@@ -14,7 +14,143 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          linkedin: string | null
+          location: string | null
+          phone: string | null
+          portfolio: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          linkedin?: string | null
+          location?: string | null
+          phone?: string | null
+          portfolio?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          linkedin?: string | null
+          location?: string | null
+          phone?: string | null
+          portfolio?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      resume_templates: {
+        Row: {
+          created_at: string
+          description: string | null
+          experience_level: Database["public"]["Enums"]["experience_level"]
+          id: string
+          is_active: boolean
+          layout_config: Json
+          name: string
+          preview_image_url: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          experience_level: Database["public"]["Enums"]["experience_level"]
+          id?: string
+          is_active?: boolean
+          layout_config?: Json
+          name: string
+          preview_image_url?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          experience_level?: Database["public"]["Enums"]["experience_level"]
+          id?: string
+          is_active?: boolean
+          layout_config?: Json
+          name?: string
+          preview_image_url?: string | null
+        }
+        Relationships: []
+      }
+      resumes: {
+        Row: {
+          certifications: Json | null
+          created_at: string
+          education: Json | null
+          experience: Json | null
+          id: string
+          is_complete: boolean
+          pdf_url: string | null
+          personal_info: Json | null
+          projects: Json | null
+          skills: Json | null
+          summary: string | null
+          template_id: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          certifications?: Json | null
+          created_at?: string
+          education?: Json | null
+          experience?: Json | null
+          id?: string
+          is_complete?: boolean
+          pdf_url?: string | null
+          personal_info?: Json | null
+          projects?: Json | null
+          skills?: Json | null
+          summary?: string | null
+          template_id?: string | null
+          title?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          certifications?: Json | null
+          created_at?: string
+          education?: Json | null
+          experience?: Json | null
+          id?: string
+          is_complete?: boolean
+          pdf_url?: string | null
+          personal_info?: Json | null
+          projects?: Json | null
+          skills?: Json | null
+          summary?: string | null
+          template_id?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resumes_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "resume_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +159,12 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      experience_level:
+        | "student"
+        | "fresher"
+        | "one_to_three"
+        | "three_to_five"
+        | "senior"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +291,14 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      experience_level: [
+        "student",
+        "fresher",
+        "one_to_three",
+        "three_to_five",
+        "senior",
+      ],
+    },
   },
 } as const

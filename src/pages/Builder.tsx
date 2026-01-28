@@ -1,499 +1,123 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import {
-  FileText,
-  Sparkles,
-  ChevronLeft,
-  Download,
-  Share2,
-  Eye,
-  Wand2,
-  Plus,
-  Trash2,
-  GripVertical,
-  User,
-  Briefcase,
-  GraduationCap,
-  Code,
-  Award,
-  FileCheck,
-  ChevronDown,
-  ChevronUp,
-} from "lucide-react";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-
-interface Section {
-  id: string;
-  title: string;
-  icon: React.ElementType;
-  isOpen: boolean;
-}
+import { useAuth } from "@/hooks/useAuth";
+import { useResumes, Resume } from "@/hooks/useResumes";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
+import { FileText, ChevronLeft, Download, Plus, Trash2, User, Briefcase, GraduationCap, Code, FileCheck, ChevronDown, ChevronUp, Loader2, Save } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 const Builder = () => {
-  const [activeSection, setActiveSection] = useState("personal");
-  const [sections, setSections] = useState<Section[]>([
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const { resumes, updateResume, createResume } = useResumes();
+  const { toast } = useToast();
+  const resumePreviewRef = useRef<HTMLDivElement>(null);
+  const [saving, setSaving] = useState(false);
+  const [generating, setGenerating] = useState(false);
+  const [currentResume, setCurrentResume] = useState<Resume | null>(null);
+  const [sections, setSections] = useState([
     { id: "personal", title: "Personal Information", icon: User, isOpen: true },
     { id: "summary", title: "Professional Summary", icon: FileCheck, isOpen: false },
     { id: "experience", title: "Work Experience", icon: Briefcase, isOpen: false },
     { id: "education", title: "Education", icon: GraduationCap, isOpen: false },
     { id: "skills", title: "Skills", icon: Code, isOpen: false },
-    { id: "projects", title: "Projects", icon: FileText, isOpen: false },
-    { id: "certifications", title: "Certifications", icon: Award, isOpen: false },
   ]);
+  const [formData, setFormData] = useState({ title: "Untitled Resume", fullName: "", email: "", phone: "", location: "", linkedin: "", portfolio: "", summary: "" });
+  const [experiences, setExperiences] = useState([{ id: 1, company: "", title: "", startDate: "", endDate: "", description: "" }]);
+  const [education, setEducation] = useState([{ id: 1, institution: "", degree: "", year: "", grade: "" }]);
+  const [skills, setSkills] = useState<string[]>([]);
+  const [newSkill, setNewSkill] = useState("");
 
-  const [formData, setFormData] = useState({
-    fullName: "",
-    email: "",
-    phone: "",
-    location: "",
-    linkedin: "",
-    portfolio: "",
-    summary: "",
-  });
+  useEffect(() => {
+    if (id && resumes.length > 0) {
+      const resume = resumes.find(r => r.id === id);
+      if (resume) {
+        setCurrentResume(resume);
+        setFormData({ title: resume.title, fullName: resume.personal_info?.fullName || "", email: resume.personal_info?.email || "", phone: resume.personal_info?.phone || "", location: resume.personal_info?.location || "", linkedin: resume.personal_info?.linkedin || "", portfolio: resume.personal_info?.portfolio || "", summary: resume.summary || "" });
+        if (resume.experience?.length) setExperiences(resume.experience as any);
+        if (resume.education?.length) setEducation(resume.education as any);
+        if (resume.skills?.length) setSkills((resume.skills as any).map((s: any) => s.name || s));
+      }
+    } else if (!id && user) {
+      createResume().then(resume => { if (resume) navigate(`/builder/${resume.id}`, { replace: true }); });
+    }
+  }, [id, resumes, user]);
 
-  const [experiences, setExperiences] = useState([
-    { id: 1, company: "", title: "", startDate: "", endDate: "", description: "" },
-  ]);
+  const toggleSection = (sectionId: string) => setSections(prev => prev.map(s => s.id === sectionId ? { ...s, isOpen: !s.isOpen } : s));
+  const addSkill = () => { if (newSkill.trim() && !skills.includes(newSkill.trim())) { setSkills(prev => [...prev, newSkill.trim()]); setNewSkill(""); } };
 
-  const toggleSection = (id: string) => {
-    setSections((prev) =>
-      prev.map((s) => (s.id === id ? { ...s, isOpen: !s.isOpen } : s))
-    );
-    setActiveSection(id);
+  const handleSave = async () => {
+    if (!currentResume || !user) return;
+    setSaving(true);
+    await updateResume(currentResume.id, { title: formData.title, personal_info: { fullName: formData.fullName, email: formData.email, phone: formData.phone, location: formData.location, linkedin: formData.linkedin, portfolio: formData.portfolio }, summary: formData.summary, experience: experiences, education: education, skills: skills.map(s => ({ name: s })) });
+    toast({ title: "Resume saved!" });
+    setSaving(false);
   };
 
-  const addExperience = () => {
-    setExperiences((prev) => [
-      ...prev,
-      { id: Date.now(), company: "", title: "", startDate: "", endDate: "", description: "" },
-    ]);
+  const handleDownloadPDF = async () => {
+    if (!resumePreviewRef.current || !currentResume || !user) return;
+    setGenerating(true);
+    try {
+      const canvas = await html2canvas(resumePreviewRef.current, { scale: 2 });
+      const pdf = new jsPDF("p", "mm", "a4");
+      pdf.addImage(canvas.toDataURL("image/png"), "PNG", 0, 0, 210, (canvas.height * 210) / canvas.width);
+      pdf.save(`${formData.title}.pdf`);
+      const pdfBlob = pdf.output("blob");
+      await supabase.storage.from("resumes").upload(`${user.id}/${currentResume.id}.pdf`, pdfBlob, { upsert: true });
+      toast({ title: "PDF saved!" });
+    } catch (e) { toast({ title: "Error", variant: "destructive" }); }
+    setGenerating(false);
   };
 
-  const removeExperience = (id: number) => {
-    setExperiences((prev) => prev.filter((exp) => exp.id !== id));
-  };
+  if (!user) return <div className="min-h-screen flex items-center justify-center"><Link to="/login"><Button variant="hero">Log in</Button></Link></div>;
 
   return (
     <div className="min-h-screen bg-muted/20 flex flex-col">
-      {/* Header */}
       <header className="bg-card border-b border-border sticky top-0 z-50">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between h-14">
-            {/* Left */}
-            <div className="flex items-center gap-4">
-              <Link
-                to="/dashboard"
-                className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
-              >
-                <ChevronLeft className="w-5 h-5" />
-                <span className="hidden sm:inline">Dashboard</span>
-              </Link>
-              <div className="h-6 w-px bg-border" />
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg gradient-button flex items-center justify-center">
-                  <FileText className="w-4 h-4 text-primary-foreground" />
-                </div>
-                <Input
-                  type="text"
-                  defaultValue="Untitled Resume"
-                  className="border-0 bg-transparent font-semibold text-foreground focus-visible:ring-0 focus-visible:ring-offset-0 px-0 h-8 w-40"
-                />
-              </div>
-            </div>
-
-            {/* Right */}
-            <div className="flex items-center gap-2">
-              <Button variant="ghost" size="sm">
-                <Eye className="w-4 h-4 mr-1" />
-                <span className="hidden sm:inline">Preview</span>
-              </Button>
-              <Button variant="ghost" size="sm">
-                <Share2 className="w-4 h-4 mr-1" />
-                <span className="hidden sm:inline">Share</span>
-              </Button>
-              <Button variant="hero" size="sm">
-                <Download className="w-4 h-4 mr-1" />
-                <span className="hidden sm:inline">Download</span>
-              </Button>
-            </div>
+        <div className="container mx-auto px-4 flex items-center justify-between h-14">
+          <div className="flex items-center gap-4">
+            <Link to="/dashboard" className="flex items-center gap-2 text-muted-foreground hover:text-foreground"><ChevronLeft className="w-5 h-5" /></Link>
+            <Input value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} className="border-0 bg-transparent font-semibold w-40" />
+          </div>
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="sm" onClick={handleSave} disabled={saving}>{saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}</Button>
+            <Button variant="hero" size="sm" onClick={handleDownloadPDF} disabled={generating}>{generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />} PDF</Button>
           </div>
         </div>
       </header>
-
-      {/* Main Content */}
       <div className="flex-1 flex">
-        {/* Left Panel - Editor */}
-        <div className="w-full lg:w-1/2 xl:w-2/5 border-r border-border bg-card overflow-auto">
-          <div className="p-6 space-y-4">
-            {sections.map((section) => (
-              <Collapsible
-                key={section.id}
-                open={section.isOpen}
-                onOpenChange={() => toggleSection(section.id)}
-              >
-                <CollapsibleTrigger asChild>
-                  <button className="w-full flex items-center justify-between p-4 rounded-xl bg-muted/50 hover:bg-muted transition-colors">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-icy-blue-600/30 flex items-center justify-center">
-                        <section.icon className="w-5 h-5 text-primary" />
-                      </div>
-                      <span className="font-semibold text-foreground">{section.title}</span>
-                    </div>
-                    {section.isOpen ? (
-                      <ChevronUp className="w-5 h-5 text-muted-foreground" />
-                    ) : (
-                      <ChevronDown className="w-5 h-5 text-muted-foreground" />
-                    )}
-                  </button>
-                </CollapsibleTrigger>
-                <CollapsibleContent>
-                  <div className="p-4 space-y-4">
-                    {section.id === "personal" && (
-                      <>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                          <div className="space-y-2">
-                            <Label htmlFor="fullName">Full Name</Label>
-                            <Input
-                              id="fullName"
-                              placeholder="John Doe"
-                              value={formData.fullName}
-                              onChange={(e) =>
-                                setFormData({ ...formData, fullName: e.target.value })
-                              }
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="email">Email</Label>
-                            <Input
-                              id="email"
-                              type="email"
-                              placeholder="john@example.com"
-                              value={formData.email}
-                              onChange={(e) =>
-                                setFormData({ ...formData, email: e.target.value })
-                              }
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="phone">Phone</Label>
-                            <Input
-                              id="phone"
-                              placeholder="+880 1234-567890"
-                              value={formData.phone}
-                              onChange={(e) =>
-                                setFormData({ ...formData, phone: e.target.value })
-                              }
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="location">Location</Label>
-                            <Input
-                              id="location"
-                              placeholder="Dhaka, Bangladesh"
-                              value={formData.location}
-                              onChange={(e) =>
-                                setFormData({ ...formData, location: e.target.value })
-                              }
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="linkedin">LinkedIn</Label>
-                            <Input
-                              id="linkedin"
-                              placeholder="linkedin.com/in/johndoe"
-                              value={formData.linkedin}
-                              onChange={(e) =>
-                                setFormData({ ...formData, linkedin: e.target.value })
-                              }
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="portfolio">Portfolio</Label>
-                            <Input
-                              id="portfolio"
-                              placeholder="johndoe.com"
-                              value={formData.portfolio}
-                              onChange={(e) =>
-                                setFormData({ ...formData, portfolio: e.target.value })
-                              }
-                            />
-                          </div>
-                        </div>
-                      </>
-                    )}
-
-                    {section.id === "summary" && (
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between">
-                          <Label htmlFor="summary">Professional Summary</Label>
-                          <Button variant="ghost" size="sm" className="text-primary">
-                            <Wand2 className="w-4 h-4 mr-1" />
-                            AI Generate
-                          </Button>
-                        </div>
-                        <Textarea
-                          id="summary"
-                          placeholder="Write a compelling summary of your professional background..."
-                          value={formData.summary}
-                          onChange={(e) =>
-                            setFormData({ ...formData, summary: e.target.value })
-                          }
-                          rows={5}
-                        />
-                        <p className="text-xs text-muted-foreground">
-                          {formData.summary.length}/300 characters
-                        </p>
-                      </div>
-                    )}
-
-                    {section.id === "experience" && (
-                      <div className="space-y-4">
-                        {experiences.map((exp, index) => (
-                          <div
-                            key={exp.id}
-                            className="p-4 rounded-xl border border-border bg-card space-y-4"
-                          >
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center gap-2">
-                                <GripVertical className="w-5 h-5 text-muted-foreground cursor-grab" />
-                                <span className="font-medium text-sm text-muted-foreground">
-                                  Experience {index + 1}
-                                </span>
-                              </div>
-                              {experiences.length > 1 && (
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => removeExperience(exp.id)}
-                                  className="text-destructive hover:text-destructive"
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </Button>
-                              )}
-                            </div>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                              <div className="space-y-2">
-                                <Label>Company</Label>
-                                <Input placeholder="Company Name" />
-                              </div>
-                              <div className="space-y-2">
-                                <Label>Job Title</Label>
-                                <Input placeholder="Software Engineer" />
-                              </div>
-                              <div className="space-y-2">
-                                <Label>Start Date</Label>
-                                <Input placeholder="Jan 2022" />
-                              </div>
-                              <div className="space-y-2">
-                                <Label>End Date</Label>
-                                <Input placeholder="Present" />
-                              </div>
-                            </div>
-                            <div className="space-y-2">
-                              <div className="flex items-center justify-between">
-                                <Label>Description</Label>
-                                <Button variant="ghost" size="sm" className="text-primary">
-                                  <Wand2 className="w-4 h-4 mr-1" />
-                                  Improve with AI
-                                </Button>
-                              </div>
-                              <Textarea
-                                placeholder="• Led development of..."
-                                rows={4}
-                              />
-                            </div>
-                          </div>
-                        ))}
-                        <Button
-                          variant="outline"
-                          className="w-full"
-                          onClick={addExperience}
-                        >
-                          <Plus className="w-4 h-4 mr-2" />
-                          Add Experience
-                        </Button>
-                      </div>
-                    )}
-
-                    {section.id === "education" && (
-                      <div className="p-4 rounded-xl border border-border bg-card space-y-4">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                          <div className="space-y-2">
-                            <Label>Institution</Label>
-                            <Input placeholder="University Name" />
-                          </div>
-                          <div className="space-y-2">
-                            <Label>Degree</Label>
-                            <Input placeholder="B.Sc. in Computer Science" />
-                          </div>
-                          <div className="space-y-2">
-                            <Label>Graduation Year</Label>
-                            <Input placeholder="2024" />
-                          </div>
-                          <div className="space-y-2">
-                            <Label>CGPA / Grade</Label>
-                            <Input placeholder="3.80/4.00" />
-                          </div>
-                        </div>
-                        <Button variant="outline" className="w-full">
-                          <Plus className="w-4 h-4 mr-2" />
-                          Add Education
-                        </Button>
-                      </div>
-                    )}
-
-                    {section.id === "skills" && (
-                      <div className="space-y-4">
-                        <div className="space-y-2">
-                          <Label>Add Skills</Label>
-                          <div className="flex gap-2">
-                            <Input placeholder="e.g., JavaScript, React, Python" />
-                            <Button variant="outline">
-                              <Plus className="w-4 h-4" />
-                            </Button>
-                          </div>
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                          {["JavaScript", "React", "TypeScript", "Node.js", "Python"].map(
-                            (skill) => (
-                              <span
-                                key={skill}
-                                className="px-3 py-1.5 rounded-full bg-icy-blue-600/30 text-sm font-medium text-foreground flex items-center gap-2"
-                              >
-                                {skill}
-                                <button className="hover:text-destructive">
-                                  <Trash2 className="w-3 h-3" />
-                                </button>
-                              </span>
-                            )
-                          )}
-                        </div>
-                        <Button variant="ghost" size="sm" className="text-primary">
-                          <Sparkles className="w-4 h-4 mr-1" />
-                          Suggest relevant skills
-                        </Button>
-                      </div>
-                    )}
-
-                    {(section.id === "projects" || section.id === "certifications") && (
-                      <div className="text-center py-8 text-muted-foreground">
-                        <p className="mb-4">Add your {section.title.toLowerCase()}</p>
-                        <Button variant="outline">
-                          <Plus className="w-4 h-4 mr-2" />
-                          Add {section.id === "projects" ? "Project" : "Certification"}
-                        </Button>
-                      </div>
-                    )}
-                  </div>
-                </CollapsibleContent>
-              </Collapsible>
-            ))}
-          </div>
+        <div className="w-full lg:w-1/2 border-r border-border bg-card overflow-auto p-6 space-y-4">
+          {sections.map(section => (
+            <Collapsible key={section.id} open={section.isOpen} onOpenChange={() => toggleSection(section.id)}>
+              <CollapsibleTrigger className="w-full flex items-center justify-between p-4 rounded-xl bg-muted/50">
+                <div className="flex items-center gap-3"><div className="w-10 h-10 rounded-lg bg-icy-blue-600/30 flex items-center justify-center"><section.icon className="w-5 h-5 text-primary" /></div><span className="font-semibold">{section.title}</span></div>
+                {section.isOpen ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+              </CollapsibleTrigger>
+              <CollapsibleContent className="p-4 space-y-4">
+                {section.id === "personal" && <div className="grid grid-cols-2 gap-4">{["fullName", "email", "phone", "location", "linkedin", "portfolio"].map(f => <div key={f}><Label>{f}</Label><Input value={(formData as any)[f]} onChange={e => setFormData({ ...formData, [f]: e.target.value })} /></div>)}</div>}
+                {section.id === "summary" && <Textarea value={formData.summary} onChange={e => setFormData({ ...formData, summary: e.target.value })} rows={5} />}
+                {section.id === "experience" && <>{experiences.map((exp, i) => <div key={exp.id} className="p-4 border rounded-xl space-y-4"><div className="grid grid-cols-2 gap-4"><Input placeholder="Company" value={exp.company} onChange={e => setExperiences(experiences.map(x => x.id === exp.id ? { ...x, company: e.target.value } : x))} /><Input placeholder="Title" value={exp.title} onChange={e => setExperiences(experiences.map(x => x.id === exp.id ? { ...x, title: e.target.value } : x))} /></div><Textarea placeholder="Description" value={exp.description} onChange={e => setExperiences(experiences.map(x => x.id === exp.id ? { ...x, description: e.target.value } : x))} /></div>)}<Button variant="outline" onClick={() => setExperiences([...experiences, { id: Date.now(), company: "", title: "", startDate: "", endDate: "", description: "" }])}><Plus className="w-4 h-4 mr-2" />Add</Button></>}
+                {section.id === "education" && education.map(edu => <div key={edu.id} className="grid grid-cols-2 gap-4"><Input placeholder="Institution" value={edu.institution} onChange={e => setEducation(education.map(x => x.id === edu.id ? { ...x, institution: e.target.value } : x))} /><Input placeholder="Degree" value={edu.degree} onChange={e => setEducation(education.map(x => x.id === edu.id ? { ...x, degree: e.target.value } : x))} /></div>)}
+                {section.id === "skills" && <><div className="flex gap-2"><Input value={newSkill} onChange={e => setNewSkill(e.target.value)} onKeyPress={e => e.key === "Enter" && addSkill()} /><Button onClick={addSkill}><Plus className="w-4 h-4" /></Button></div><div className="flex flex-wrap gap-2">{skills.map(s => <span key={s} className="px-3 py-1 rounded-full bg-icy-blue-600/30 flex items-center gap-2">{s}<button onClick={() => setSkills(skills.filter(x => x !== s))}><Trash2 className="w-3 h-3" /></button></span>)}</div></>}
+              </CollapsibleContent>
+            </Collapsible>
+          ))}
         </div>
-
-        {/* Right Panel - Preview */}
         <div className="hidden lg:flex flex-1 items-start justify-center p-8 bg-muted/30 overflow-auto">
-          <div className="w-full max-w-[600px] bg-card rounded-2xl shadow-xl border border-border overflow-hidden">
-            {/* Preview Header */}
-            <div className="px-6 py-4 border-b border-border flex items-center justify-between bg-muted/30">
-              <span className="text-sm font-medium text-muted-foreground">Live Preview</span>
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-muted-foreground">Template: Modern Professional</span>
-              </div>
-            </div>
-
-            {/* Resume Preview */}
-            <div className="p-8 min-h-[800px]">
-              {/* Header */}
-              <div className="text-center pb-6 border-b border-border">
-                <h1 className="text-2xl font-bold text-foreground">
-                  {formData.fullName || "Your Name"}
-                </h1>
-                <p className="text-sm text-muted-foreground mt-2">
-                  {[formData.email, formData.phone, formData.location]
-                    .filter(Boolean)
-                    .join(" • ") || "your@email.com • +880 1234-567890 • Dhaka, BD"}
-                </p>
-                {(formData.linkedin || formData.portfolio) && (
-                  <p className="text-sm text-primary mt-1">
-                    {[formData.linkedin, formData.portfolio].filter(Boolean).join(" • ")}
-                  </p>
-                )}
-              </div>
-
-              {/* Summary */}
-              {formData.summary && (
-                <div className="py-6 border-b border-border">
-                  <h2 className="text-sm font-bold text-primary uppercase tracking-wider mb-3">
-                    Summary
-                  </h2>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    {formData.summary}
-                  </p>
-                </div>
-              )}
-
-              {/* Experience Placeholder */}
-              <div className="py-6 border-b border-border">
-                <h2 className="text-sm font-bold text-primary uppercase tracking-wider mb-4">
-                  Experience
-                </h2>
-                <div className="space-y-4">
-                  <div className="space-y-1">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <h3 className="font-semibold text-foreground">Software Engineer</h3>
-                        <p className="text-sm text-muted-foreground">Tech Company</p>
-                      </div>
-                      <span className="text-xs text-muted-foreground">Jan 2022 - Present</span>
-                    </div>
-                    <ul className="text-sm text-muted-foreground list-disc list-inside space-y-1 mt-2">
-                      <li>Led development of new features...</li>
-                      <li>Collaborated with cross-functional teams...</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-
-              {/* Education Placeholder */}
-              <div className="py-6 border-b border-border">
-                <h2 className="text-sm font-bold text-primary uppercase tracking-wider mb-4">
-                  Education
-                </h2>
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h3 className="font-semibold text-foreground">B.Sc. in Computer Science</h3>
-                    <p className="text-sm text-muted-foreground">University Name</p>
-                  </div>
-                  <span className="text-xs text-muted-foreground">2024</span>
-                </div>
-              </div>
-
-              {/* Skills Placeholder */}
-              <div className="py-6">
-                <h2 className="text-sm font-bold text-primary uppercase tracking-wider mb-4">
-                  Skills
-                </h2>
-                <div className="flex flex-wrap gap-2">
-                  {["JavaScript", "React", "TypeScript", "Node.js", "Python"].map((skill) => (
-                    <span
-                      key={skill}
-                      className="px-2 py-1 text-xs rounded bg-muted text-muted-foreground"
-                    >
-                      {skill}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
+          <div ref={resumePreviewRef} className="w-full max-w-[600px] bg-white rounded-2xl shadow-xl p-8 min-h-[800px]">
+            <div className="text-center pb-6 border-b"><h1 className="text-2xl font-bold">{formData.fullName || "Your Name"}</h1><p className="text-sm text-muted-foreground">{[formData.email, formData.phone, formData.location].filter(Boolean).join(" • ")}</p></div>
+            {formData.summary && <div className="py-6 border-b"><h2 className="text-sm font-bold text-primary uppercase mb-3">Summary</h2><p className="text-sm">{formData.summary}</p></div>}
+            {experiences.some(e => e.company) && <div className="py-6 border-b"><h2 className="text-sm font-bold text-primary uppercase mb-3">Experience</h2>{experiences.filter(e => e.company).map(exp => <div key={exp.id}><h3 className="font-semibold">{exp.title}</h3><p className="text-sm text-muted-foreground">{exp.company}</p><p className="text-sm">{exp.description}</p></div>)}</div>}
+            {education.some(e => e.institution) && <div className="py-6 border-b"><h2 className="text-sm font-bold text-primary uppercase mb-3">Education</h2>{education.filter(e => e.institution).map(edu => <div key={edu.id}><h3 className="font-semibold">{edu.degree}</h3><p className="text-sm text-muted-foreground">{edu.institution}</p></div>)}</div>}
+            {skills.length > 0 && <div className="py-6"><h2 className="text-sm font-bold text-primary uppercase mb-3">Skills</h2><div className="flex flex-wrap gap-2">{skills.map(s => <span key={s} className="px-2 py-1 text-xs bg-muted rounded">{s}</span>)}</div></div>}
           </div>
         </div>
       </div>
