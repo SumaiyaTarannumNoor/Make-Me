@@ -62,6 +62,30 @@
     --sky-blue-800: 212 100% 93%;
     --sky-blue-900: 212 100% 96%;
 
+    /* Coral color palette */
+    --coral: 16 100% 66%;
+    --coral-100: 16 100% 13%;
+    --coral-200: 16 100% 26%;
+    --coral-300: 16 100% 40%;
+    --coral-400: 16 100% 53%;
+    --coral-500: 16 100% 66%;
+    --coral-600: 16 100% 73%;
+    --coral-700: 16 100% 80%;
+    --coral-800: 16 100% 87%;
+    --coral-900: 16 100% 94%;
+
+    /* Royal Blue color palette */
+    --royal-blue: 225 73% 57%;
+    --royal-blue-100: 225 73% 11%;
+    --royal-blue-200: 225 73% 23%;
+    --royal-blue-300: 225 73% 34%;
+    --royal-blue-400: 225 73% 46%;
+    --royal-blue-500: 225 73% 57%;
+    --royal-blue-600: 225 73% 66%;
+    --royal-blue-700: 225 73% 75%;
+    --royal-blue-800: 225 73% 84%;
+    --royal-blue-900: 225 73% 92%;
+
     /* Semantic tokens */
     --background: 0 0% 100%;
     --foreground: 240 10% 10%;

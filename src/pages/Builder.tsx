@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { Link, useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -10,11 +10,16 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
-import { FileText, ChevronLeft, Download, Plus, Trash2, User, Briefcase, GraduationCap, Code, FileCheck, ChevronDown, ChevronUp, Loader2, Save } from "lucide-react";
+import {
+  ChevronLeft, Download, Plus, Trash2, User, Briefcase,
+  GraduationCap, Code, FileCheck, ChevronDown, ChevronUp, Loader2, Save,
+  FolderOpen, Award, Mail, Phone, MapPin, Linkedin, Globe,
+} from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 const Builder = () => {
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { user } = useAuth();
   const { resumes, updateResume, createResume } = useResumes();
@@ -23,41 +28,149 @@ const Builder = () => {
   const [saving, setSaving] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [currentResume, setCurrentResume] = useState<Resume | null>(null);
+  const [colorScheme, setColorScheme] = useState<"coral" | "royal-blue">("coral");
+
   const [sections, setSections] = useState([
     { id: "personal", title: "Personal Information", icon: User, isOpen: true },
     { id: "summary", title: "Professional Summary", icon: FileCheck, isOpen: false },
     { id: "experience", title: "Work Experience", icon: Briefcase, isOpen: false },
     { id: "education", title: "Education", icon: GraduationCap, isOpen: false },
     { id: "skills", title: "Skills", icon: Code, isOpen: false },
+    { id: "projects", title: "Projects", icon: FolderOpen, isOpen: false },
+    { id: "certifications", title: "Certifications", icon: Award, isOpen: false },
   ]);
-  const [formData, setFormData] = useState({ title: "Untitled Resume", fullName: "", email: "", phone: "", location: "", linkedin: "", portfolio: "", summary: "" });
-  const [experiences, setExperiences] = useState([{ id: 1, company: "", title: "", startDate: "", endDate: "", description: "" }]);
-  const [education, setEducation] = useState([{ id: 1, institution: "", degree: "", year: "", grade: "" }]);
-  const [skills, setSkills] = useState<string[]>([]);
+
+  const [formData, setFormData] = useState({
+    title: "Untitled Resume",
+    fullName: "",
+    email: "",
+    phone: "",
+    location: "",
+    linkedin: "",
+    portfolio: "",
+    tagline: "",
+    summary: "",
+  });
+
+  const [experiences, setExperiences] = useState([
+    { id: 1, company: "", title: "", type: "Full-time", startDate: "", endDate: "", description: "" },
+  ]);
+
+  const [education, setEducation] = useState([
+    { id: 1, institution: "", degree: "", year: "", grade: "" },
+  ]);
+
+  const [skillGroups, setSkillGroups] = useState([
+    { id: 1, category: "Technical Skills", items: [] as string[] },
+  ]);
   const [newSkill, setNewSkill] = useState("");
+  const [activeSkillGroup, setActiveSkillGroup] = useState(0);
+
+  const [projects, setProjects] = useState([
+    { id: 1, name: "", description: "", link: "" },
+  ]);
+
+  const [certifications, setCertifications] = useState<string[]>([]);
+  const [newCert, setNewCert] = useState("");
+
+  const colors = {
+    coral: {
+      primary: "hsl(16, 100%, 66%)",
+      light: "hsl(16, 100%, 94%)",
+      headerBg: "hsl(220, 20%, 20%)",
+    },
+    "royal-blue": {
+      primary: "hsl(225, 73%, 57%)",
+      light: "hsl(225, 73%, 92%)",
+      headerBg: "hsl(220, 20%, 20%)",
+    },
+  };
+
+  const theme = colors[colorScheme];
+
+  useEffect(() => {
+    const templateParam = searchParams.get("template");
+    if (templateParam === "coral" || templateParam === "royal-blue") {
+      setColorScheme(templateParam);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     if (id && resumes.length > 0) {
-      const resume = resumes.find(r => r.id === id);
+      const resume = resumes.find((r) => r.id === id);
       if (resume) {
         setCurrentResume(resume);
-        setFormData({ title: resume.title, fullName: resume.personal_info?.fullName || "", email: resume.personal_info?.email || "", phone: resume.personal_info?.phone || "", location: resume.personal_info?.location || "", linkedin: resume.personal_info?.linkedin || "", portfolio: resume.personal_info?.portfolio || "", summary: resume.summary || "" });
+        setFormData({
+          title: resume.title || "Untitled Resume",
+          fullName: resume.personal_info?.fullName || "",
+          email: resume.personal_info?.email || "",
+          phone: resume.personal_info?.phone || "",
+          location: resume.personal_info?.location || "",
+          linkedin: resume.personal_info?.linkedin || "",
+          portfolio: resume.personal_info?.portfolio || "",
+          tagline: resume.personal_info?.tagline || "",
+          summary: resume.summary || "",
+        });
         if (resume.experience?.length) setExperiences(resume.experience as any);
         if (resume.education?.length) setEducation(resume.education as any);
-        if (resume.skills?.length) setSkills((resume.skills as any).map((s: any) => s.name || s));
+        if (resume.skills?.length) {
+          const skills = resume.skills as any[];
+          if (skills[0]?.category) {
+            setSkillGroups(skills);
+          } else {
+            setSkillGroups([{ id: 1, category: "Technical Skills", items: skills.map((s) => s.name || s) }]);
+          }
+        }
+        if (resume.projects?.length) setProjects(resume.projects as any);
+        if (resume.certifications?.length) setCertifications((resume.certifications as any[]).map((c) => c.name || c));
       }
     } else if (!id && user) {
-      createResume().then(resume => { if (resume) navigate(`/builder/${resume.id}`, { replace: true }); });
+      createResume().then((resume) => {
+        if (resume) navigate(`/builder/${resume.id}`, { replace: true });
+      });
     }
   }, [id, resumes, user]);
 
-  const toggleSection = (sectionId: string) => setSections(prev => prev.map(s => s.id === sectionId ? { ...s, isOpen: !s.isOpen } : s));
-  const addSkill = () => { if (newSkill.trim() && !skills.includes(newSkill.trim())) { setSkills(prev => [...prev, newSkill.trim()]); setNewSkill(""); } };
+  const toggleSection = (sectionId: string) =>
+    setSections((prev) => prev.map((s) => (s.id === sectionId ? { ...s, isOpen: !s.isOpen } : s)));
+
+  const addSkill = () => {
+    if (newSkill.trim() && !skillGroups[activeSkillGroup].items.includes(newSkill.trim())) {
+      setSkillGroups((prev) =>
+        prev.map((g, i) => (i === activeSkillGroup ? { ...g, items: [...g.items, newSkill.trim()] } : g))
+      );
+      setNewSkill("");
+    }
+  };
+
+  const addCertification = () => {
+    if (newCert.trim() && !certifications.includes(newCert.trim())) {
+      setCertifications((prev) => [...prev, newCert.trim()]);
+      setNewCert("");
+    }
+  };
 
   const handleSave = async () => {
     if (!currentResume || !user) return;
     setSaving(true);
-    await updateResume(currentResume.id, { title: formData.title, personal_info: { fullName: formData.fullName, email: formData.email, phone: formData.phone, location: formData.location, linkedin: formData.linkedin, portfolio: formData.portfolio }, summary: formData.summary, experience: experiences, education: education, skills: skills.map(s => ({ name: s })) });
+    await updateResume(currentResume.id, {
+      title: formData.title,
+      personal_info: {
+        fullName: formData.fullName,
+        email: formData.email,
+        phone: formData.phone,
+        location: formData.location,
+        linkedin: formData.linkedin,
+        portfolio: formData.portfolio,
+        tagline: formData.tagline,
+      },
+      summary: formData.summary,
+      experience: experiences,
+      education: education,
+      skills: skillGroups,
+      projects: projects,
+      certifications: certifications.map((c) => ({ name: c })),
+    });
     toast({ title: "Resume saved!" });
     setSaving(false);
   };
@@ -66,58 +179,360 @@ const Builder = () => {
     if (!resumePreviewRef.current || !currentResume || !user) return;
     setGenerating(true);
     try {
-      const canvas = await html2canvas(resumePreviewRef.current, { scale: 2 });
+      const canvas = await html2canvas(resumePreviewRef.current, { scale: 2, useCORS: true });
       const pdf = new jsPDF("p", "mm", "a4");
       pdf.addImage(canvas.toDataURL("image/png"), "PNG", 0, 0, 210, (canvas.height * 210) / canvas.width);
       pdf.save(`${formData.title}.pdf`);
       const pdfBlob = pdf.output("blob");
       await supabase.storage.from("resumes").upload(`${user.id}/${currentResume.id}.pdf`, pdfBlob, { upsert: true });
       toast({ title: "PDF saved!" });
-    } catch (e) { toast({ title: "Error", variant: "destructive" }); }
+    } catch (e) {
+      toast({ title: "Error", variant: "destructive" });
+    }
     setGenerating(false);
   };
 
-  if (!user) return <div className="min-h-screen flex items-center justify-center"><Link to="/login"><Button variant="hero">Log in</Button></Link></div>;
+  if (!user)
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Link to="/login">
+          <Button variant="hero">Log in</Button>
+        </Link>
+      </div>
+    );
 
   return (
     <div className="min-h-screen bg-muted/20 flex flex-col">
       <header className="bg-card border-b border-border sticky top-0 z-50">
         <div className="container mx-auto px-4 flex items-center justify-between h-14">
           <div className="flex items-center gap-4">
-            <Link to="/dashboard" className="flex items-center gap-2 text-muted-foreground hover:text-foreground"><ChevronLeft className="w-5 h-5" /></Link>
-            <Input value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} className="border-0 bg-transparent font-semibold w-40" />
+            <Link to="/dashboard" className="flex items-center gap-2 text-muted-foreground hover:text-foreground">
+              <ChevronLeft className="w-5 h-5" />
+            </Link>
+            <Input
+              value={formData.title}
+              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              className="border-0 bg-transparent font-semibold w-40"
+            />
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" onClick={handleSave} disabled={saving}>{saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}</Button>
-            <Button variant="hero" size="sm" onClick={handleDownloadPDF} disabled={generating}>{generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />} PDF</Button>
+            {/* Color Scheme Toggle */}
+            <div className="flex bg-muted rounded-lg p-1 mr-2">
+              <button
+                onClick={() => setColorScheme("coral")}
+                className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
+                  colorScheme === "coral" ? "bg-coral text-white" : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                Coral
+              </button>
+              <button
+                onClick={() => setColorScheme("royal-blue")}
+                className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
+                  colorScheme === "royal-blue" ? "bg-royal-blue text-white" : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                Royal Blue
+              </button>
+            </div>
+            <Button variant="ghost" size="sm" onClick={handleSave} disabled={saving}>
+              {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+            </Button>
+            <Button variant="hero" size="sm" onClick={handleDownloadPDF} disabled={generating}>
+              {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />} PDF
+            </Button>
           </div>
         </div>
       </header>
+
       <div className="flex-1 flex">
+        {/* Left Panel - Editor */}
         <div className="w-full lg:w-1/2 border-r border-border bg-card overflow-auto p-6 space-y-4">
-          {sections.map(section => (
+          {sections.map((section) => (
             <Collapsible key={section.id} open={section.isOpen} onOpenChange={() => toggleSection(section.id)}>
               <CollapsibleTrigger className="w-full flex items-center justify-between p-4 rounded-xl bg-muted/50">
-                <div className="flex items-center gap-3"><div className="w-10 h-10 rounded-lg bg-icy-blue-600/30 flex items-center justify-center"><section.icon className="w-5 h-5 text-primary" /></div><span className="font-semibold">{section.title}</span></div>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-icy-blue-600/30 flex items-center justify-center">
+                    <section.icon className="w-5 h-5 text-primary" />
+                  </div>
+                  <span className="font-semibold">{section.title}</span>
+                </div>
                 {section.isOpen ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
               </CollapsibleTrigger>
               <CollapsibleContent className="p-4 space-y-4">
-                {section.id === "personal" && <div className="grid grid-cols-2 gap-4">{["fullName", "email", "phone", "location", "linkedin", "portfolio"].map(f => <div key={f}><Label>{f}</Label><Input value={(formData as any)[f]} onChange={e => setFormData({ ...formData, [f]: e.target.value })} /></div>)}</div>}
-                {section.id === "summary" && <Textarea value={formData.summary} onChange={e => setFormData({ ...formData, summary: e.target.value })} rows={5} />}
-                {section.id === "experience" && <>{experiences.map((exp, i) => <div key={exp.id} className="p-4 border rounded-xl space-y-4"><div className="grid grid-cols-2 gap-4"><Input placeholder="Company" value={exp.company} onChange={e => setExperiences(experiences.map(x => x.id === exp.id ? { ...x, company: e.target.value } : x))} /><Input placeholder="Title" value={exp.title} onChange={e => setExperiences(experiences.map(x => x.id === exp.id ? { ...x, title: e.target.value } : x))} /></div><Textarea placeholder="Description" value={exp.description} onChange={e => setExperiences(experiences.map(x => x.id === exp.id ? { ...x, description: e.target.value } : x))} /></div>)}<Button variant="outline" onClick={() => setExperiences([...experiences, { id: Date.now(), company: "", title: "", startDate: "", endDate: "", description: "" }])}><Plus className="w-4 h-4 mr-2" />Add</Button></>}
-                {section.id === "education" && education.map(edu => <div key={edu.id} className="grid grid-cols-2 gap-4"><Input placeholder="Institution" value={edu.institution} onChange={e => setEducation(education.map(x => x.id === edu.id ? { ...x, institution: e.target.value } : x))} /><Input placeholder="Degree" value={edu.degree} onChange={e => setEducation(education.map(x => x.id === edu.id ? { ...x, degree: e.target.value } : x))} /></div>)}
-                {section.id === "skills" && <><div className="flex gap-2"><Input value={newSkill} onChange={e => setNewSkill(e.target.value)} onKeyPress={e => e.key === "Enter" && addSkill()} /><Button onClick={addSkill}><Plus className="w-4 h-4" /></Button></div><div className="flex flex-wrap gap-2">{skills.map(s => <span key={s} className="px-3 py-1 rounded-full bg-icy-blue-600/30 flex items-center gap-2">{s}<button onClick={() => setSkills(skills.filter(x => x !== s))}><Trash2 className="w-3 h-3" /></button></span>)}</div></>}
+                {section.id === "personal" && (
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="col-span-2">
+                      <Label>Full Name</Label>
+                      <Input
+                        placeholder="John Doe"
+                        value={formData.fullName}
+                        onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                      />
+                    </div>
+                    <div className="col-span-2">
+                      <Label>Tagline / Headline</Label>
+                      <Input
+                        placeholder="A passionate developer who works hard to learn new skills..."
+                        value={formData.tagline}
+                        onChange={(e) => setFormData({ ...formData, tagline: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <Label>Email</Label>
+                      <Input placeholder="john@example.com" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
+                    </div>
+                    <div>
+                      <Label>Phone</Label>
+                      <Input placeholder="+880 1234-567890" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} />
+                    </div>
+                    <div>
+                      <Label>Location</Label>
+                      <Input placeholder="Dhaka, Bangladesh" value={formData.location} onChange={(e) => setFormData({ ...formData, location: e.target.value })} />
+                    </div>
+                    <div>
+                      <Label>LinkedIn</Label>
+                      <Input placeholder="linkedin.com/in/johndoe" value={formData.linkedin} onChange={(e) => setFormData({ ...formData, linkedin: e.target.value })} />
+                    </div>
+                    <div className="col-span-2">
+                      <Label>Portfolio / Website</Label>
+                      <Input placeholder="johndoe.com" value={formData.portfolio} onChange={(e) => setFormData({ ...formData, portfolio: e.target.value })} />
+                    </div>
+                  </div>
+                )}
+
+                {section.id === "summary" && (
+                  <Textarea placeholder="Write a compelling summary..." value={formData.summary} onChange={(e) => setFormData({ ...formData, summary: e.target.value })} rows={4} />
+                )}
+
+                {section.id === "experience" && (
+                  <>
+                    {experiences.map((exp, i) => (
+                      <div key={exp.id} className="p-4 border rounded-xl space-y-4">
+                        <div className="flex justify-between">
+                          <span className="text-sm font-medium text-muted-foreground">Experience {i + 1}</span>
+                          {experiences.length > 1 && (
+                            <Button variant="ghost" size="sm" onClick={() => setExperiences(experiences.filter((e) => e.id !== exp.id))} className="text-destructive">
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          )}
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                          <Input placeholder="Job Title" value={exp.title} onChange={(e) => setExperiences(experiences.map((x) => (x.id === exp.id ? { ...x, title: e.target.value } : x)))} />
+                          <Input placeholder="Type (Full-time, Part-time)" value={exp.type} onChange={(e) => setExperiences(experiences.map((x) => (x.id === exp.id ? { ...x, type: e.target.value } : x)))} />
+                          <Input placeholder="Company" value={exp.company} onChange={(e) => setExperiences(experiences.map((x) => (x.id === exp.id ? { ...x, company: e.target.value } : x)))} />
+                          <div className="flex gap-2">
+                            <Input placeholder="Start" value={exp.startDate} onChange={(e) => setExperiences(experiences.map((x) => (x.id === exp.id ? { ...x, startDate: e.target.value } : x)))} />
+                            <Input placeholder="End" value={exp.endDate} onChange={(e) => setExperiences(experiences.map((x) => (x.id === exp.id ? { ...x, endDate: e.target.value } : x)))} />
+                          </div>
+                        </div>
+                        <Textarea placeholder="• Led development of... (one bullet point per line)" value={exp.description} onChange={(e) => setExperiences(experiences.map((x) => (x.id === exp.id ? { ...x, description: e.target.value } : x)))} rows={4} />
+                      </div>
+                    ))}
+                    <Button variant="outline" onClick={() => setExperiences([...experiences, { id: Date.now(), company: "", title: "", type: "Full-time", startDate: "", endDate: "", description: "" }])}>
+                      <Plus className="w-4 h-4 mr-2" />Add Experience
+                    </Button>
+                  </>
+                )}
+
+                {section.id === "education" && (
+                  <>
+                    {education.map((edu) => (
+                      <div key={edu.id} className="grid grid-cols-2 gap-4 p-4 border rounded-xl">
+                        <Input placeholder="Degree" value={edu.degree} onChange={(e) => setEducation(education.map((x) => (x.id === edu.id ? { ...x, degree: e.target.value } : x)))} />
+                        <Input placeholder="Institution" value={edu.institution} onChange={(e) => setEducation(education.map((x) => (x.id === edu.id ? { ...x, institution: e.target.value } : x)))} />
+                        <Input placeholder="Year" value={edu.year} onChange={(e) => setEducation(education.map((x) => (x.id === edu.id ? { ...x, year: e.target.value } : x)))} />
+                        <Input placeholder="CGPA / Grade" value={edu.grade} onChange={(e) => setEducation(education.map((x) => (x.id === edu.id ? { ...x, grade: e.target.value } : x)))} />
+                      </div>
+                    ))}
+                    <Button variant="outline" onClick={() => setEducation([...education, { id: Date.now(), institution: "", degree: "", year: "", grade: "" }])}>
+                      <Plus className="w-4 h-4 mr-2" />Add Education
+                    </Button>
+                  </>
+                )}
+
+                {section.id === "skills" && (
+                  <>
+                    {skillGroups.map((group, groupIndex) => (
+                      <div key={group.id} className="p-4 border rounded-xl space-y-3">
+                        <Input placeholder="Category (e.g., Technical Skills)" value={group.category} onChange={(e) => setSkillGroups(skillGroups.map((g, i) => (i === groupIndex ? { ...g, category: e.target.value } : g)))} className="font-medium" />
+                        <div className="flex gap-2">
+                          <Input placeholder="Add skill..." value={activeSkillGroup === groupIndex ? newSkill : ""} onFocus={() => setActiveSkillGroup(groupIndex)} onChange={(e) => { setActiveSkillGroup(groupIndex); setNewSkill(e.target.value); }} onKeyPress={(e) => e.key === "Enter" && addSkill()} />
+                          <Button onClick={addSkill}><Plus className="w-4 h-4" /></Button>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {group.items.map((skill) => (
+                            <span key={skill} className="px-3 py-1 rounded-full bg-icy-blue-600/30 flex items-center gap-2 text-sm">
+                              {skill}
+                              <button onClick={() => setSkillGroups(skillGroups.map((g, i) => i === groupIndex ? { ...g, items: g.items.filter((s) => s !== skill) } : g))}><Trash2 className="w-3 h-3" /></button>
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                    <Button variant="outline" onClick={() => setSkillGroups([...skillGroups, { id: Date.now(), category: "", items: [] }])}>
+                      <Plus className="w-4 h-4 mr-2" />Add Skill Category
+                    </Button>
+                  </>
+                )}
+
+                {section.id === "projects" && (
+                  <>
+                    {projects.map((project) => (
+                      <div key={project.id} className="p-4 border rounded-xl space-y-3">
+                        <Input placeholder="Project Name" value={project.name} onChange={(e) => setProjects(projects.map((p) => (p.id === project.id ? { ...p, name: e.target.value } : p)))} />
+                        <Textarea placeholder="Brief description..." value={project.description} onChange={(e) => setProjects(projects.map((p) => (p.id === project.id ? { ...p, description: e.target.value } : p)))} rows={2} />
+                        <Input placeholder="Link (optional)" value={project.link} onChange={(e) => setProjects(projects.map((p) => (p.id === project.id ? { ...p, link: e.target.value } : p)))} />
+                      </div>
+                    ))}
+                    <Button variant="outline" onClick={() => setProjects([...projects, { id: Date.now(), name: "", description: "", link: "" }])}>
+                      <Plus className="w-4 h-4 mr-2" />Add Project
+                    </Button>
+                  </>
+                )}
+
+                {section.id === "certifications" && (
+                  <>
+                    <div className="flex gap-2">
+                      <Input placeholder="Certification name..." value={newCert} onChange={(e) => setNewCert(e.target.value)} onKeyPress={(e) => e.key === "Enter" && addCertification()} />
+                      <Button onClick={addCertification}><Plus className="w-4 h-4" /></Button>
+                    </div>
+                    <div className="space-y-2">
+                      {certifications.map((cert) => (
+                        <div key={cert} className="flex items-center justify-between p-3 bg-muted rounded-lg">
+                          <span className="text-sm">{cert}</span>
+                          <button onClick={() => setCertifications(certifications.filter((c) => c !== cert))}><Trash2 className="w-4 h-4 text-destructive" /></button>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
               </CollapsibleContent>
             </Collapsible>
           ))}
         </div>
+
+        {/* Right Panel - Preview */}
         <div className="hidden lg:flex flex-1 items-start justify-center p-8 bg-muted/30 overflow-auto">
-          <div ref={resumePreviewRef} className="w-full max-w-[600px] bg-white rounded-2xl shadow-xl p-8 min-h-[800px]">
-            <div className="text-center pb-6 border-b"><h1 className="text-2xl font-bold">{formData.fullName || "Your Name"}</h1><p className="text-sm text-muted-foreground">{[formData.email, formData.phone, formData.location].filter(Boolean).join(" • ")}</p></div>
-            {formData.summary && <div className="py-6 border-b"><h2 className="text-sm font-bold text-primary uppercase mb-3">Summary</h2><p className="text-sm">{formData.summary}</p></div>}
-            {experiences.some(e => e.company) && <div className="py-6 border-b"><h2 className="text-sm font-bold text-primary uppercase mb-3">Experience</h2>{experiences.filter(e => e.company).map(exp => <div key={exp.id}><h3 className="font-semibold">{exp.title}</h3><p className="text-sm text-muted-foreground">{exp.company}</p><p className="text-sm">{exp.description}</p></div>)}</div>}
-            {education.some(e => e.institution) && <div className="py-6 border-b"><h2 className="text-sm font-bold text-primary uppercase mb-3">Education</h2>{education.filter(e => e.institution).map(edu => <div key={edu.id}><h3 className="font-semibold">{edu.degree}</h3><p className="text-sm text-muted-foreground">{edu.institution}</p></div>)}</div>}
-            {skills.length > 0 && <div className="py-6"><h2 className="text-sm font-bold text-primary uppercase mb-3">Skills</h2><div className="flex flex-wrap gap-2">{skills.map(s => <span key={s} className="px-2 py-1 text-xs bg-muted rounded">{s}</span>)}</div></div>}
+          <div className="w-full max-w-[600px] shadow-xl rounded-lg overflow-hidden">
+            <div ref={resumePreviewRef} className="bg-white" style={{ fontFamily: "'Inter', sans-serif" }}>
+              {/* Header Section */}
+              <div className="px-6 py-5" style={{ backgroundColor: theme.headerBg }}>
+                <div className="flex items-center gap-4 mb-3">
+                  <div className="w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: theme.primary }}>
+                    <User className="w-8 h-8 text-white" />
+                  </div>
+                  <div>
+                    <h1 className="text-xl font-bold text-white tracking-wide">{formData.fullName || "YOUR NAME"}</h1>
+                    <p className="text-gray-300 text-sm mt-0.5">{formData.tagline || "Your professional tagline..."}</p>
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-4 text-gray-300 text-[10px]">
+                  {formData.email && <div className="flex items-center gap-1.5"><Mail className="w-3.5 h-3.5" style={{ color: theme.primary }} /><span>{formData.email}</span></div>}
+                  {formData.phone && <div className="flex items-center gap-1.5"><Phone className="w-3.5 h-3.5" style={{ color: theme.primary }} /><span>{formData.phone}</span></div>}
+                  {formData.location && <div className="flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" style={{ color: theme.primary }} /><span>{formData.location}</span></div>}
+                  {formData.linkedin && <div className="flex items-center gap-1.5"><Linkedin className="w-3.5 h-3.5" style={{ color: theme.primary }} /><span>{formData.linkedin}</span></div>}
+                  {formData.portfolio && <div className="flex items-center gap-1.5"><Globe className="w-3.5 h-3.5" style={{ color: theme.primary }} /><span>{formData.portfolio}</span></div>}
+                </div>
+              </div>
+
+              {/* Two Column Layout */}
+              <div className="flex text-xs">
+                {/* Left Column - 60% */}
+                <div className="w-[60%] p-5 pr-4">
+                  {/* Work Experience */}
+                  <div className="mb-5">
+                    <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Work Experience</h2>
+                    <div className="space-y-3">
+                      {experiences.filter((e) => e.company || e.title).map((exp) => (
+                        <div key={exp.id}>
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <h3 className="font-semibold text-gray-900">{exp.title || "Job Title"} {exp.type && `(${exp.type})`}</h3>
+                              <p className="text-gray-600 text-[10px]">{exp.company}</p>
+                            </div>
+                            <span className="text-[9px] text-gray-500 whitespace-nowrap">{exp.startDate} - {exp.endDate || "Present"}</span>
+                          </div>
+                          {exp.description && (
+                            <ul className="mt-1.5 text-[10px] text-gray-600 space-y-0.5">
+                              {exp.description.split("\n").filter(Boolean).map((line, i) => (
+                                <li key={i} className="flex items-start gap-1"><span style={{ color: theme.primary }}>•</span><span>{line.replace(/^[•\-]\s*/, "")}</span></li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
+                      ))}
+                      {experiences.filter((e) => e.company || e.title).length === 0 && <p className="text-gray-400 italic text-[10px]">Add your work experience...</p>}
+                    </div>
+                  </div>
+
+                  {/* Education */}
+                  <div>
+                    <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Education</h2>
+                    <div className="space-y-2">
+                      {education.filter((e) => e.institution || e.degree).map((edu) => (
+                        <div key={edu.id} className="flex justify-between items-start">
+                          <div>
+                            <h3 className="font-semibold text-gray-900 text-[11px]">{edu.degree || "Degree"}</h3>
+                            <p className="text-gray-600 text-[10px]">{edu.institution}</p>
+                            {edu.grade && <p className="text-gray-500 text-[9px]">CGPA: {edu.grade}</p>}
+                          </div>
+                          <span className="text-[9px] text-gray-500">{edu.year}</span>
+                        </div>
+                      ))}
+                      {education.filter((e) => e.institution || e.degree).length === 0 && <p className="text-gray-400 italic text-[10px]">Add your education...</p>}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right Column - 40% */}
+                <div className="w-[40%] p-5 pl-4" style={{ backgroundColor: theme.light }}>
+                  {/* Skills */}
+                  <div className="mb-5">
+                    <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Skills</h2>
+                    <div className="space-y-2">
+                      {skillGroups.map((group) => (
+                        <div key={group.id}>
+                          {group.category && <p className="font-medium text-gray-700 text-[10px] mb-1">{group.category}</p>}
+                          <div className="flex flex-wrap gap-1">
+                            {group.items.map((skill, j) => <span key={j} className="px-1.5 py-0.5 rounded text-[9px] text-gray-700 bg-white/70">{skill}</span>)}
+                          </div>
+                        </div>
+                      ))}
+                      {skillGroups.every((g) => g.items.length === 0) && <p className="text-gray-400 italic text-[10px]">Add your skills...</p>}
+                    </div>
+                  </div>
+
+                  {/* Projects */}
+                  {projects.some((p) => p.name) && (
+                    <div className="mb-5">
+                      <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Projects</h2>
+                      <div className="space-y-2">
+                        {projects.filter((p) => p.name).map((project) => (
+                          <div key={project.id}>
+                            <h3 className="font-semibold text-gray-900 text-[10px]">{project.name}</h3>
+                            <p className="text-gray-600 text-[9px]">{project.description}</p>
+                            {project.link && <p className="text-[8px]" style={{ color: theme.primary }}>{project.link}</p>}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Certifications */}
+                  {certifications.length > 0 && (
+                    <div>
+                      <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Training & Certificates</h2>
+                      <ul className="space-y-1">
+                        {certifications.map((cert, i) => (
+                          <li key={i} className="flex items-start gap-1 text-[10px] text-gray-700"><span style={{ color: theme.primary }}>•</span><span>{cert}</span></li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

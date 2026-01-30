@@ -2,7 +2,7 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import HeroSection from "@/components/landing/HeroSection";
 import FeaturesSection from "@/components/landing/FeaturesSection";
-import TemplatesSection from "@/components/landing/TemplatesSection";
+import TemplateShowcase from "@/components/landing/TemplateShowcase";
 import PricingSection from "@/components/landing/PricingSection";
 import CTASection from "@/components/landing/CTASection";
 
@@ -13,7 +13,7 @@ const Index = () => {
       <main>
         <HeroSection />
         <FeaturesSection />
-        <TemplatesSection />
+        <TemplateShowcase />
         <PricingSection />
         <CTASection />
       </main>
