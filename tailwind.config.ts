@@ -145,6 +145,38 @@ export default {
           800: "hsl(var(--royal-blue-800))",
           900: "hsl(var(--royal-blue-900))",
         },
+        "light-coral": {
+          DEFAULT: "hsl(var(--light-coral))",
+          light: "hsl(var(--light-coral-light))",
+        },
+        "deep-pink": {
+          DEFAULT: "hsl(var(--deep-pink))",
+          light: "hsl(var(--deep-pink-light))",
+        },
+        "dark-orange": {
+          DEFAULT: "hsl(var(--dark-orange))",
+          light: "hsl(var(--dark-orange-light))",
+        },
+        "medium-orchid": {
+          DEFAULT: "hsl(var(--medium-orchid))",
+          light: "hsl(var(--medium-orchid-light))",
+        },
+        "teal": {
+          DEFAULT: "hsl(var(--teal))",
+          light: "hsl(var(--teal-light))",
+        },
+        "dark-turquoise": {
+          DEFAULT: "hsl(var(--dark-turquoise))",
+          light: "hsl(var(--dark-turquoise-light))",
+        },
+        "olive-drab": {
+          DEFAULT: "hsl(var(--olive-drab))",
+          light: "hsl(var(--olive-drab-light))",
+        },
+        "medium-blue": {
+          DEFAULT: "hsl(var(--medium-blue))",
+          light: "hsl(var(--medium-blue-light))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
