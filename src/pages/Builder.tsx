@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Link, useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,14 +8,17 @@ import { useAuth } from "@/hooks/useAuth";
 import { useResumes, Resume } from "@/hooks/useResumes";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { ColorScheme, colorSchemes } from "@/components/landing/TemplateShowcase";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import {
   ChevronLeft, Download, Plus, Trash2, User, Briefcase,
   GraduationCap, Code, FileCheck, ChevronDown, ChevronUp, Loader2, Save,
-  FolderOpen, Award, Mail, Phone, MapPin, Linkedin, Globe,
+  FolderOpen, Award, Mail, Phone, MapPin, Linkedin, Globe, Camera,
 } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+
+const AUTOSAVE_KEY = "resume_autosave_";
 
 const Builder = () => {
   const { id } = useParams();
@@ -25,13 +28,17 @@ const Builder = () => {
   const { resumes, updateResume, createResume } = useResumes();
   const { toast } = useToast();
   const resumePreviewRef = useRef<HTMLDivElement>(null);
+  const photoInputRef = useRef<HTMLInputElement>(null);
   const [saving, setSaving] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [currentResume, setCurrentResume] = useState<Resume | null>(null);
-  const [colorScheme, setColorScheme] = useState<"coral" | "royal-blue">("coral");
+  const [colorScheme, setColorScheme] = useState<ColorScheme>("coral");
+  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   const [sections, setSections] = useState([
     { id: "personal", title: "Personal Information", icon: User, isOpen: true },
+    { id: "photo", title: "Profile Photo", icon: Camera, isOpen: false },
     { id: "summary", title: "Professional Summary", icon: FileCheck, isOpen: false },
     { id: "experience", title: "Work Experience", icon: Briefcase, isOpen: false },
     { id: "education", title: "Education", icon: GraduationCap, isOpen: false },
@@ -73,30 +80,71 @@ const Builder = () => {
   const [certifications, setCertifications] = useState<string[]>([]);
   const [newCert, setNewCert] = useState("");
 
-  const colors = {
-    coral: {
-      primary: "hsl(16, 100%, 66%)",
-      light: "hsl(16, 100%, 94%)",
-      headerBg: "hsl(220, 20%, 20%)",
-    },
-    "royal-blue": {
-      primary: "hsl(225, 73%, 57%)",
-      light: "hsl(225, 73%, 92%)",
-      headerBg: "hsl(220, 20%, 20%)",
-    },
-  };
+  const theme = colorSchemes[colorScheme];
 
-  const theme = colors[colorScheme];
+  // Auto-save to localStorage whenever data changes
+  const saveToLocalStorage = useCallback(() => {
+    if (!id) return;
+    const data = {
+      formData,
+      experiences,
+      education,
+      skillGroups,
+      projects,
+      certifications,
+      colorScheme,
+      photoUrl,
+    };
+    localStorage.setItem(AUTOSAVE_KEY + id, JSON.stringify(data));
+    setHasUnsavedChanges(true);
+  }, [id, formData, experiences, education, skillGroups, projects, certifications, colorScheme, photoUrl]);
 
+  // Auto-save effect
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      saveToLocalStorage();
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [saveToLocalStorage]);
+
+  // Load from localStorage on mount
+  useEffect(() => {
+    if (id) {
+      const saved = localStorage.getItem(AUTOSAVE_KEY + id);
+      if (saved) {
+        try {
+          const data = JSON.parse(saved);
+          if (data.formData) setFormData(data.formData);
+          if (data.experiences) setExperiences(data.experiences);
+          if (data.education) setEducation(data.education);
+          if (data.skillGroups) setSkillGroups(data.skillGroups);
+          if (data.projects) setProjects(data.projects);
+          if (data.certifications) setCertifications(data.certifications);
+          if (data.colorScheme) setColorScheme(data.colorScheme);
+          if (data.photoUrl) setPhotoUrl(data.photoUrl);
+          setHasUnsavedChanges(true);
+          return; // Use localStorage data instead of database
+        } catch (e) {
+          console.error("Failed to parse saved data", e);
+        }
+      }
+    }
+  }, [id]);
+
+  // Load from template param
   useEffect(() => {
     const templateParam = searchParams.get("template");
-    if (templateParam === "coral" || templateParam === "royal-blue") {
-      setColorScheme(templateParam);
+    if (templateParam && Object.keys(colorSchemes).includes(templateParam)) {
+      setColorScheme(templateParam as ColorScheme);
     }
   }, [searchParams]);
 
+  // Load from database if no localStorage data
   useEffect(() => {
     if (id && resumes.length > 0) {
+      const saved = localStorage.getItem(AUTOSAVE_KEY + id);
+      if (saved) return; // Already loaded from localStorage
+
       const resume = resumes.find((r) => r.id === id);
       if (resume) {
         setCurrentResume(resume);
@@ -131,6 +179,14 @@ const Builder = () => {
     }
   }, [id, resumes, user]);
 
+  // Set current resume reference
+  useEffect(() => {
+    if (id && resumes.length > 0) {
+      const resume = resumes.find((r) => r.id === id);
+      if (resume) setCurrentResume(resume);
+    }
+  }, [id, resumes]);
+
   const toggleSection = (sectionId: string) =>
     setSections((prev) => prev.map((s) => (s.id === sectionId ? { ...s, isOpen: !s.isOpen } : s)));
 
@@ -147,6 +203,17 @@ const Builder = () => {
     if (newCert.trim() && !certifications.includes(newCert.trim())) {
       setCertifications((prev) => [...prev, newCert.trim()]);
       setNewCert("");
+    }
+  };
+
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPhotoUrl(reader.result as string);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -171,6 +238,9 @@ const Builder = () => {
       projects: projects,
       certifications: certifications.map((c) => ({ name: c })),
     });
+    // Clear localStorage after successful save
+    if (id) localStorage.removeItem(AUTOSAVE_KEY + id);
+    setHasUnsavedChanges(false);
     toast({ title: "Resume saved!" });
     setSaving(false);
   };
@@ -214,32 +284,25 @@ const Builder = () => {
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
               className="border-0 bg-transparent font-semibold w-40"
             />
+            {hasUnsavedChanges && <span className="text-xs text-muted-foreground">(unsaved)</span>}
           </div>
           <div className="flex items-center gap-2">
-            {/* Color Scheme Toggle */}
-            <div className="flex bg-muted rounded-lg p-1 mr-2">
-              <button
-                onClick={() => setColorScheme("coral")}
-                className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
-                  colorScheme === "coral" ? "bg-coral text-white" : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                Coral
-              </button>
-              <button
-                onClick={() => setColorScheme("royal-blue")}
-                className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
-                  colorScheme === "royal-blue" ? "bg-royal-blue text-white" : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                Royal Blue
-              </button>
-            </div>
+            <select
+              value={colorScheme}
+              onChange={(e) => setColorScheme(e.target.value as ColorScheme)}
+              className="px-3 py-1.5 rounded-lg bg-muted text-sm font-medium border-0 focus:ring-2 focus:ring-primary"
+            >
+              {Object.entries(colorSchemes).map(([key, value]) => (
+                <option key={key} value={key}>{value.name}</option>
+              ))}
+            </select>
             <Button variant="ghost" size="sm" onClick={handleSave} disabled={saving}>
               {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+              <span className="hidden sm:inline ml-1">Save</span>
             </Button>
             <Button variant="hero" size="sm" onClick={handleDownloadPDF} disabled={generating}>
-              {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />} PDF
+              {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+              <span className="hidden sm:inline ml-1">PDF</span>
             </Button>
           </div>
         </div>
@@ -264,19 +327,11 @@ const Builder = () => {
                   <div className="grid grid-cols-2 gap-4">
                     <div className="col-span-2">
                       <Label>Full Name</Label>
-                      <Input
-                        placeholder="John Doe"
-                        value={formData.fullName}
-                        onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                      />
+                      <Input placeholder="John Doe" value={formData.fullName} onChange={(e) => setFormData({ ...formData, fullName: e.target.value })} />
                     </div>
                     <div className="col-span-2">
                       <Label>Tagline / Headline</Label>
-                      <Input
-                        placeholder="A passionate developer who works hard to learn new skills..."
-                        value={formData.tagline}
-                        onChange={(e) => setFormData({ ...formData, tagline: e.target.value })}
-                      />
+                      <Input placeholder="A passionate developer..." value={formData.tagline} onChange={(e) => setFormData({ ...formData, tagline: e.target.value })} />
                     </div>
                     <div>
                       <Label>Email</Label>
@@ -301,6 +356,32 @@ const Builder = () => {
                   </div>
                 )}
 
+                {section.id === "photo" && (
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-4">
+                      <div className="w-24 h-24 rounded-full bg-muted flex items-center justify-center overflow-hidden border-2 border-dashed border-border">
+                        {photoUrl ? (
+                          <img src={photoUrl} alt="Profile" className="w-full h-full object-cover" />
+                        ) : (
+                          <User className="w-10 h-10 text-muted-foreground" />
+                        )}
+                      </div>
+                      <div>
+                        <input ref={photoInputRef} type="file" accept="image/*" className="hidden" onChange={handlePhotoUpload} />
+                        <Button variant="outline" onClick={() => photoInputRef.current?.click()}>
+                          <Camera className="w-4 h-4 mr-2" />Upload Photo
+                        </Button>
+                        {photoUrl && (
+                          <Button variant="ghost" size="sm" className="ml-2 text-destructive" onClick={() => setPhotoUrl(null)}>
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                    <p className="text-xs text-muted-foreground">Photo is embedded in PDF only, not saved to database.</p>
+                  </div>
+                )}
+
                 {section.id === "summary" && (
                   <Textarea placeholder="Write a compelling summary..." value={formData.summary} onChange={(e) => setFormData({ ...formData, summary: e.target.value })} rows={4} />
                 )}
@@ -319,14 +400,14 @@ const Builder = () => {
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                           <Input placeholder="Job Title" value={exp.title} onChange={(e) => setExperiences(experiences.map((x) => (x.id === exp.id ? { ...x, title: e.target.value } : x)))} />
-                          <Input placeholder="Type (Full-time, Part-time)" value={exp.type} onChange={(e) => setExperiences(experiences.map((x) => (x.id === exp.id ? { ...x, type: e.target.value } : x)))} />
+                          <Input placeholder="Type (Full-time)" value={exp.type} onChange={(e) => setExperiences(experiences.map((x) => (x.id === exp.id ? { ...x, type: e.target.value } : x)))} />
                           <Input placeholder="Company" value={exp.company} onChange={(e) => setExperiences(experiences.map((x) => (x.id === exp.id ? { ...x, company: e.target.value } : x)))} />
                           <div className="flex gap-2">
                             <Input placeholder="Start" value={exp.startDate} onChange={(e) => setExperiences(experiences.map((x) => (x.id === exp.id ? { ...x, startDate: e.target.value } : x)))} />
                             <Input placeholder="End" value={exp.endDate} onChange={(e) => setExperiences(experiences.map((x) => (x.id === exp.id ? { ...x, endDate: e.target.value } : x)))} />
                           </div>
                         </div>
-                        <Textarea placeholder="• Led development of... (one bullet point per line)" value={exp.description} onChange={(e) => setExperiences(experiences.map((x) => (x.id === exp.id ? { ...x, description: e.target.value } : x)))} rows={4} />
+                        <Textarea placeholder="• Led development of..." value={exp.description} onChange={(e) => setExperiences(experiences.map((x) => (x.id === exp.id ? { ...x, description: e.target.value } : x)))} rows={4} />
                       </div>
                     ))}
                     <Button variant="outline" onClick={() => setExperiences([...experiences, { id: Date.now(), company: "", title: "", type: "Full-time", startDate: "", endDate: "", description: "" }])}>
@@ -419,8 +500,12 @@ const Builder = () => {
               {/* Header Section */}
               <div className="px-6 py-5" style={{ backgroundColor: theme.headerBg }}>
                 <div className="flex items-center gap-4 mb-3">
-                  <div className="w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: theme.primary }}>
-                    <User className="w-8 h-8 text-white" />
+                  <div className="w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden" style={{ backgroundColor: photoUrl ? "transparent" : theme.primary }}>
+                    {photoUrl ? (
+                      <img src={photoUrl} alt="Profile" className="w-full h-full object-cover" />
+                    ) : (
+                      <User className="w-8 h-8 text-white" />
+                    )}
                   </div>
                   <div>
                     <h1 className="text-xl font-bold text-white tracking-wide">{formData.fullName || "YOUR NAME"}</h1>
@@ -440,7 +525,6 @@ const Builder = () => {
               <div className="flex text-xs">
                 {/* Left Column - 60% */}
                 <div className="w-[60%] p-5 pr-4">
-                  {/* Work Experience */}
                   <div className="mb-5">
                     <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Work Experience</h2>
                     <div className="space-y-3">
@@ -466,7 +550,6 @@ const Builder = () => {
                     </div>
                   </div>
 
-                  {/* Education */}
                   <div>
                     <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Education</h2>
                     <div className="space-y-2">
@@ -487,7 +570,6 @@ const Builder = () => {
 
                 {/* Right Column - 40% */}
                 <div className="w-[40%] p-5 pl-4" style={{ backgroundColor: theme.light }}>
-                  {/* Skills */}
                   <div className="mb-5">
                     <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Skills</h2>
                     <div className="space-y-2">
@@ -503,7 +585,6 @@ const Builder = () => {
                     </div>
                   </div>
 
-                  {/* Projects */}
                   {projects.some((p) => p.name) && (
                     <div className="mb-5">
                       <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Projects</h2>
@@ -519,7 +600,6 @@ const Builder = () => {
                     </div>
                   )}
 
-                  {/* Certifications */}
                   {certifications.length > 0 && (
                     <div>
                       <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Training & Certificates</h2>

@@ -86,6 +86,38 @@
     --royal-blue-800: 225 73% 84%;
     --royal-blue-900: 225 73% 92%;
 
+    /* Light Coral - #F08080 */
+    --light-coral: 0 79% 72%;
+    --light-coral-light: 0 79% 94%;
+
+    /* Deep Pink - #FF1493 */
+    --deep-pink: 328 100% 54%;
+    --deep-pink-light: 328 100% 92%;
+
+    /* Dark Orange - #FF8C00 */
+    --dark-orange: 33 100% 50%;
+    --dark-orange-light: 33 100% 92%;
+
+    /* Medium Orchid - #BA55D3 */
+    --medium-orchid: 288 59% 58%;
+    --medium-orchid-light: 288 59% 92%;
+
+    /* Teal - #008080 */
+    --teal: 180 100% 25%;
+    --teal-light: 180 100% 90%;
+
+    /* Dark Turquoise - #00CED1 */
+    --dark-turquoise: 181 100% 41%;
+    --dark-turquoise-light: 181 100% 92%;
+
+    /* Olive Drab - #6B8E23 */
+    --olive-drab: 80 61% 35%;
+    --olive-drab-light: 80 61% 90%;
+
+    /* Medium Blue - #0000CD */
+    --medium-blue: 240 100% 40%;
+    --medium-blue-light: 240 100% 92%;
+
     /* Semantic tokens */
     --background: 0 0% 100%;
     --foreground: 240 10% 10%;
