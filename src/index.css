@@ -6,210 +6,250 @@
 
 @layer base {
   :root {
-    /* Core brand colors */
-    --thistle: 302 37% 78%;
-    --thistle-100: 282 37% 16%;
-    --thistle-200: 282 37% 31%;
-    --thistle-300: 282 37% 47%;
-    --thistle-400: 292 34% 63%;
-    --thistle-500: 302 37% 78%;
-    --thistle-600: 300 35% 82%;
-    --thistle-700: 300 33% 87%;
-    --thistle-800: 300 30% 92%;
-    --thistle-900: 300 33% 96%;
+    /* Neon Pink */
+    --neon-pink-50: 342 97% 95%;
+    --neon-pink-100: 342 95% 90%;
+    --neon-pink-200: 342 96% 81%;
+    --neon-pink-300: 342 95% 70%;
+    --neon-pink-400: 342 95% 60%;
+    --neon-pink-500: 342 95% 50%;
+    --neon-pink-600: 342 95% 40%;
+    --neon-pink-700: 342 95% 30%;
+    --neon-pink-800: 342 95% 20%;
+    --neon-pink-900: 342 94% 10%;
+    --neon-pink-950: 342 95% 7%;
 
-    --pastel-petal: 338 100% 89%;
-    --pastel-petal-100: 340 100% 18%;
-    --pastel-petal-200: 340 100% 36%;
-    --pastel-petal-300: 340 100% 53%;
-    --pastel-petal-400: 340 100% 71%;
-    --pastel-petal-500: 338 100% 89%;
-    --pastel-petal-600: 338 100% 91%;
-    --pastel-petal-700: 338 100% 93%;
-    --pastel-petal-800: 338 100% 95%;
-    --pastel-petal-900: 338 100% 98%;
+    /* Raspberry Plum */
+    --raspberry-plum-50: 308 87% 95%;
+    --raspberry-plum-100: 308 83% 90%;
+    --raspberry-plum-200: 308 80% 80%;
+    --raspberry-plum-300: 308 77% 70%;
+    --raspberry-plum-400: 308 80% 60%;
+    --raspberry-plum-500: 308 80% 50%;
+    --raspberry-plum-600: 308 80% 40%;
+    --raspberry-plum-700: 308 80% 30%;
+    --raspberry-plum-800: 308 80% 20%;
+    --raspberry-plum-900: 308 80% 10%;
+    --raspberry-plum-950: 308 78% 7%;
 
-    --baby-pink: 337 100% 84%;
-    --baby-pink-100: 337 100% 17%;
-    --baby-pink-200: 337 100% 34%;
-    --baby-pink-300: 337 100% 50%;
-    --baby-pink-400: 337 100% 67%;
-    --baby-pink-500: 337 100% 84%;
-    --baby-pink-600: 337 100% 87%;
-    --baby-pink-700: 337 100% 90%;
-    --baby-pink-800: 337 100% 93%;
-    --baby-pink-900: 337 100% 96%;
+    /* Indigo Bloom */
+    --indigo-bloom-50: 272 95% 95%;
+    --indigo-bloom-100: 272 93% 90%;
+    --indigo-bloom-200: 272 91% 80%;
+    --indigo-bloom-300: 272 90% 70%;
+    --indigo-bloom-400: 272 92% 60%;
+    --indigo-bloom-500: 272 93% 50%;
+    --indigo-bloom-600: 272 93% 40%;
+    --indigo-bloom-700: 272 93% 30%;
+    --indigo-bloom-800: 272 93% 20%;
+    --indigo-bloom-900: 272 94% 10%;
+    --indigo-bloom-950: 272 93% 7%;
 
-    --icy-blue: 206 99% 87%;
-    --icy-blue-100: 206 97% 17%;
-    --icy-blue-200: 206 97% 35%;
-    --icy-blue-300: 206 96% 52%;
-    --icy-blue-400: 206 97% 70%;
-    --icy-blue-500: 206 99% 87%;
-    --icy-blue-600: 206 99% 90%;
-    --icy-blue-700: 206 99% 92%;
-    --icy-blue-800: 206 100% 95%;
-    --icy-blue-900: 206 100% 97%;
+    /* Ultrasonic Blue */
+    --ultrasonic-blue-50: 257 93% 95%;
+    --ultrasonic-blue-100: 257 90% 90%;
+    --ultrasonic-blue-200: 257 88% 80%;
+    --ultrasonic-blue-300: 257 86% 70%;
+    --ultrasonic-blue-400: 257 89% 60%;
+    --ultrasonic-blue-500: 257 91% 50%;
+    --ultrasonic-blue-600: 257 91% 40%;
+    --ultrasonic-blue-700: 257 91% 30%;
+    --ultrasonic-blue-800: 257 91% 20%;
+    --ultrasonic-blue-900: 257 90% 10%;
+    --ultrasonic-blue-950: 257 91% 7%;
 
-    --sky-blue: 212 100% 82%;
-    --sky-blue-100: 212 100% 16%;
-    --sky-blue-200: 212 100% 33%;
-    --sky-blue-300: 212 100% 49%;
-    --sky-blue-400: 212 100% 66%;
-    --sky-blue-500: 212 100% 82%;
-    --sky-blue-600: 212 100% 86%;
-    --sky-blue-700: 212 100% 89%;
-    --sky-blue-800: 212 100% 93%;
-    --sky-blue-900: 212 100% 96%;
+    /* True Azure */
+    --true-azure-50: 261 93% 95%;
+    --true-azure-100: 261 90% 90%;
+    --true-azure-200: 261 84% 80%;
+    --true-azure-300: 261 82% 70%;
+    --true-azure-400: 261 86% 60%;
+    --true-azure-500: 261 90% 50%;
+    --true-azure-600: 261 91% 40%;
+    --true-azure-700: 261 91% 31%;
+    --true-azure-800: 261 91% 20%;
+    --true-azure-900: 261 89% 10%;
+    --true-azure-950: 261 90% 7%;
 
-    /* Coral color palette */
-    --coral: 16 100% 66%;
-    --coral-100: 16 100% 13%;
-    --coral-200: 16 100% 26%;
-    --coral-300: 16 100% 40%;
-    --coral-400: 16 100% 53%;
-    --coral-500: 16 100% 66%;
-    --coral-600: 16 100% 73%;
-    --coral-700: 16 100% 80%;
-    --coral-800: 16 100% 87%;
-    --coral-900: 16 100% 94%;
+    /* Vivid Royal */
+    --vivid-royal-50: 257 93% 95%;
+    --vivid-royal-100: 257 88% 90%;
+    --vivid-royal-200: 257 84% 80%;
+    --vivid-royal-300: 257 80% 70%;
+    --vivid-royal-400: 257 85% 60%;
+    --vivid-royal-500: 257 89% 50%;
+    --vivid-royal-600: 257 90% 40%;
+    --vivid-royal-700: 257 90% 30%;
+    --vivid-royal-800: 257 90% 20%;
+    --vivid-royal-900: 257 89% 10%;
+    --vivid-royal-950: 257 90% 7%;
 
-    /* Royal Blue color palette */
-    --royal-blue: 225 73% 57%;
-    --royal-blue-100: 225 73% 11%;
-    --royal-blue-200: 225 73% 23%;
-    --royal-blue-300: 225 73% 34%;
-    --royal-blue-400: 225 73% 46%;
-    --royal-blue-500: 225 73% 57%;
-    --royal-blue-600: 225 73% 66%;
-    --royal-blue-700: 225 73% 75%;
-    --royal-blue-800: 225 73% 84%;
-    --royal-blue-900: 225 73% 92%;
+    /* Bright Indigo */
+    --bright-indigo-50: 243 48% 95%;
+    --bright-indigo-100: 243 48% 90%;
+    --bright-indigo-200: 243 48% 80%;
+    --bright-indigo-300: 243 48% 70%;
+    --bright-indigo-400: 243 51% 60%;
+    --bright-indigo-500: 243 54% 50%;
+    --bright-indigo-600: 243 54% 41%;
+    --bright-indigo-700: 243 54% 30%;
+    --bright-indigo-800: 243 54% 20%;
+    --bright-indigo-900: 243 54% 10%;
+    --bright-indigo-950: 243 52% 7%;
 
-    /* Light Coral - #F08080 */
+    /* Electric Sapphire */
+    --electric-sapphire-50: 227 93% 95%;
+    --electric-sapphire-100: 227 88% 90%;
+    --electric-sapphire-200: 227 83% 80%;
+    --electric-sapphire-300: 227 80% 70%;
+    --electric-sapphire-400: 227 84% 60%;
+    --electric-sapphire-500: 227 88% 50%;
+    --electric-sapphire-600: 227 90% 40%;
+    --electric-sapphire-700: 227 90% 30%;
+    --electric-sapphire-800: 227 90% 20%;
+    --electric-sapphire-900: 227 89% 10%;
+    --electric-sapphire-950: 227 90% 7%;
+
+    /* Blue Energy */
+    --blue-energy-50: 210 93% 95%;
+    --blue-energy-100: 210 88% 90%;
+    --blue-energy-200: 210 83% 80%;
+    --blue-energy-300: 210 80% 70%;
+    --blue-energy-400: 210 84% 60%;
+    --blue-energy-500: 210 88% 50%;
+    --blue-energy-600: 210 90% 40%;
+    --blue-energy-700: 210 90% 30%;
+    --blue-energy-800: 210 90% 20%;
+    --blue-energy-900: 210 89% 10%;
+    --blue-energy-950: 210 90% 7%;
+
+    /* Sky Aqua */
+    --sky-aqua-50: 192 93% 95%;
+    --sky-aqua-100: 192 88% 90%;
+    --sky-aqua-200: 192 83% 80%;
+    --sky-aqua-300: 192 80% 70%;
+    --sky-aqua-400: 192 84% 60%;
+    --sky-aqua-500: 192 88% 50%;
+    --sky-aqua-600: 192 90% 40%;
+    --sky-aqua-700: 192 90% 30%;
+    --sky-aqua-800: 192 90% 20%;
+    --sky-aqua-900: 192 89% 10%;
+    --sky-aqua-950: 192 90% 7%;
+
+    /* Resume Template Colors - keep for templates */
     --light-coral: 0 79% 72%;
     --light-coral-light: 0 79% 94%;
-
-    /* Deep Pink - #FF1493 */
     --deep-pink: 328 100% 54%;
     --deep-pink-light: 328 100% 92%;
-
-    /* Dark Orange - #FF8C00 */
     --dark-orange: 33 100% 50%;
     --dark-orange-light: 33 100% 92%;
-
-    /* Medium Orchid - #BA55D3 */
     --medium-orchid: 288 59% 58%;
     --medium-orchid-light: 288 59% 92%;
-
-    /* Teal - #008080 */
     --teal: 180 100% 25%;
     --teal-light: 180 100% 90%;
-
-    /* Dark Turquoise - #00CED1 */
     --dark-turquoise: 181 100% 41%;
     --dark-turquoise-light: 181 100% 92%;
-
-    /* Olive Drab - #6B8E23 */
     --olive-drab: 80 61% 35%;
     --olive-drab-light: 80 61% 90%;
-
-    /* Medium Blue - #0000CD */
     --medium-blue: 240 100% 40%;
     --medium-blue-light: 240 100% 92%;
+    --coral: 16 100% 66%;
+    --coral-light: 16 100% 92%;
+    --royal-blue: 225 73% 57%;
+    --royal-blue-light: 225 73% 92%;
 
-    /* Semantic tokens */
+    /* Semantic tokens - using neon theme as primary */
     --background: 0 0% 100%;
-    --foreground: 240 10% 10%;
+    --foreground: 257 90% 10%;
 
     --card: 0 0% 100%;
-    --card-foreground: 240 10% 10%;
+    --card-foreground: 257 90% 10%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 10%;
+    --popover-foreground: 257 90% 10%;
 
-    --primary: 212 100% 49%;
+    --primary: 342 95% 50%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 302 37% 78%;
-    --secondary-foreground: 282 37% 16%;
+    --secondary: 308 80% 50%;
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 206 30% 96%;
-    --muted-foreground: 215 16% 47%;
+    --muted: 272 30% 96%;
+    --muted-foreground: 257 20% 46%;
 
-    --accent: 337 100% 84%;
-    --accent-foreground: 337 100% 17%;
+    --accent: 272 93% 50%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 212 100% 49%;
+    --border: 272 30% 90%;
+    --input: 272 30% 90%;
+    --ring: 342 95% 50%;
 
     --radius: 0.75rem;
 
     /* Gradients */
-    --gradient-hero: linear-gradient(135deg, hsl(var(--icy-blue-500)) 0%, hsl(var(--pastel-petal-500)) 50%, hsl(var(--thistle-500)) 100%);
-    --gradient-card: linear-gradient(180deg, hsl(var(--icy-blue-900)) 0%, hsl(var(--background)) 100%);
-    --gradient-button: linear-gradient(135deg, hsl(var(--sky-blue-400)) 0%, hsl(var(--icy-blue-500)) 100%);
-    --gradient-pink: linear-gradient(135deg, hsl(var(--pastel-petal-500)) 0%, hsl(var(--baby-pink-500)) 100%);
-    --gradient-purple: linear-gradient(135deg, hsl(var(--thistle-500)) 0%, hsl(var(--thistle-400)) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(var(--neon-pink-500)) 0%, hsl(var(--raspberry-plum-500)) 25%, hsl(var(--indigo-bloom-500)) 50%, hsl(var(--ultrasonic-blue-500)) 75%, hsl(var(--electric-sapphire-500)) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(var(--indigo-bloom-50)) 0%, hsl(var(--background)) 100%);
+    --gradient-button: linear-gradient(135deg, hsl(var(--neon-pink-500)) 0%, hsl(var(--raspberry-plum-500)) 50%, hsl(var(--indigo-bloom-500)) 100%);
+    --gradient-pink: linear-gradient(135deg, hsl(var(--neon-pink-400)) 0%, hsl(var(--raspberry-plum-500)) 100%);
+    --gradient-purple: linear-gradient(135deg, hsl(var(--indigo-bloom-500)) 0%, hsl(var(--ultrasonic-blue-500)) 100%);
 
     /* Shadows */
-    --shadow-sm: 0 1px 2px 0 hsl(var(--thistle-500) / 0.05);
-    --shadow-md: 0 4px 6px -1px hsl(var(--thistle-500) / 0.1), 0 2px 4px -2px hsl(var(--thistle-500) / 0.1);
-    --shadow-lg: 0 10px 15px -3px hsl(var(--thistle-500) / 0.1), 0 4px 6px -4px hsl(var(--thistle-500) / 0.1);
-    --shadow-xl: 0 20px 25px -5px hsl(var(--thistle-500) / 0.15), 0 8px 10px -6px hsl(var(--thistle-500) / 0.1);
-    --shadow-glow: 0 0 40px hsl(var(--icy-blue-400) / 0.3);
+    --shadow-sm: 0 1px 2px 0 hsl(var(--indigo-bloom-500) / 0.05);
+    --shadow-md: 0 4px 6px -1px hsl(var(--indigo-bloom-500) / 0.1), 0 2px 4px -2px hsl(var(--indigo-bloom-500) / 0.1);
+    --shadow-lg: 0 10px 15px -3px hsl(var(--indigo-bloom-500) / 0.1), 0 4px 6px -4px hsl(var(--indigo-bloom-500) / 0.1);
+    --shadow-xl: 0 20px 25px -5px hsl(var(--indigo-bloom-500) / 0.15), 0 8px 10px -6px hsl(var(--indigo-bloom-500) / 0.1);
+    --shadow-glow: 0 0 40px hsl(var(--neon-pink-400) / 0.4);
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5% 26%;
-    --sidebar-primary: 212 100% 49%;
+    --sidebar-background: 272 30% 98%;
+    --sidebar-foreground: 257 25% 26%;
+    --sidebar-primary: 342 95% 50%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 206 99% 95%;
-    --sidebar-accent-foreground: 212 100% 33%;
-    --sidebar-border: 214 32% 91%;
-    --sidebar-ring: 212 100% 49%;
+    --sidebar-accent: 272 50% 95%;
+    --sidebar-accent-foreground: 272 80% 33%;
+    --sidebar-border: 272 30% 91%;
+    --sidebar-ring: 342 95% 50%;
   }
 
   .dark {
-    --background: 240 10% 6%;
+    --background: 257 30% 6%;
     --foreground: 0 0% 98%;
 
-    --card: 240 10% 8%;
+    --card: 257 30% 8%;
     --card-foreground: 0 0% 98%;
 
-    --popover: 240 10% 8%;
+    --popover: 257 30% 8%;
     --popover-foreground: 0 0% 98%;
 
-    --primary: 212 100% 60%;
-    --primary-foreground: 212 100% 10%;
+    --primary: 342 95% 55%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 302 25% 25%;
-    --secondary-foreground: 302 37% 90%;
+    --secondary: 308 60% 35%;
+    --secondary-foreground: 308 80% 90%;
 
-    --muted: 240 10% 15%;
-    --muted-foreground: 215 16% 65%;
+    --muted: 257 25% 15%;
+    --muted-foreground: 257 20% 65%;
 
-    --accent: 337 60% 30%;
-    --accent-foreground: 337 100% 90%;
+    --accent: 272 70% 40%;
+    --accent-foreground: 272 90% 95%;
 
     --destructive: 0 62% 30%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 240 10% 18%;
-    --input: 240 10% 18%;
-    --ring: 212 100% 60%;
+    --border: 257 25% 18%;
+    --input: 257 25% 18%;
+    --ring: 342 95% 55%;
 
-    --sidebar-background: 240 10% 8%;
+    --sidebar-background: 257 30% 8%;
     --sidebar-foreground: 0 0% 90%;
-    --sidebar-primary: 212 100% 60%;
+    --sidebar-primary: 342 95% 55%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 10% 15%;
-    --sidebar-accent-foreground: 212 100% 70%;
-    --sidebar-border: 240 10% 18%;
-    --sidebar-ring: 212 100% 60%;
+    --sidebar-accent: 257 30% 15%;
+    --sidebar-accent-foreground: 342 95% 70%;
+    --sidebar-border: 257 25% 18%;
+    --sidebar-ring: 342 95% 55%;
   }
 }
 
@@ -254,7 +294,7 @@
   }
 
   .text-gradient {
-    background: linear-gradient(135deg, hsl(var(--sky-blue-300)) 0%, hsl(var(--primary)) 50%, hsl(var(--thistle-400)) 100%);
+    background: linear-gradient(135deg, hsl(var(--neon-pink-400)) 0%, hsl(var(--raspberry-plum-500)) 50%, hsl(var(--indigo-bloom-500)) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
