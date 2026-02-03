@@ -249,15 +249,46 @@ const Builder = () => {
     if (!resumePreviewRef.current || !currentResume || !user) return;
     setGenerating(true);
     try {
-      const canvas = await html2canvas(resumePreviewRef.current, { scale: 2, useCORS: true });
+      // Higher scale for better quality, especially for photos
+      const canvas = await html2canvas(resumePreviewRef.current, { 
+        scale: 3, 
+        useCORS: true,
+        allowTaint: true,
+        logging: false,
+        imageTimeout: 0,
+      });
+      
       const pdf = new jsPDF("p", "mm", "a4");
-      pdf.addImage(canvas.toDataURL("image/png"), "PNG", 0, 0, 210, (canvas.height * 210) / canvas.width);
+      const pageWidth = 210;
+      const pageHeight = 297;
+      const imgWidth = pageWidth;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      
+      // Handle multi-page if content is longer than A4
+      if (imgHeight <= pageHeight) {
+        pdf.addImage(canvas.toDataURL("image/png", 1.0), "PNG", 0, 0, imgWidth, imgHeight, undefined, "FAST");
+      } else {
+        let heightLeft = imgHeight;
+        let position = 0;
+        
+        pdf.addImage(canvas.toDataURL("image/png", 1.0), "PNG", 0, position, imgWidth, imgHeight, undefined, "FAST");
+        heightLeft -= pageHeight;
+        
+        while (heightLeft > 0) {
+          position = -pageHeight + (imgHeight - heightLeft - pageHeight);
+          pdf.addPage();
+          pdf.addImage(canvas.toDataURL("image/png", 1.0), "PNG", 0, position, imgWidth, imgHeight, undefined, "FAST");
+          heightLeft -= pageHeight;
+        }
+      }
+      
       pdf.save(`${formData.title}.pdf`);
       const pdfBlob = pdf.output("blob");
       await supabase.storage.from("resumes").upload(`${user.id}/${currentResume.id}.pdf`, pdfBlob, { upsert: true });
       toast({ title: "PDF saved!" });
     } catch (e) {
-      toast({ title: "Error", variant: "destructive" });
+      console.error("PDF generation error:", e);
+      toast({ title: "Error generating PDF", variant: "destructive" });
     }
     setGenerating(false);
   };
@@ -500,9 +531,27 @@ const Builder = () => {
               {/* Header Section */}
               <div className="px-6 py-5" style={{ backgroundColor: theme.headerBg }}>
                 <div className="flex items-center gap-4 mb-3">
-                  <div className="w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden" style={{ backgroundColor: photoUrl ? "transparent" : theme.primary }}>
+                  <div 
+                    className="rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden" 
+                    style={{ 
+                      backgroundColor: photoUrl ? "transparent" : theme.primary,
+                      width: "64px",
+                      height: "64px",
+                      minWidth: "64px",
+                      minHeight: "64px",
+                    }}
+                  >
                     {photoUrl ? (
-                      <img src={photoUrl} alt="Profile" className="w-full h-full object-cover" />
+                      <img 
+                        src={photoUrl} 
+                        alt="Profile" 
+                        style={{ 
+                          width: "64px", 
+                          height: "64px", 
+                          objectFit: "cover",
+                          borderRadius: "50%",
+                        }} 
+                      />
                     ) : (
                       <User className="w-8 h-8 text-white" />
                     )}

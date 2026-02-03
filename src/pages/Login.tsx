@@ -38,7 +38,7 @@ const Login = () => {
               <div className="w-10 h-10 rounded-xl gradient-button flex items-center justify-center">
                 <FileText className="w-5 h-5 text-primary-foreground" />
               </div>
-              <Sparkles className="absolute -top-1 -right-1 w-4 h-4 text-baby-pink" />
+              <Sparkles className="absolute -top-1 -right-1 w-4 h-4 text-neon-pink-400" />
             </div>
             <span className="font-display font-bold text-xl">
               Make<span className="text-gradient">Me</span>
@@ -147,8 +147,8 @@ const Login = () => {
         </div>
 
         {/* Background Shapes */}
-        <div className="absolute top-20 left-20 w-40 h-40 bg-icy-blue-400/30 rounded-full blur-3xl animate-float" />
-        <div className="absolute bottom-20 right-20 w-60 h-60 bg-pastel-petal-400/30 rounded-full blur-3xl animate-float-delayed" />
+        <div className="absolute top-20 left-20 w-40 h-40 bg-neon-pink-400/30 rounded-full blur-3xl animate-float" />
+        <div className="absolute bottom-20 right-20 w-60 h-60 bg-indigo-bloom-400/30 rounded-full blur-3xl animate-float-delayed" />
       </div>
     </div>
   );
