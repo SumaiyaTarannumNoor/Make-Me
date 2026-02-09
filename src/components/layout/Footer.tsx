@@ -6,7 +6,7 @@ const Footer = () => {
     product: [
       { label: "Templates", href: "/templates" },
       { label: "Pricing", href: "/pricing" },
-      { label: "AI Features", href: "/features" },
+      { label: "Features", href: "/features" },
       { label: "Export Options", href: "/export" },
     ],
     company: [
@@ -39,14 +39,14 @@ const Footer = () => {
                 <div className="w-10 h-10 rounded-xl gradient-button flex items-center justify-center">
                   <FileText className="w-5 h-5 text-primary-foreground" />
                 </div>
-                <Sparkles className="absolute -top-1 -right-1 w-4 h-4 text-baby-pink" />
+                <Sparkles className="absolute -top-1 -right-1 w-4 h-4 text-neon-pink-500" />
               </div>
               <span className="font-display font-bold text-xl">
                 Make<span className="text-gradient">Me</span>
               </span>
             </Link>
             <p className="text-muted-foreground text-sm mb-4 max-w-xs">
-              Create stunning, ATS-optimized resumes in minutes with AI-powered assistance. Perfect for students and professionals.
+              Create stunning, professional resumes in minutes. Perfect for students and professionals.
             </p>
             <div className="flex flex-col gap-2 text-sm text-muted-foreground">
               <div className="flex items-center gap-2">

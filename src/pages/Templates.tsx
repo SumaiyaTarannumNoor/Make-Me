@@ -50,15 +50,15 @@ const Templates = () => {
       <main className="pt-24 pb-20">
         <div className="container mx-auto px-4">
           <div className="text-center max-w-3xl mx-auto mb-12">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-icy-blue-600/30 border border-icy-blue-400/30 mb-6">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-neon-pink-600/30 border border-neon-pink-400/30 mb-6">
               <LayoutTemplate className="w-4 h-4 text-primary" />
-              <span className="text-sm font-medium text-primary">ATS-Optimized</span>
+              <span className="text-sm font-medium text-primary">Professional</span>
             </div>
             <h1 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
               Professional Resume<span className="text-gradient block">Templates</span>
             </h1>
             <p className="text-lg text-muted-foreground">
-              Choose from our collection of professionally designed, ATS-friendly templates for every experience level.
+              Choose from our collection of professionally designed templates for every experience level.
             </p>
           </div>
 
@@ -86,8 +86,8 @@ const Templates = () => {
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredTemplates.map((template) => {
                 const Icon = getIcon(template.experience_level);
-                const color = template.layout_config?.color || "from-icy-blue-400 to-sky-blue-500";
-                const features = ['ATS-friendly', '1-2 pages', 'Print-ready'];
+                const color = template.layout_config?.color || "from-neon-pink-400 to-sky-aqua-500";
+                const features = ['Professional', '1-2 pages', 'Print-ready'];
 
                 return (
                   <div key={template.id} className="group rounded-2xl overflow-hidden bg-card border border-border hover:border-primary/30 hover:shadow-card-hover transition-all duration-300">
@@ -109,7 +109,7 @@ const Templates = () => {
                       </div>
                       {template.experience_level === 'student' && (
                         <div className="absolute top-4 right-4 flex items-center gap-1 px-3 py-1.5 rounded-full bg-card shadow-lg">
-                          <Star className="w-4 h-4 text-baby-pink fill-baby-pink" />
+                          <Star className="w-4 h-4 text-neon-pink-500 fill-neon-pink-500" />
                           <span className="text-xs font-semibold text-foreground">Popular</span>
                         </div>
                       )}

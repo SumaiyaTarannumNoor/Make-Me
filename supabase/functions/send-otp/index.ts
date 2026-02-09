@@ -17,6 +17,14 @@ const generateOTP = (): string => {
 const sendEmail = async (to: string, otp: string): Promise<void> => {
   const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
   
+  if (!RESEND_API_KEY) {
+    console.error("RESEND_API_KEY is not configured");
+    throw new Error("Email service not configured");
+  }
+
+  console.log("Attempting to send email to:", to);
+  console.log("Using API key starting with:", RESEND_API_KEY.substring(0, 10) + "...");
+
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
@@ -34,12 +42,12 @@ const sendEmail = async (to: string, otp: string): Promise<void> => {
           <meta charset="utf-8">
           <title>Password Reset</title>
         </head>
-        <body style="font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #f60974 0%, #e21dc4 50%, #970bf4 100%); padding: 40px; margin: 0;">
+        <body style="font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #f72585 0%, #b5179e 50%, #7209b7 100%); padding: 40px; margin: 0;">
           <div style="max-width: 500px; margin: 0 auto; background: white; border-radius: 16px; padding: 40px; box-shadow: 0 20px 40px rgba(0,0,0,0.15);">
-            <h1 style="font-size: 24px; font-weight: 700; color: #1e0231; margin: 0 0 8px 0;">Password Reset</h1>
+            <h1 style="font-size: 24px; font-weight: 700; color: #170225; margin: 0 0 8px 0;">Password Reset</h1>
             <p style="color: #666; margin: 0 0 24px 0;">Use this code to reset your password:</p>
             
-            <div style="background: linear-gradient(135deg, #f60974 0%, #970bf4 100%); border-radius: 12px; padding: 24px; text-align: center; margin-bottom: 24px;">
+            <div style="background: linear-gradient(135deg, #f72585 0%, #7209b7 100%); border-radius: 12px; padding: 24px; text-align: center; margin-bottom: 24px;">
               <span style="font-size: 36px; font-weight: 700; letter-spacing: 8px; color: white;">${otp}</span>
             </div>
             
@@ -51,11 +59,29 @@ const sendEmail = async (to: string, otp: string): Promise<void> => {
     }),
   });
 
+  const responseText = await res.text();
+  console.log("Resend API response status:", res.status);
+  console.log("Resend API response:", responseText);
+
   if (!res.ok) {
-    const error = await res.text();
-    console.error("Resend error:", error);
-    throw new Error("Failed to send email");
+    console.error("Resend error:", responseText);
+    
+    // Parse error for more detail
+    try {
+      const errorData = JSON.parse(responseText);
+      if (errorData.statusCode === 403) {
+        throw new Error("Email domain not verified. Please verify your domain in Resend dashboard.");
+      }
+      throw new Error(errorData.message || "Failed to send email");
+    } catch (e) {
+      if (e instanceof SyntaxError) {
+        throw new Error("Failed to send email: " + responseText);
+      }
+      throw e;
+    }
   }
+
+  console.log("Email sent successfully to:", to);
 };
 
 const handler = async (req: Request): Promise<Response> => {
@@ -66,6 +92,8 @@ const handler = async (req: Request): Promise<Response> => {
   try {
     const body = await req.json();
     const { email, action, otp, resetToken, newPassword } = body;
+
+    console.log("Received request:", { email, action });
 
     if (!email) {
       return new Response(
@@ -91,6 +119,7 @@ const handler = async (req: Request): Promise<Response> => {
       }
 
       const userExists = users.users.some(u => u.email?.toLowerCase() === email.toLowerCase());
+      console.log("User exists check:", userExists, "for email:", email);
       
       if (!userExists) {
         // For security, still return success but don't send email
@@ -107,10 +136,19 @@ const handler = async (req: Request): Promise<Response> => {
 
       // Store OTP
       otpStore.set(email.toLowerCase(), { otp: newOtp, expiry });
+      console.log("OTP stored for email:", email.toLowerCase());
 
       // Send email
-      await sendEmail(email, newOtp);
-      console.log("OTP email sent to:", email);
+      try {
+        await sendEmail(email, newOtp);
+        console.log("OTP email sent successfully to:", email);
+      } catch (emailError: any) {
+        console.error("Failed to send email:", emailError);
+        return new Response(
+          JSON.stringify({ error: emailError.message || "Failed to send email. Please try again." }),
+          { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        );
+      }
 
       return new Response(
         JSON.stringify({ success: true, message: "OTP sent successfully" }),
