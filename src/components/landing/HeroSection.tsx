@@ -98,7 +98,7 @@ const HeroSection = () => {
                   {/* Header */}
                   <div className="text-center pb-4 border-b border-border">
                     <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-neon-pink-400 to-sky-aqua-400" />
-                    <h3 className="font-display font-bold text-xl text-foreground">Sarah Ahmed</h3>
+                    <h3 className="font-display font-bold text-xl text-foreground">Joe Rothbart</h3>
                     <p className="text-sm text-muted-foreground">Software Engineer</p>
                   </div>
 
