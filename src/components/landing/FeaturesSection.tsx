@@ -13,39 +13,39 @@ const FeaturesSection = () => {
   const features = [
     {
       icon: Wand2,
-      title: "AI-Powered Writing",
-      description: "Transform rough notes into professional bullet points. Our AI understands your experience and crafts compelling content.",
-      color: "bg-icy-blue-500/20 text-icy-blue-300",
+      title: "Smart Writing Assistance",
+      description: "Transform rough notes into professional bullet points. Our tools help you craft compelling content easily.",
+      color: "bg-neon-pink-500/20 text-neon-pink-300",
     },
     {
       icon: LayoutTemplate,
-      title: "ATS-Optimized Templates",
-      description: "Choose from 5+ professionally designed templates that pass Applicant Tracking Systems with flying colors.",
-      color: "bg-pastel-petal-500/20 text-pastel-petal-300",
+      title: "Professional Templates",
+      description: "Choose from 10+ professionally designed templates that help you stand out from the competition.",
+      color: "bg-raspberry-plum-500/20 text-raspberry-plum-300",
     },
     {
       icon: Zap,
       title: "10-Minute Resumes",
       description: "Our guided wizard and smart suggestions help you create a polished resume in under 10 minutes.",
-      color: "bg-baby-pink-500/20 text-baby-pink-300",
+      color: "bg-indigo-bloom-500/20 text-indigo-bloom-300",
     },
     {
       icon: Download,
       title: "Multiple Export Formats",
       description: "Download your resume as PDF or DOCX. Share via public link or print directly from the app.",
-      color: "bg-thistle-500/20 text-thistle-300",
+      color: "bg-ultrasonic-blue-500/20 text-ultrasonic-blue-300",
     },
     {
       icon: Shield,
       title: "Keyword Optimization",
       description: "Get real-time suggestions for industry keywords that help your resume rank higher in searches.",
-      color: "bg-sky-blue-500/20 text-sky-blue-300",
+      color: "bg-electric-sapphire-500/20 text-electric-sapphire-300",
     },
     {
       icon: Globe,
       title: "Shareable Links",
       description: "Generate public links to share your resume with recruiters. Track views and engagement.",
-      color: "bg-icy-blue-500/20 text-icy-blue-300",
+      color: "bg-sky-aqua-500/20 text-sky-aqua-300",
     },
   ];
 
@@ -53,23 +53,23 @@ const FeaturesSection = () => {
     <section className="py-24 relative overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 -z-10">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-icy-blue-400/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-pastel-petal-400/10 rounded-full blur-3xl" />
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-neon-pink-400/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-raspberry-plum-400/10 rounded-full blur-3xl" />
       </div>
 
       <div className="container mx-auto px-4">
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-pastel-petal-600/30 border border-pastel-petal-400/30 mb-6">
-            <Sparkles className="w-4 h-4 text-pastel-petal-300" />
-            <span className="text-sm font-medium text-pastel-petal-100">Powerful Features</span>
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-raspberry-plum-600/30 border border-raspberry-plum-400/30 mb-6">
+            <Sparkles className="w-4 h-4 text-raspberry-plum-300" />
+            <span className="text-sm font-medium text-raspberry-plum-100">Powerful Features</span>
           </div>
           <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
             Everything you need to
             <span className="text-gradient block">land your dream job</span>
           </h2>
           <p className="text-lg text-muted-foreground">
-            Our AI-powered platform combines cutting-edge technology with proven resume strategies 
+            Our platform combines modern technology with proven resume strategies 
             to help you stand out from the competition.
           </p>
         </div>

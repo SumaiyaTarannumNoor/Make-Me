@@ -4,8 +4,8 @@ import { ArrowRight, Sparkles, CheckCircle2, Play } from "lucide-react";
 
 const HeroSection = () => {
   const features = [
-    "AI-powered bullet points",
-    "ATS-optimized templates",
+    "Professional templates",
+    "Quick & Easy to use",
     "Export to PDF & DOCX",
   ];
 
@@ -14,9 +14,9 @@ const HeroSection = () => {
       {/* Background Elements */}
       <div className="absolute inset-0 -z-10">
         <div className="absolute top-0 left-0 w-full h-full gradient-hero opacity-30" />
-        <div className="absolute top-20 left-10 w-72 h-72 bg-icy-blue-400/30 rounded-full blur-3xl animate-float" />
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-pastel-petal-400/30 rounded-full blur-3xl animate-float-delayed" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-thistle-400/20 rounded-full blur-3xl" />
+        <div className="absolute top-20 left-10 w-72 h-72 bg-neon-pink-400/30 rounded-full blur-3xl animate-float" />
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-raspberry-plum-400/30 rounded-full blur-3xl animate-float-delayed" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-bloom-400/20 rounded-full blur-3xl" />
       </div>
 
       <div className="container mx-auto px-4 py-20">
@@ -24,10 +24,10 @@ const HeroSection = () => {
           {/* Left Content */}
           <div className="max-w-2xl">
             {/* Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-icy-blue-600/50 border border-icy-blue-400/50 mb-6 animate-fade-in">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-neon-pink-600/50 border border-neon-pink-400/50 mb-6 animate-fade-in">
               <Sparkles className="w-4 h-4 text-primary" />
               <span className="text-sm font-medium text-primary">
-                AI-Powered Resume Builder
+                Professional Resume Builder
               </span>
             </div>
 
@@ -39,8 +39,8 @@ const HeroSection = () => {
 
             {/* Subheadline */}
             <p className="text-lg md:text-xl text-muted-foreground mb-8 animate-fade-in" style={{ animationDelay: "0.2s" }}>
-              Build professional, ATS-optimized resumes in under 10 minutes. 
-              Let AI transform your experience into compelling bullet points 
+              Build professional resumes in under 10 minutes. 
+              Transform your experience into compelling bullet points 
               that land interviews.
             </p>
 
@@ -77,7 +77,7 @@ const HeroSection = () => {
                   {[1, 2, 3, 4, 5].map((i) => (
                     <div
                       key={i}
-                      className="w-10 h-10 rounded-full border-2 border-background bg-gradient-to-br from-icy-blue-400 to-pastel-petal-400"
+                      className="w-10 h-10 rounded-full border-2 border-background bg-gradient-to-br from-neon-pink-400 to-raspberry-plum-400"
                     />
                   ))}
                 </div>
@@ -97,7 +97,7 @@ const HeroSection = () => {
                 <div className="space-y-6">
                   {/* Header */}
                   <div className="text-center pb-4 border-b border-border">
-                    <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-icy-blue-400 to-sky-blue-400" />
+                    <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-neon-pink-400 to-sky-aqua-400" />
                     <h3 className="font-display font-bold text-xl text-foreground">Sarah Ahmed</h3>
                     <p className="text-sm text-muted-foreground">Software Engineer</p>
                   </div>
@@ -115,13 +115,13 @@ const HeroSection = () => {
                   <div>
                     <h4 className="font-semibold text-sm text-primary mb-2">Experience</h4>
                     <div className="space-y-3">
-                      <div className="p-3 rounded-lg bg-icy-blue-900/50">
-                        <div className="h-3 bg-icy-blue-400/30 rounded w-3/4 mb-2" />
-                        <div className="h-2 bg-icy-blue-400/20 rounded w-1/2" />
+                      <div className="p-3 rounded-lg bg-neon-pink-900/50">
+                        <div className="h-3 bg-neon-pink-400/30 rounded w-3/4 mb-2" />
+                        <div className="h-2 bg-neon-pink-400/20 rounded w-1/2" />
                       </div>
-                      <div className="p-3 rounded-lg bg-pastel-petal-900/50">
-                        <div className="h-3 bg-pastel-petal-400/30 rounded w-2/3 mb-2" />
-                        <div className="h-2 bg-pastel-petal-400/20 rounded w-1/2" />
+                      <div className="p-3 rounded-lg bg-raspberry-plum-900/50">
+                        <div className="h-3 bg-raspberry-plum-400/30 rounded w-2/3 mb-2" />
+                        <div className="h-2 bg-raspberry-plum-400/20 rounded w-1/2" />
                       </div>
                     </div>
                   </div>
@@ -133,7 +133,7 @@ const HeroSection = () => {
                       {["React", "Python", "AWS", "SQL"].map((skill) => (
                         <span
                           key={skill}
-                          className="px-3 py-1 text-xs font-medium rounded-full bg-thistle-600/50 text-thistle-100"
+                          className="px-3 py-1 text-xs font-medium rounded-full bg-indigo-bloom-600/50 text-indigo-bloom-100"
                         >
                           {skill}
                         </span>
@@ -146,15 +146,15 @@ const HeroSection = () => {
               {/* Floating Elements */}
               <div className="absolute -top-4 -right-4 px-4 py-2 rounded-xl bg-card shadow-lg border border-border animate-float">
                 <div className="flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-baby-pink" />
-                  <span className="text-sm font-medium">AI Enhanced</span>
+                  <Sparkles className="w-4 h-4 text-neon-pink-500" />
+                  <span className="text-sm font-medium">Professional</span>
                 </div>
               </div>
 
               <div className="absolute -bottom-4 -left-4 px-4 py-2 rounded-xl bg-card shadow-lg border border-border animate-float-delayed">
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-primary" />
-                  <span className="text-sm font-medium">ATS Score: 95%</span>
+                  <span className="text-sm font-medium">Ready to Download</span>
                 </div>
               </div>
             </div>

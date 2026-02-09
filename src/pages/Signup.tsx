@@ -45,7 +45,7 @@ const Signup = () => {
             Start your journey
           </h2>
           <p className="text-muted-foreground max-w-sm mx-auto">
-            Join thousands of students building professional resumes with AI assistance.
+            Join thousands of students building professional resumes with ease.
           </p>
 
           <div className="grid grid-cols-3 gap-6 mt-12">
@@ -59,13 +59,13 @@ const Signup = () => {
             </div>
             <div className="text-center">
               <p className="font-display text-2xl font-bold text-foreground">95%</p>
-              <p className="text-sm text-muted-foreground">ATS Pass</p>
+              <p className="text-sm text-muted-foreground">Success Rate</p>
             </div>
           </div>
         </div>
 
-        <div className="absolute top-20 right-20 w-40 h-40 bg-baby-pink-400/30 rounded-full blur-3xl animate-float" />
-        <div className="absolute bottom-20 left-20 w-60 h-60 bg-thistle-400/30 rounded-full blur-3xl animate-float-delayed" />
+        <div className="absolute top-20 right-20 w-40 h-40 bg-neon-pink-400/30 rounded-full blur-3xl animate-float" />
+        <div className="absolute bottom-20 left-20 w-60 h-60 bg-indigo-bloom-400/30 rounded-full blur-3xl animate-float-delayed" />
       </div>
 
       {/* Right Side - Form */}
@@ -76,7 +76,7 @@ const Signup = () => {
               <div className="w-10 h-10 rounded-xl gradient-button flex items-center justify-center">
                 <FileText className="w-5 h-5 text-primary-foreground" />
               </div>
-              <Sparkles className="absolute -top-1 -right-1 w-4 h-4 text-baby-pink" />
+              <Sparkles className="absolute -top-1 -right-1 w-4 h-4 text-neon-pink-500" />
             </div>
             <span className="font-display font-bold text-xl">
               Make<span className="text-gradient">Me</span>

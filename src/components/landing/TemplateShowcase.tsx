@@ -150,7 +150,7 @@ const TemplateShowcase = () => {
         <div className="text-center max-w-2xl mx-auto mb-12">
           <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">Professional Resume Templates</h2>
           <p className="text-lg text-muted-foreground">
-            Choose from 10 ATS-optimized color schemes with modern layouts featuring work experience, skills, projects, and certifications.
+            Choose from 10 color schemes with modern layouts featuring work experience, skills, projects, and certifications.
           </p>
         </div>
 

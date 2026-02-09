@@ -13,7 +13,7 @@ const Pricing = () => {
   const faqs = [
     {
       question: "Can I try MakeMe for free?",
-      answer: "Yes! Our Free plan lets you create 1 resume with basic templates and 3 AI rewrites per month. No credit card required.",
+      answer: "Yes! Our Free plan lets you create 1 resume with basic templates. No credit card required.",
     },
     {
       question: "What payment methods do you accept?",
@@ -32,8 +32,8 @@ const Pricing = () => {
       answer: "Yes, we offer a 7-day money-back guarantee for all paid plans. If you're not satisfied, contact us for a full refund.",
     },
     {
-      question: "Are the resumes really ATS-optimized?",
-      answer: "Yes! All our templates are designed to pass Applicant Tracking Systems. We regularly test them against popular ATS software used by employers in Bangladesh and globally.",
+      question: "Are the templates professionally designed?",
+      answer: "Yes! All our templates are designed by professionals and tested to ensure they look great when printed or shared digitally.",
     },
     {
       question: "Can I export my resume in different formats?",
@@ -56,9 +56,9 @@ const Pricing = () => {
         <section className="py-24 bg-muted/30">
           <div className="container mx-auto px-4">
             <div className="text-center max-w-3xl mx-auto mb-12">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-baby-pink-600/30 border border-baby-pink-400/30 mb-6">
-                <HelpCircle className="w-4 h-4 text-baby-pink-300" />
-                <span className="text-sm font-medium text-baby-pink-100">FAQ</span>
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-neon-pink-600/30 border border-neon-pink-400/30 mb-6">
+                <HelpCircle className="w-4 h-4 text-neon-pink-300" />
+                <span className="text-sm font-medium text-neon-pink-100">FAQ</span>
               </div>
               <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">
                 Frequently Asked Questions
