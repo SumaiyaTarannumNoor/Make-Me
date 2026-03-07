@@ -50,22 +50,25 @@ const Signup = () => {
 
           <div className="grid grid-cols-3 gap-6 mt-12">
             <div className="text-center">
-              <p className="font-display text-2xl font-bold text-foreground">10K+</p>
+              <p className="font-display text-2xl font-bold text-neon-pink-500">10K+</p>
               <p className="text-sm text-muted-foreground">Users</p>
             </div>
             <div className="text-center">
-              <p className="font-display text-2xl font-bold text-foreground">50K+</p>
+              <p className="font-display text-2xl font-bold text-electric-sapphire-500">50K+</p>
               <p className="text-sm text-muted-foreground">Resumes</p>
             </div>
             <div className="text-center">
-              <p className="font-display text-2xl font-bold text-foreground">95%</p>
+              <p className="font-display text-2xl font-bold text-sky-aqua-500">95%</p>
               <p className="text-sm text-muted-foreground">Success Rate</p>
             </div>
           </div>
         </div>
 
-        <div className="absolute top-20 right-20 w-40 h-40 bg-neon-pink-400/30 rounded-full blur-3xl animate-float" />
-        <div className="absolute bottom-20 left-20 w-60 h-60 bg-indigo-bloom-400/30 rounded-full blur-3xl animate-float-delayed" />
+        {/* Background shapes - varied colors */}
+        <div className="absolute top-20 right-20 w-40 h-40 bg-raspberry-plum-400/30 rounded-full blur-3xl animate-float" />
+        <div className="absolute bottom-20 left-20 w-60 h-60 bg-vivid-royal-400/30 rounded-full blur-3xl animate-float-delayed" />
+        <div className="absolute top-1/3 left-10 w-32 h-32 bg-true-azure-400/30 rounded-full blur-3xl" />
+        <div className="absolute bottom-40 right-10 w-24 h-24 bg-ultrasonic-blue-400/30 rounded-full blur-3xl" />
       </div>
 
       {/* Right Side - Form */}
@@ -76,7 +79,7 @@ const Signup = () => {
               <div className="w-10 h-10 rounded-xl gradient-button flex items-center justify-center">
                 <FileText className="w-5 h-5 text-primary-foreground" />
               </div>
-              <Sparkles className="absolute -top-1 -right-1 w-4 h-4 text-neon-pink-500" />
+              <Sparkles className="absolute -top-1 -right-1 w-4 h-4 text-indigo-bloom-500" />
             </div>
             <span className="font-display font-bold text-xl">
               Make<span className="text-gradient">Me</span>
@@ -97,15 +100,7 @@ const Signup = () => {
               <Label htmlFor="name">Full Name</Label>
               <div className="relative">
                 <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                <Input
-                  id="name"
-                  type="text"
-                  placeholder="John Doe"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="pl-10 h-12"
-                  required
-                />
+                <Input id="name" type="text" placeholder="John Doe" value={name} onChange={(e) => setName(e.target.value)} className="pl-10 h-12" required />
               </div>
             </div>
 
@@ -113,15 +108,7 @@ const Signup = () => {
               <Label htmlFor="email">Email</Label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="you@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="pl-10 h-12"
-                  required
-                />
+                <Input id="email" type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} className="pl-10 h-12" required />
               </div>
             </div>
 
@@ -129,21 +116,8 @@ const Signup = () => {
               <Label htmlFor="password">Password</Label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="pl-10 pr-10 h-12"
-                  required
-                  minLength={6}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                >
+                <Input id="password" type={showPassword ? "text" : "password"} placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} className="pl-10 pr-10 h-12" required minLength={6} />
+                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
               </div>
@@ -151,33 +125,23 @@ const Signup = () => {
             </div>
 
             <div className="flex items-start space-x-3">
-              <Checkbox
-                id="terms"
-                checked={agreedToTerms}
-                onCheckedChange={(checked) => setAgreedToTerms(checked as boolean)}
-              />
+              <Checkbox id="terms" checked={agreedToTerms} onCheckedChange={(checked) => setAgreedToTerms(checked as boolean)} />
               <Label htmlFor="terms" className="text-sm text-muted-foreground leading-tight">
                 I agree to the{" "}
-                <Link to="/terms" className="text-primary hover:underline">Terms of Service</Link>{" "}
+                <Link to="/terms" className="text-electric-sapphire-500 hover:underline">Terms of Service</Link>{" "}
                 and{" "}
-                <Link to="/privacy" className="text-primary hover:underline">Privacy Policy</Link>
+                <Link to="/privacy" className="text-electric-sapphire-500 hover:underline">Privacy Policy</Link>
               </Label>
             </div>
 
-            <Button
-              type="submit"
-              variant="hero"
-              className="w-full"
-              size="lg"
-              disabled={isLoading || !agreedToTerms}
-            >
+            <Button type="submit" variant="hero" className="w-full" size="lg" disabled={isLoading || !agreedToTerms}>
               {isLoading ? "Creating account..." : "Create account"}
             </Button>
           </form>
 
           <p className="text-center text-sm text-muted-foreground mt-8">
             Already have an account?{" "}
-            <Link to="/login" className="text-primary font-medium hover:underline">Log in</Link>
+            <Link to="/login" className="text-neon-pink-500 font-medium hover:underline">Log in</Link>
           </p>
         </div>
       </div>

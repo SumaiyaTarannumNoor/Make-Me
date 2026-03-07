@@ -11,12 +11,14 @@ const HeroSection = () => {
 
   return (
     <section className="relative min-h-screen flex items-center pt-16 overflow-hidden">
-      {/* Background Elements */}
+      {/* Background Elements - using neon-pink, raspberry-plum, indigo-bloom, electric-sapphire, sky-aqua */}
       <div className="absolute inset-0 -z-10">
         <div className="absolute top-0 left-0 w-full h-full gradient-hero opacity-30" />
         <div className="absolute top-20 left-10 w-72 h-72 bg-neon-pink-400/30 rounded-full blur-3xl animate-float" />
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-raspberry-plum-400/30 rounded-full blur-3xl animate-float-delayed" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-bloom-400/20 rounded-full blur-3xl" />
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-electric-sapphire-400/30 rounded-full blur-3xl animate-float-delayed" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-sky-aqua-400/20 rounded-full blur-3xl" />
+        <div className="absolute top-40 right-1/4 w-64 h-64 bg-vivid-royal-400/20 rounded-full blur-3xl" />
+        <div className="absolute bottom-40 left-1/4 w-48 h-48 bg-blue-energy-400/20 rounded-full blur-3xl" />
       </div>
 
       <div className="container mx-auto px-4 py-20">
@@ -24,9 +26,9 @@ const HeroSection = () => {
           {/* Left Content */}
           <div className="max-w-2xl">
             {/* Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-neon-pink-600/50 border border-neon-pink-400/50 mb-6 animate-fade-in">
-              <Sparkles className="w-4 h-4 text-primary" />
-              <span className="text-sm font-medium text-primary">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-bright-indigo-500/20 border border-bright-indigo-400/50 mb-6 animate-fade-in">
+              <Sparkles className="w-4 h-4 text-bright-indigo-600" />
+              <span className="text-sm font-medium text-bright-indigo-600">
                 Professional Resume Builder
               </span>
             </div>
@@ -46,12 +48,15 @@ const HeroSection = () => {
 
             {/* Features List */}
             <ul className="flex flex-wrap gap-4 mb-8 animate-fade-in" style={{ animationDelay: "0.3s" }}>
-              {features.map((feature, index) => (
-                <li key={index} className="flex items-center gap-2 text-sm text-foreground">
-                  <CheckCircle2 className="w-5 h-5 text-primary" />
-                  <span>{feature}</span>
-                </li>
-              ))}
+              {features.map((feature, index) => {
+                const colors = ["text-neon-pink-500", "text-electric-sapphire-500", "text-sky-aqua-500"];
+                return (
+                  <li key={index} className="flex items-center gap-2 text-sm text-foreground">
+                    <CheckCircle2 className={`w-5 h-5 ${colors[index]}`} />
+                    <span>{feature}</span>
+                  </li>
+                );
+              })}
             </ul>
 
             {/* CTAs */}
@@ -74,10 +79,16 @@ const HeroSection = () => {
             <div className="mt-10 pt-8 border-t border-border/50 animate-fade-in" style={{ animationDelay: "0.5s" }}>
               <div className="flex items-center gap-6">
                 <div className="flex -space-x-3">
-                  {[1, 2, 3, 4, 5].map((i) => (
+                  {[
+                    "from-neon-pink-400 to-raspberry-plum-400",
+                    "from-indigo-bloom-400 to-ultrasonic-blue-400",
+                    "from-true-azure-400 to-vivid-royal-400",
+                    "from-bright-indigo-400 to-electric-sapphire-400",
+                    "from-blue-energy-400 to-sky-aqua-400",
+                  ].map((gradient, i) => (
                     <div
                       key={i}
-                      className="w-10 h-10 rounded-full border-2 border-background bg-gradient-to-br from-neon-pink-400 to-raspberry-plum-400"
+                      className={`w-10 h-10 rounded-full border-2 border-background bg-gradient-to-br ${gradient}`}
                     />
                   ))}
                 </div>
@@ -97,14 +108,14 @@ const HeroSection = () => {
                 <div className="space-y-6">
                   {/* Header */}
                   <div className="text-center pb-4 border-b border-border">
-                    <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-neon-pink-400 to-sky-aqua-400" />
+                    <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-vivid-royal-400 to-sky-aqua-400" />
                     <h3 className="font-display font-bold text-xl text-foreground">Joe Rothbart</h3>
                     <p className="text-sm text-muted-foreground">Software Engineer</p>
                   </div>
 
                   {/* Summary */}
                   <div>
-                    <h4 className="font-semibold text-sm text-primary mb-2">Summary</h4>
+                    <h4 className="font-semibold text-sm text-ultrasonic-blue-500 mb-2">Summary</h4>
                     <div className="space-y-2">
                       <div className="h-3 bg-muted rounded-full w-full" />
                       <div className="h-3 bg-muted rounded-full w-4/5" />
@@ -113,27 +124,32 @@ const HeroSection = () => {
 
                   {/* Experience */}
                   <div>
-                    <h4 className="font-semibold text-sm text-primary mb-2">Experience</h4>
+                    <h4 className="font-semibold text-sm text-true-azure-500 mb-2">Experience</h4>
                     <div className="space-y-3">
-                      <div className="p-3 rounded-lg bg-neon-pink-900/50">
-                        <div className="h-3 bg-neon-pink-400/30 rounded w-3/4 mb-2" />
-                        <div className="h-2 bg-neon-pink-400/20 rounded w-1/2" />
+                      <div className="p-3 rounded-lg bg-electric-sapphire-900/50">
+                        <div className="h-3 bg-electric-sapphire-400/30 rounded w-3/4 mb-2" />
+                        <div className="h-2 bg-electric-sapphire-400/20 rounded w-1/2" />
                       </div>
-                      <div className="p-3 rounded-lg bg-raspberry-plum-900/50">
-                        <div className="h-3 bg-raspberry-plum-400/30 rounded w-2/3 mb-2" />
-                        <div className="h-2 bg-raspberry-plum-400/20 rounded w-1/2" />
+                      <div className="p-3 rounded-lg bg-blue-energy-900/50">
+                        <div className="h-3 bg-blue-energy-400/30 rounded w-2/3 mb-2" />
+                        <div className="h-2 bg-blue-energy-400/20 rounded w-1/2" />
                       </div>
                     </div>
                   </div>
 
                   {/* Skills */}
                   <div>
-                    <h4 className="font-semibold text-sm text-primary mb-2">Skills</h4>
+                    <h4 className="font-semibold text-sm text-bright-indigo-500 mb-2">Skills</h4>
                     <div className="flex flex-wrap gap-2">
-                      {["React", "Python", "AWS", "SQL"].map((skill) => (
+                      {[
+                        { skill: "React", color: "bg-neon-pink-500/20 text-neon-pink-700" },
+                        { skill: "Python", color: "bg-indigo-bloom-500/20 text-indigo-bloom-700" },
+                        { skill: "AWS", color: "bg-sky-aqua-500/20 text-sky-aqua-700" },
+                        { skill: "SQL", color: "bg-vivid-royal-500/20 text-vivid-royal-700" },
+                      ].map(({ skill, color }) => (
                         <span
                           key={skill}
-                          className="px-3 py-1 text-xs font-medium rounded-full bg-indigo-bloom-600/50 text-indigo-bloom-100"
+                          className={`px-3 py-1 text-xs font-medium rounded-full ${color}`}
                         >
                           {skill}
                         </span>
@@ -146,14 +162,14 @@ const HeroSection = () => {
               {/* Floating Elements */}
               <div className="absolute -top-4 -right-4 px-4 py-2 rounded-xl bg-card shadow-lg border border-border animate-float">
                 <div className="flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-neon-pink-500" />
+                  <Sparkles className="w-4 h-4 text-raspberry-plum-500" />
                   <span className="text-sm font-medium">Professional</span>
                 </div>
               </div>
 
               <div className="absolute -bottom-4 -left-4 px-4 py-2 rounded-xl bg-card shadow-lg border border-border animate-float-delayed">
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-primary" />
+                  <CheckCircle2 className="w-4 h-4 text-sky-aqua-500" />
                   <span className="text-sm font-medium">Ready to Download</span>
                 </div>
               </div>

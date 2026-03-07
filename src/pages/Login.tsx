@@ -61,60 +61,27 @@ const Login = () => {
               <Label htmlFor="email">Email</Label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="you@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="pl-10 h-12"
-                  required
-                />
+                <Input id="email" type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} className="pl-10 h-12" required />
               </div>
             </div>
 
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label htmlFor="password">Password</Label>
-                <Link
-                  to="/forgot-password"
-                  className="text-sm text-primary hover:underline"
-                >
+                <Link to="/forgot-password" className="text-sm text-electric-sapphire-500 hover:underline">
                   Forgot password?
                 </Link>
               </div>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="pl-10 pr-10 h-12"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                >
-                  {showPassword ? (
-                    <EyeOff className="w-5 h-5" />
-                  ) : (
-                    <Eye className="w-5 h-5" />
-                  )}
+                <Input id="password" type={showPassword ? "text" : "password"} placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} className="pl-10 pr-10 h-12" required />
+                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
               </div>
             </div>
 
-            <Button
-              type="submit"
-              variant="hero"
-              className="w-full"
-              size="lg"
-              disabled={isLoading}
-            >
+            <Button type="submit" variant="hero" className="w-full" size="lg" disabled={isLoading}>
               {isLoading ? "Logging in..." : "Log in"}
             </Button>
           </form>
@@ -122,7 +89,7 @@ const Login = () => {
           {/* Sign Up Link */}
           <p className="text-center text-sm text-muted-foreground mt-8">
             Don't have an account?{" "}
-            <Link to="/signup" className="text-primary font-medium hover:underline">
+            <Link to="/signup" className="text-neon-pink-500 font-medium hover:underline">
               Sign up for free
             </Link>
           </p>
@@ -142,13 +109,15 @@ const Login = () => {
             Your resume, reimagined
           </h2>
           <p className="text-muted-foreground max-w-sm mx-auto">
-            AI-powered tools to help you craft the perfect resume and land your dream job.
+            Professional tools to help you craft the perfect resume and land your dream job.
           </p>
         </div>
 
-        {/* Background Shapes */}
+        {/* Background Shapes - all different colors */}
         <div className="absolute top-20 left-20 w-40 h-40 bg-neon-pink-400/30 rounded-full blur-3xl animate-float" />
-        <div className="absolute bottom-20 right-20 w-60 h-60 bg-indigo-bloom-400/30 rounded-full blur-3xl animate-float-delayed" />
+        <div className="absolute bottom-20 right-20 w-60 h-60 bg-bright-indigo-400/30 rounded-full blur-3xl animate-float-delayed" />
+        <div className="absolute top-1/2 right-10 w-32 h-32 bg-sky-aqua-400/30 rounded-full blur-3xl" />
+        <div className="absolute bottom-40 left-10 w-24 h-24 bg-blue-energy-400/30 rounded-full blur-3xl" />
       </div>
     </div>
   );

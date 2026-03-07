@@ -25,7 +25,7 @@ const Header = () => {
               <div className="w-10 h-10 rounded-xl gradient-button flex items-center justify-center shadow-soft group-hover:shadow-lg transition-shadow">
                 <FileText className="w-5 h-5 text-primary-foreground" />
               </div>
-              <Sparkles className="absolute -top-1 -right-1 w-4 h-4 text-baby-pink animate-pulse-soft" />
+              <Sparkles className="absolute -top-1 -right-1 w-4 h-4 text-neon-pink-500 animate-pulse-soft" />
             </div>
             <span className="font-display font-bold text-xl text-foreground">
               Make<span className="text-gradient">Me</span>
@@ -40,7 +40,7 @@ const Header = () => {
                 to={link.href}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                   isActive(link.href)
-                    ? "bg-icy-blue-600/50 text-primary"
+                    ? "bg-bright-indigo-500/20 text-bright-indigo-600"
                     : "text-muted-foreground hover:text-foreground hover:bg-muted"
                 }`}
               >
@@ -86,7 +86,7 @@ const Header = () => {
                   to={link.href}
                   className={`px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
                     isActive(link.href)
-                      ? "bg-icy-blue-600/50 text-primary"
+                      ? "bg-bright-indigo-500/20 text-bright-indigo-600"
                       : "text-muted-foreground hover:text-foreground hover:bg-muted"
                   }`}
                   onClick={() => setIsMenuOpen(false)}
