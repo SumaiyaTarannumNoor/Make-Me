@@ -108,7 +108,7 @@ const Login = () => {
           <h2 className="font-display text-3xl font-bold text-foreground mb-4">
             Your resume, reimagined
           </h2>
-          <p className="text-muted-foreground max-w-sm mx-auto">
+          <p className="text-white-foreground max-w-sm mx-auto">
             Professional tools to help you craft the perfect resume and land your dream job.
           </p>
         </div>
