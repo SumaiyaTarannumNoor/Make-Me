@@ -13,28 +13,32 @@ const TemplatesSection = () => {
 
   const getIcon = (level: string) => {
     switch (level) {
-      case 'student':
-        return GraduationCap;
-      case 'fresher':
-        return User;
+      case 'student': return GraduationCap;
+      case 'fresher': return User;
       case 'one_to_three':
-      case 'three_to_five':
-        return Briefcase;
-      default:
-        return Award;
+      case 'three_to_five': return Briefcase;
+      default: return Award;
     }
   };
 
+  // Cycle through all 10 neon colors for template cards
+  const templateGradients = [
+    "from-neon-pink-400 to-raspberry-plum-400",
+    "from-raspberry-plum-400 to-indigo-bloom-400",
+    "from-indigo-bloom-400 to-ultrasonic-blue-400",
+    "from-ultrasonic-blue-400 to-true-azure-400",
+    "from-true-azure-400 to-vivid-royal-400",
+    "from-vivid-royal-400 to-bright-indigo-400",
+    "from-bright-indigo-400 to-electric-sapphire-400",
+    "from-electric-sapphire-400 to-blue-energy-400",
+    "from-blue-energy-400 to-sky-aqua-400",
+    "from-sky-aqua-400 to-neon-pink-400",
+  ];
+
   const handleUseTemplate = async (templateId: string) => {
-    if (!user) {
-      navigate('/signup');
-      return;
-    }
-    
+    if (!user) { navigate('/signup'); return; }
     const resume = await createResume(templateId);
-    if (resume) {
-      navigate(`/builder/${resume.id}`);
-    }
+    if (resume) navigate(`/builder/${resume.id}`);
   };
 
   if (loading) {
@@ -54,7 +58,6 @@ const TemplatesSection = () => {
   return (
     <section className="py-24 bg-muted/30">
       <div className="container mx-auto px-4">
-        {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
           <div>
             <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">
@@ -73,21 +76,15 @@ const TemplatesSection = () => {
           </Link>
         </div>
 
-        {/* Templates Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {templates.slice(0, 4).map((template) => {
+          {templates.slice(0, 4).map((template, idx) => {
             const Icon = getIcon(template.experience_level);
-            const color = template.layout_config?.color || "from-icy-blue-400 to-sky-blue-500";
+            const gradient = templateGradients[idx % templateGradients.length];
             
             return (
-              <div
-                key={template.id}
-                className="group relative rounded-2xl overflow-hidden bg-card border border-border hover:border-primary/30 hover:shadow-card-hover transition-all duration-300"
-              >
-                {/* Template Preview */}
-                <div className={`aspect-[3/4] bg-gradient-to-br ${color} p-4`}>
+              <div key={template.id} className="group relative rounded-2xl overflow-hidden bg-card border border-border hover:border-primary/30 hover:shadow-card-hover transition-all duration-300">
+                <div className={`aspect-[3/4] bg-gradient-to-br ${gradient} p-4`}>
                   <div className="w-full h-full bg-card/90 rounded-lg p-4 shadow-lg">
-                    {/* Mini Resume Preview */}
                     <div className="space-y-3">
                       <div className="w-12 h-12 rounded-full bg-gradient-to-br from-muted to-muted-foreground/20 mx-auto flex items-center justify-center">
                         <Icon className="w-6 h-6 text-muted-foreground" />
@@ -99,35 +96,24 @@ const TemplatesSection = () => {
                         <div className="h-2 bg-muted/50 rounded w-5/6" />
                         <div className="h-2 bg-muted/50 rounded w-4/6" />
                       </div>
-                      <div className="pt-3 space-y-2">
-                        <div className="h-2 bg-muted/50 rounded w-full" />
-                        <div className="h-2 bg-muted/50 rounded w-3/4" />
-                      </div>
                     </div>
                   </div>
                 </div>
 
-                {/* Template Info */}
                 <div className="p-4">
                   <div className="flex items-start justify-between mb-2">
                     <div>
                       <h3 className="font-semibold text-foreground">{template.name}</h3>
-                      <p className="text-sm text-muted-foreground">
-                        {getExperienceLevelLabel(template.experience_level)}
-                      </p>
+                      <p className="text-sm text-muted-foreground">{getExperienceLevelLabel(template.experience_level)}</p>
                     </div>
                     {template.experience_level === 'student' && (
-                      <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-baby-pink-600/30 text-baby-pink-200">
+                      <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-neon-pink-500/20 text-neon-pink-600">
                         <Star className="w-3 h-3 fill-current" />
                         <span className="text-xs font-medium">Popular</span>
                       </div>
                     )}
                   </div>
-                  <Button 
-                    variant="ghost" 
-                    className="w-full mt-2 group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
-                    onClick={() => handleUseTemplate(template.id)}
-                  >
+                  <Button variant="ghost" className="w-full mt-2 group-hover:bg-primary group-hover:text-primary-foreground transition-colors" onClick={() => handleUseTemplate(template.id)}>
                     Use Template
                   </Button>
                 </div>

@@ -19,6 +19,7 @@ const PricingSection = () => {
       cta: "Start Free",
       variant: "hero-outline" as const,
       popular: false,
+      accentColor: "text-blue-energy-500",
     },
     {
       name: "Pro",
@@ -38,6 +39,7 @@ const PricingSection = () => {
       cta: "Go Pro",
       variant: "hero" as const,
       popular: true,
+      accentColor: "text-neon-pink-500",
     },
     {
       name: "Lifetime",
@@ -55,6 +57,7 @@ const PricingSection = () => {
       cta: "Get Lifetime",
       variant: "purple" as const,
       popular: false,
+      accentColor: "text-indigo-bloom-500",
     },
   ];
 
@@ -62,15 +65,15 @@ const PricingSection = () => {
     <section className="py-24 relative overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 -z-10">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-br from-icy-blue-400/10 via-pastel-petal-400/10 to-thistle-400/10 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-br from-ultrasonic-blue-400/10 via-bright-indigo-400/10 to-sky-aqua-400/10 rounded-full blur-3xl" />
       </div>
 
       <div className="container mx-auto px-4">
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-thistle-600/30 border border-thistle-400/30 mb-6">
-            <Zap className="w-4 h-4 text-thistle-300" />
-            <span className="text-sm font-medium text-thistle-100">Simple Pricing</span>
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-vivid-royal-500/20 border border-vivid-royal-400/30 mb-6">
+            <Zap className="w-4 h-4 text-vivid-royal-500" />
+            <span className="text-sm font-medium text-vivid-royal-600">Simple Pricing</span>
           </div>
           <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
             Choose your path to
@@ -120,7 +123,7 @@ const PricingSection = () => {
               <ul className="space-y-4 mb-8">
                 {plan.features.map((feature, i) => (
                   <li key={i} className="flex items-start gap-3">
-                    <Check className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                    <Check className={`w-5 h-5 ${plan.accentColor} mt-0.5 flex-shrink-0`} />
                     <span className="text-sm text-foreground">{feature}</span>
                   </li>
                 ))}

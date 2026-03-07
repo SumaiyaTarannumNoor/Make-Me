@@ -15,54 +15,55 @@ const FeaturesSection = () => {
       icon: Wand2,
       title: "Smart Writing Assistance",
       description: "Transform rough notes into professional bullet points. Our tools help you craft compelling content easily.",
-      color: "bg-neon-pink-500/20 text-neon-pink-300",
+      color: "bg-neon-pink-500/20 text-neon-pink-500",
     },
     {
       icon: LayoutTemplate,
       title: "Professional Templates",
       description: "Choose from 10+ professionally designed templates that help you stand out from the competition.",
-      color: "bg-raspberry-plum-500/20 text-raspberry-plum-300",
+      color: "bg-raspberry-plum-500/20 text-raspberry-plum-500",
     },
     {
       icon: Zap,
       title: "10-Minute Resumes",
       description: "Our guided wizard and smart suggestions help you create a polished resume in under 10 minutes.",
-      color: "bg-indigo-bloom-500/20 text-indigo-bloom-300",
+      color: "bg-indigo-bloom-500/20 text-indigo-bloom-500",
     },
     {
       icon: Download,
       title: "Multiple Export Formats",
       description: "Download your resume as PDF or DOCX. Share via public link or print directly from the app.",
-      color: "bg-ultrasonic-blue-500/20 text-ultrasonic-blue-300",
+      color: "bg-true-azure-500/20 text-true-azure-500",
     },
     {
       icon: Shield,
       title: "Keyword Optimization",
       description: "Get real-time suggestions for industry keywords that help your resume rank higher in searches.",
-      color: "bg-electric-sapphire-500/20 text-electric-sapphire-300",
+      color: "bg-electric-sapphire-500/20 text-electric-sapphire-500",
     },
     {
       icon: Globe,
       title: "Shareable Links",
       description: "Generate public links to share your resume with recruiters. Track views and engagement.",
-      color: "bg-sky-aqua-500/20 text-sky-aqua-300",
+      color: "bg-sky-aqua-500/20 text-sky-aqua-500",
     },
   ];
 
   return (
     <section className="py-24 relative overflow-hidden">
-      {/* Background */}
+      {/* Background - using vivid-royal and blue-energy */}
       <div className="absolute inset-0 -z-10">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-neon-pink-400/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-raspberry-plum-400/10 rounded-full blur-3xl" />
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-vivid-royal-400/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-energy-400/10 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 right-10 w-64 h-64 bg-ultrasonic-blue-400/10 rounded-full blur-3xl" />
       </div>
 
       <div className="container mx-auto px-4">
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-raspberry-plum-600/30 border border-raspberry-plum-400/30 mb-6">
-            <Sparkles className="w-4 h-4 text-raspberry-plum-300" />
-            <span className="text-sm font-medium text-raspberry-plum-100">Powerful Features</span>
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-bright-indigo-500/20 border border-bright-indigo-400/30 mb-6">
+            <Sparkles className="w-4 h-4 text-bright-indigo-500" />
+            <span className="text-sm font-medium text-bright-indigo-600">Powerful Features</span>
           </div>
           <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
             Everything you need to

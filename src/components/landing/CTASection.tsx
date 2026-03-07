@@ -8,6 +8,12 @@ const CTASection = () => {
       {/* Background */}
       <div className="absolute inset-0 gradient-hero opacity-40" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,hsl(var(--background))_70%)]" />
+      
+      {/* Decorative orbs using multiple colors */}
+      <div className="absolute top-10 left-10 w-40 h-40 bg-neon-pink-400/20 rounded-full blur-3xl" />
+      <div className="absolute top-20 right-20 w-32 h-32 bg-true-azure-400/20 rounded-full blur-3xl" />
+      <div className="absolute bottom-10 left-1/3 w-48 h-48 bg-sky-aqua-400/20 rounded-full blur-3xl" />
+      <div className="absolute bottom-20 right-10 w-36 h-36 bg-vivid-royal-400/20 rounded-full blur-3xl" />
 
       <div className="container mx-auto px-4 relative">
         <div className="max-w-4xl mx-auto text-center">
@@ -43,22 +49,22 @@ const CTASection = () => {
             </Link>
           </div>
 
-          {/* Trust Badges */}
+          {/* Trust Badges - each with a different color */}
           <div className="mt-12 flex flex-wrap items-center justify-center gap-8 text-sm text-muted-foreground">
             <div className="flex items-center gap-2">
-              <svg className="w-5 h-5 text-primary" fill="currentColor" viewBox="0 0 20 20">
+              <svg className="w-5 h-5 text-neon-pink-500" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
               </svg>
               <span>No credit card required</span>
             </div>
             <div className="flex items-center gap-2">
-              <svg className="w-5 h-5 text-primary" fill="currentColor" viewBox="0 0 20 20">
+              <svg className="w-5 h-5 text-electric-sapphire-500" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
               </svg>
               <span>Free forever plan</span>
             </div>
             <div className="flex items-center gap-2">
-              <svg className="w-5 h-5 text-primary" fill="currentColor" viewBox="0 0 20 20">
+              <svg className="w-5 h-5 text-sky-aqua-500" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
               </svg>
               <span>Cancel anytime</span>
