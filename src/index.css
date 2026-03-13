@@ -294,7 +294,7 @@
   }
 
   .text-gradient {
-    background: linear-gradient(135deg, hsl(var(--neon-pink-400)) 0%, hsl(var(--raspberry-plum-500)) 50%, hsl(var(--indigo-bloom-500)) 100%);
+    background: linear-gradient(135deg, hsl(var(--sky-aqua-400)) 0%, hsl(var(--blue-energy-500)) 50%, hsl(var(--electric-sapphire-500)) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
