@@ -158,59 +158,59 @@
     --royal-blue: 225 73% 57%;
     --royal-blue-light: 225 73% 92%;
 
-    /* Semantic tokens - using neon theme as primary */
+    /* Semantic tokens - reversed: sky-aqua as primary */
     --background: 0 0% 100%;
-    --foreground: 263 90% 10%;
+    --foreground: 207 90% 10%;
 
     --card: 0 0% 100%;
-    --card-foreground: 263 90% 10%;
+    --card-foreground: 207 90% 10%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 263 90% 10%;
+    --popover-foreground: 207 90% 10%;
 
-    --primary: 333 94% 56%;
+    --primary: 189 89% 62%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 306 85% 39%;
+    --secondary: 207 90% 60%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 277 30% 96%;
-    --muted-foreground: 263 20% 46%;
+    --muted: 207 30% 96%;
+    --muted-foreground: 207 20% 46%;
 
-    --accent: 277 92% 37%;
+    --accent: 227 92% 51%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 277 30% 90%;
-    --input: 277 30% 90%;
-    --ring: 333 94% 56%;
+    --border: 207 30% 90%;
+    --input: 207 30% 90%;
+    --ring: 189 89% 62%;
 
     --radius: 0.75rem;
 
-    /* Gradients */
-    --gradient-hero: linear-gradient(135deg, hsl(var(--neon-pink-500)) 0%, hsl(var(--raspberry-plum-500)) 25%, hsl(var(--indigo-bloom-500)) 50%, hsl(var(--ultrasonic-blue-500)) 75%, hsl(var(--electric-sapphire-500)) 100%);
-    --gradient-card: linear-gradient(180deg, hsl(var(--indigo-bloom-50)) 0%, hsl(var(--background)) 100%);
-    --gradient-button: linear-gradient(135deg, hsl(var(--neon-pink-500)) 0%, hsl(var(--raspberry-plum-500)) 50%, hsl(var(--indigo-bloom-500)) 100%);
-    --gradient-pink: linear-gradient(135deg, hsl(var(--neon-pink-400)) 0%, hsl(var(--raspberry-plum-500)) 100%);
-    --gradient-purple: linear-gradient(135deg, hsl(var(--indigo-bloom-500)) 0%, hsl(var(--ultrasonic-blue-500)) 100%);
+    /* Gradients - reversed */
+    --gradient-hero: linear-gradient(135deg, hsl(var(--sky-aqua-500)) 0%, hsl(var(--blue-energy-500)) 25%, hsl(var(--electric-sapphire-500)) 50%, hsl(var(--bright-indigo-500)) 75%, hsl(var(--neon-pink-500)) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(var(--electric-sapphire-50)) 0%, hsl(var(--background)) 100%);
+    --gradient-button: linear-gradient(135deg, hsl(var(--sky-aqua-500)) 0%, hsl(var(--blue-energy-500)) 50%, hsl(var(--electric-sapphire-500)) 100%);
+    --gradient-pink: linear-gradient(135deg, hsl(var(--sky-aqua-400)) 0%, hsl(var(--blue-energy-500)) 100%);
+    --gradient-purple: linear-gradient(135deg, hsl(var(--electric-sapphire-500)) 0%, hsl(var(--bright-indigo-500)) 100%);
 
     /* Shadows */
-    --shadow-sm: 0 1px 2px 0 hsl(var(--indigo-bloom-500) / 0.05);
-    --shadow-md: 0 4px 6px -1px hsl(var(--indigo-bloom-500) / 0.1), 0 2px 4px -2px hsl(var(--indigo-bloom-500) / 0.1);
-    --shadow-lg: 0 10px 15px -3px hsl(var(--indigo-bloom-500) / 0.1), 0 4px 6px -4px hsl(var(--indigo-bloom-500) / 0.1);
-    --shadow-xl: 0 20px 25px -5px hsl(var(--indigo-bloom-500) / 0.15), 0 8px 10px -6px hsl(var(--indigo-bloom-500) / 0.1);
-    --shadow-glow: 0 0 40px hsl(var(--neon-pink-400) / 0.4);
+    --shadow-sm: 0 1px 2px 0 hsl(var(--electric-sapphire-500) / 0.05);
+    --shadow-md: 0 4px 6px -1px hsl(var(--electric-sapphire-500) / 0.1), 0 2px 4px -2px hsl(var(--electric-sapphire-500) / 0.1);
+    --shadow-lg: 0 10px 15px -3px hsl(var(--electric-sapphire-500) / 0.1), 0 4px 6px -4px hsl(var(--electric-sapphire-500) / 0.1);
+    --shadow-xl: 0 20px 25px -5px hsl(var(--electric-sapphire-500) / 0.15), 0 8px 10px -6px hsl(var(--electric-sapphire-500) / 0.1);
+    --shadow-glow: 0 0 40px hsl(var(--sky-aqua-400) / 0.4);
 
-    --sidebar-background: 277 30% 98%;
-    --sidebar-foreground: 263 25% 26%;
-    --sidebar-primary: 333 94% 56%;
+    --sidebar-background: 207 30% 98%;
+    --sidebar-foreground: 207 25% 26%;
+    --sidebar-primary: 189 89% 62%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 277 50% 95%;
-    --sidebar-accent-foreground: 277 80% 33%;
-    --sidebar-border: 277 30% 91%;
-    --sidebar-ring: 333 94% 56%;
+    --sidebar-accent: 207 50% 95%;
+    --sidebar-accent-foreground: 207 80% 33%;
+    --sidebar-border: 207 30% 91%;
+    --sidebar-ring: 189 89% 62%;
   }
 
   .dark {
