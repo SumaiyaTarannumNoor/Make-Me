@@ -61,7 +61,7 @@ const Dashboard = () => {
                 <div className="w-9 h-9 rounded-lg gradient-button flex items-center justify-center">
                   <FileText className="w-4 h-4 text-primary-foreground" />
                 </div>
-                <Sparkles className="absolute -top-0.5 -right-0.5 w-3 h-3 text-raspberry-plum-500" />
+                <Sparkles className="absolute -top-0.5 -right-0.5 w-3 h-3 text-blue-energy-500" />
               </div>
               <span className="font-display font-bold text-lg">Make<span className="text-gradient">Me</span></span>
             </Link>
@@ -74,7 +74,7 @@ const Dashboard = () => {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-muted transition-colors">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-vivid-royal-400 to-electric-sapphire-500" />
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-true-azure-400 to-indigo-bloom-500" />
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
@@ -127,8 +127,8 @@ const Dashboard = () => {
         <div className={viewMode === "grid" ? "grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" : "flex flex-col gap-4"}>
           {viewMode === "grid" && (
             <button onClick={handleCreateResume} className="group aspect-[3/4] rounded-2xl border-2 border-dashed border-border hover:border-primary/50 bg-card/50 hover:bg-card flex flex-col items-center justify-center gap-4 transition-all">
-              <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center group-hover:bg-indigo-bloom-500/20 transition-colors">
-                <Plus className="w-8 h-8 text-muted-foreground group-hover:text-indigo-bloom-500" />
+              <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center group-hover:bg-electric-sapphire-500/20 transition-colors">
+                <Plus className="w-8 h-8 text-muted-foreground group-hover:text-electric-sapphire-500" />
               </div>
               <span className="font-medium text-muted-foreground group-hover:text-foreground">Create New Resume</span>
             </button>
@@ -138,7 +138,7 @@ const Dashboard = () => {
             const completeness = getCompleteness(resume);
             return viewMode === "grid" ? (
               <div key={resume.id} className="group relative aspect-[3/4] rounded-2xl bg-card border border-border hover:border-primary/30 hover:shadow-card-hover overflow-hidden transition-all">
-                <div className="absolute inset-0 p-4 bg-gradient-to-br from-ultrasonic-blue-500/20 to-sky-aqua-500/20">
+                <div className="absolute inset-0 p-4 bg-gradient-to-br from-bright-indigo-500/20 to-neon-pink-500/20">
                   <div className="w-full h-full bg-card rounded-lg shadow-sm p-3">
                     <div className="space-y-2">
                       <div className="w-8 h-8 rounded-full bg-muted" />
@@ -190,7 +190,7 @@ const Dashboard = () => {
               </div>
             ) : (
               <div key={resume.id} className="flex items-center gap-4 p-4 rounded-xl bg-card border border-border hover:border-primary/30 hover:shadow-card-hover transition-all">
-                <div className="w-16 h-20 rounded-lg bg-gradient-to-br from-true-azure-500/20 to-blue-energy-500/20 flex-shrink-0 flex items-center justify-center">
+                <div className="w-16 h-20 rounded-lg bg-gradient-to-br from-vivid-royal-500/20 to-raspberry-plum-500/20 flex-shrink-0 flex items-center justify-center">
                   <FileText className="w-6 h-6 text-muted-foreground" />
                 </div>
                 <div className="flex-1 min-w-0">
