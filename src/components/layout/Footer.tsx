@@ -39,7 +39,7 @@ const Footer = () => {
                 <div className="w-10 h-10 rounded-xl gradient-button flex items-center justify-center">
                   <FileText className="w-5 h-5 text-primary-foreground" />
                 </div>
-                <Sparkles className="absolute -top-1 -right-1 w-4 h-4 text-raspberry-plum-500" />
+                <Sparkles className="absolute -top-1 -right-1 w-4 h-4 text-blue-energy-500" />
               </div>
               <span className="font-display font-bold text-xl">
                 Make<span className="text-gradient">Me</span>
@@ -50,11 +50,11 @@ const Footer = () => {
             </p>
             <div className="flex flex-col gap-2 text-sm text-muted-foreground">
               <div className="flex items-center gap-2">
-                <Mail className="w-4 h-4 text-electric-sapphire-500" />
+                <Mail className="w-4 h-4 text-indigo-bloom-500" />
                 <span>hello@makeme.com.bd</span>
               </div>
               <div className="flex items-center gap-2">
-                <MapPin className="w-4 h-4 text-sky-aqua-500" />
+                <MapPin className="w-4 h-4 text-neon-pink-500" />
                 <span>Dhaka, Bangladesh</span>
               </div>
             </div>
@@ -66,7 +66,7 @@ const Footer = () => {
             <ul className="space-y-3">
               {footerLinks.product.map((link) => (
                 <li key={link.href}>
-                  <Link to={link.href} className="text-sm text-muted-foreground hover:text-neon-pink-500 transition-colors">
+                  <Link to={link.href} className="text-sm text-muted-foreground hover:text-sky-aqua-500 transition-colors">
                     {link.label}
                   </Link>
                 </li>
@@ -79,7 +79,7 @@ const Footer = () => {
             <ul className="space-y-3">
               {footerLinks.company.map((link) => (
                 <li key={link.href}>
-                  <Link to={link.href} className="text-sm text-muted-foreground hover:text-indigo-bloom-500 transition-colors">
+                  <Link to={link.href} className="text-sm text-muted-foreground hover:text-electric-sapphire-500 transition-colors">
                     {link.label}
                   </Link>
                 </li>
@@ -92,7 +92,7 @@ const Footer = () => {
             <ul className="space-y-3">
               {footerLinks.resources.map((link) => (
                 <li key={link.href}>
-                  <Link to={link.href} className="text-sm text-muted-foreground hover:text-blue-energy-500 transition-colors">
+                  <Link to={link.href} className="text-sm text-muted-foreground hover:text-raspberry-plum-500 transition-colors">
                     {link.label}
                   </Link>
                 </li>
@@ -105,7 +105,7 @@ const Footer = () => {
             <ul className="space-y-3">
               {footerLinks.legal.map((link) => (
                 <li key={link.href}>
-                  <Link to={link.href} className="text-sm text-muted-foreground hover:text-true-azure-500 transition-colors">
+                  <Link to={link.href} className="text-sm text-muted-foreground hover:text-vivid-royal-500 transition-colors">
                     {link.label}
                   </Link>
                 </li>

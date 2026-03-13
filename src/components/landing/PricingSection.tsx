@@ -19,7 +19,7 @@ const PricingSection = () => {
       cta: "Start Free",
       variant: "hero-outline" as const,
       popular: false,
-      accentColor: "text-blue-energy-500",
+      accentColor: "text-raspberry-plum-500",
     },
     {
       name: "Pro",
@@ -39,7 +39,7 @@ const PricingSection = () => {
       cta: "Go Pro",
       variant: "hero" as const,
       popular: true,
-      accentColor: "text-neon-pink-500",
+      accentColor: "text-sky-aqua-500",
     },
     {
       name: "Lifetime",
@@ -57,7 +57,7 @@ const PricingSection = () => {
       cta: "Get Lifetime",
       variant: "purple" as const,
       popular: false,
-      accentColor: "text-indigo-bloom-500",
+      accentColor: "text-electric-sapphire-500",
     },
   ];
 
@@ -65,15 +65,15 @@ const PricingSection = () => {
     <section className="py-24 relative overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 -z-10">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-br from-ultrasonic-blue-400/10 via-bright-indigo-400/10 to-sky-aqua-400/10 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-br from-bright-indigo-400/10 via-ultrasonic-blue-400/10 to-neon-pink-400/10 rounded-full blur-3xl" />
       </div>
 
       <div className="container mx-auto px-4">
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-vivid-royal-500/20 border border-vivid-royal-400/30 mb-6">
-            <Zap className="w-4 h-4 text-vivid-royal-500" />
-            <span className="text-sm font-medium text-vivid-royal-600">Simple Pricing</span>
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-true-azure-500/20 border border-true-azure-400/30 mb-6">
+            <Zap className="w-4 h-4 text-true-azure-500" />
+            <span className="text-sm font-medium text-true-azure-600">Simple Pricing</span>
           </div>
           <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
             Choose your path to

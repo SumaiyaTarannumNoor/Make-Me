@@ -21,18 +21,18 @@ const TemplatesSection = () => {
     }
   };
 
-  // Cycle through all 10 neon colors for template cards
+  // Reversed: sky-aqua first, neon-pink last
   const templateGradients = [
-    "from-neon-pink-400 to-raspberry-plum-400",
-    "from-raspberry-plum-400 to-indigo-bloom-400",
-    "from-indigo-bloom-400 to-ultrasonic-blue-400",
-    "from-ultrasonic-blue-400 to-true-azure-400",
-    "from-true-azure-400 to-vivid-royal-400",
-    "from-vivid-royal-400 to-bright-indigo-400",
-    "from-bright-indigo-400 to-electric-sapphire-400",
-    "from-electric-sapphire-400 to-blue-energy-400",
-    "from-blue-energy-400 to-sky-aqua-400",
-    "from-sky-aqua-400 to-neon-pink-400",
+    "from-sky-aqua-400 to-blue-energy-400",
+    "from-blue-energy-400 to-electric-sapphire-400",
+    "from-electric-sapphire-400 to-bright-indigo-400",
+    "from-bright-indigo-400 to-ultrasonic-blue-400",
+    "from-ultrasonic-blue-400 to-vivid-royal-400",
+    "from-vivid-royal-400 to-true-azure-400",
+    "from-true-azure-400 to-indigo-bloom-400",
+    "from-indigo-bloom-400 to-raspberry-plum-400",
+    "from-raspberry-plum-400 to-neon-pink-400",
+    "from-neon-pink-400 to-sky-aqua-400",
   ];
 
   const handleUseTemplate = async (templateId: string) => {
@@ -107,7 +107,7 @@ const TemplatesSection = () => {
                       <p className="text-sm text-muted-foreground">{getExperienceLevelLabel(template.experience_level)}</p>
                     </div>
                     {template.experience_level === 'student' && (
-                      <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-neon-pink-500/20 text-neon-pink-600">
+                      <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-sky-aqua-500/20 text-sky-aqua-600">
                         <Star className="w-3 h-3 fill-current" />
                         <span className="text-xs font-medium">Popular</span>
                       </div>

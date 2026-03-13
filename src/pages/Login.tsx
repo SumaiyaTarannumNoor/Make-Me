@@ -38,7 +38,7 @@ const Login = () => {
               <div className="w-10 h-10 rounded-xl gradient-button flex items-center justify-center">
                 <FileText className="w-5 h-5 text-primary-foreground" />
               </div>
-              <Sparkles className="absolute -top-1 -right-1 w-4 h-4 text-neon-pink-400" />
+              <Sparkles className="absolute -top-1 -right-1 w-4 h-4 text-sky-aqua-400" />
             </div>
             <span className="font-display font-bold text-xl">
               Make<span className="text-gradient">Me</span>
@@ -68,7 +68,7 @@ const Login = () => {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label htmlFor="password">Password</Label>
-                <Link to="/forgot-password" className="text-sm text-electric-sapphire-500 hover:underline">
+                <Link to="/forgot-password" className="text-sm text-indigo-bloom-500 hover:underline">
                   Forgot password?
                 </Link>
               </div>
@@ -89,7 +89,7 @@ const Login = () => {
           {/* Sign Up Link */}
           <p className="text-center text-sm text-muted-foreground mt-8">
             Don't have an account?{" "}
-            <Link to="/signup" className="text-neon-pink-500 font-medium hover:underline">
+            <Link to="/signup" className="text-sky-aqua-500 font-medium hover:underline">
               Sign up for free
             </Link>
           </p>
@@ -113,11 +113,11 @@ const Login = () => {
           </p>
         </div>
 
-        {/* Background Shapes - all different colors */}
-        <div className="absolute top-20 left-20 w-40 h-40 bg-neon-pink-400/30 rounded-full blur-3xl animate-float" />
-        <div className="absolute bottom-20 right-20 w-60 h-60 bg-bright-indigo-400/30 rounded-full blur-3xl animate-float-delayed" />
-        <div className="absolute top-1/2 right-10 w-32 h-32 bg-sky-aqua-400/30 rounded-full blur-3xl" />
-        <div className="absolute bottom-40 left-10 w-24 h-24 bg-blue-energy-400/30 rounded-full blur-3xl" />
+        {/* Background Shapes - reversed colors */}
+        <div className="absolute top-20 left-20 w-40 h-40 bg-sky-aqua-400/30 rounded-full blur-3xl animate-float" />
+        <div className="absolute bottom-20 right-20 w-60 h-60 bg-ultrasonic-blue-400/30 rounded-full blur-3xl animate-float-delayed" />
+        <div className="absolute top-1/2 right-10 w-32 h-32 bg-neon-pink-400/30 rounded-full blur-3xl" />
+        <div className="absolute bottom-40 left-10 w-24 h-24 bg-raspberry-plum-400/30 rounded-full blur-3xl" />
       </div>
     </div>
   );

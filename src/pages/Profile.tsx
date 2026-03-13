@@ -66,7 +66,7 @@ const Profile = () => {
                   <div className="w-9 h-9 rounded-lg gradient-button flex items-center justify-center">
                     <FileText className="w-4 h-4 text-primary-foreground" />
                   </div>
-                  <Sparkles className="absolute -top-0.5 -right-0.5 w-3 h-3 text-neon-pink-500" />
+                  <Sparkles className="absolute -top-0.5 -right-0.5 w-3 h-3 text-sky-aqua-500" />
                 </div>
                 <span className="font-display font-bold text-lg">
                   Make<span className="text-gradient">Me</span>
@@ -83,7 +83,7 @@ const Profile = () => {
         <div className="bg-card rounded-2xl border border-border p-8">
           {/* Profile Header */}
           <div className="flex items-center gap-4 mb-8">
-            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-bright-indigo-400 to-sky-aqua-500 flex items-center justify-center">
+            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-ultrasonic-blue-400 to-neon-pink-500 flex items-center justify-center">
               <User className="w-10 h-10 text-primary-foreground" />
             </div>
             <div>
