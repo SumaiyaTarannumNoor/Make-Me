@@ -105,8 +105,8 @@ const Footer = () => {
         </div>
 
         <div className="mt-12 pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-muted-foreground">© {new Date().getFullYear()} MakeMe. All rights reserved.</p>
-          <p className="text-sm text-muted-foreground">Made with ❤️ in Bangladesh 🇧🇩</p>
+          <p className="text-sm text-muted-foreground">© {new Date().getFullYear()} MakeMe || All rights reserved.</p>
+          <p className="text-sm text-muted-foreground">Made in Bangladesh 🇧🇩</p>
         </div>
       </div>
     </footer>
