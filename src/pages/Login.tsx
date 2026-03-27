@@ -21,7 +21,6 @@ const Login = () => {
       await signIn(email, password);
       navigate("/dashboard");
     } catch (error) {
-      // Error handled in useAuth
     } finally {
       setIsLoading(false);
     }
@@ -29,33 +28,25 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex">
-      {/* Left Side - Form */}
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="w-full max-w-md">
-          {/* Logo */}
           <Link to="/" className="flex items-center gap-2 mb-8">
             <div className="relative">
               <div className="w-10 h-10 rounded-xl gradient-button flex items-center justify-center">
                 <FileText className="w-5 h-5 text-primary-foreground" />
               </div>
-              <Sparkles className="absolute -top-1 -right-1 w-4 h-4 text-sky-aqua-400" />
+              <Sparkles className="absolute -top-1 -right-1 w-4 h-4 text-aquamarine-500" />
             </div>
             <span className="font-display font-bold text-xl">
               Make<span className="text-gradient">Me</span>
             </span>
           </Link>
 
-          {/* Header */}
           <div className="mb-8">
-            <h1 className="font-display text-3xl font-bold text-foreground mb-2">
-              Welcome back
-            </h1>
-            <p className="text-muted-foreground">
-              Log in to continue building your resume
-            </p>
+            <h1 className="font-display text-3xl font-bold text-foreground mb-2">Welcome back</h1>
+            <p className="text-muted-foreground">Log in to continue building your resume</p>
           </div>
 
-          {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
@@ -68,9 +59,7 @@ const Login = () => {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label htmlFor="password">Password</Label>
-                <Link to="/forgot-password" className="text-sm text-indigo-bloom-500 hover:underline">
-                  Forgot password?
-                </Link>
+                <Link to="/forgot-password" className="text-sm text-pearl-aqua-500 hover:underline">Forgot password?</Link>
               </div>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
@@ -86,38 +75,26 @@ const Login = () => {
             </Button>
           </form>
 
-          {/* Sign Up Link */}
           <p className="text-center text-sm text-muted-foreground mt-8">
             Don't have an account?{" "}
-            <Link to="/signup" className="text-sky-aqua-500 font-medium hover:underline">
-              Sign up for free
-            </Link>
+            <Link to="/signup" className="text-aquamarine-500 font-medium hover:underline">Sign up for free</Link>
           </p>
         </div>
       </div>
 
-      {/* Right Side - Decorative */}
       <div className="hidden lg:flex flex-1 items-center justify-center relative overflow-hidden gradient-hero">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,hsl(var(--background)/0.3)_100%)]" />
-        
-        {/* Floating Elements */}
         <div className="relative z-10 text-center p-12">
           <div className="w-32 h-32 rounded-2xl gradient-button shadow-glow mx-auto mb-8 flex items-center justify-center animate-float">
             <FileText className="w-16 h-16 text-primary-foreground" />
           </div>
-          <h2 className="font-display text-3xl font-bold text-foreground mb-4">
-            Your resume, reimagined
-          </h2>
-          <p className="text-white-foreground max-w-sm mx-auto">
-            Professional tools to help you craft the perfect resume and land your dream job.
-          </p>
+          <h2 className="font-display text-3xl font-bold text-foreground mb-4">Your resume, reimagined</h2>
+          <p className="text-muted-foreground max-w-sm mx-auto">Professional tools to help you craft the perfect resume and land your dream job.</p>
         </div>
-
-        {/* Background Shapes - reversed colors */}
-        <div className="absolute top-20 left-20 w-40 h-40 bg-sky-aqua-400/30 rounded-full blur-3xl animate-float" />
-        <div className="absolute bottom-20 right-20 w-60 h-60 bg-ultrasonic-blue-400/30 rounded-full blur-3xl animate-float-delayed" />
-        <div className="absolute top-1/2 right-10 w-32 h-32 bg-neon-pink-400/30 rounded-full blur-3xl" />
-        <div className="absolute bottom-40 left-10 w-24 h-24 bg-raspberry-plum-400/30 rounded-full blur-3xl" />
+        <div className="absolute top-20 left-20 w-40 h-40 bg-aquamarine-500/20 rounded-full blur-3xl animate-float" />
+        <div className="absolute bottom-20 right-20 w-60 h-60 bg-royal-violet-500/20 rounded-full blur-3xl animate-float-delayed" />
+        <div className="absolute top-1/2 right-10 w-32 h-32 bg-turquoise-500/20 rounded-full blur-3xl" />
+        <div className="absolute bottom-40 left-10 w-24 h-24 bg-indigo-bloom-500/20 rounded-full blur-3xl" />
       </div>
     </div>
   );

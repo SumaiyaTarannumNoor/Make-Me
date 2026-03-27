@@ -21,18 +21,17 @@ const TemplatesSection = () => {
     }
   };
 
-  // Reversed: sky-aqua first, neon-pink last
   const templateGradients = [
-    "from-sky-aqua-400 to-blue-energy-400",
-    "from-blue-energy-400 to-electric-sapphire-400",
-    "from-electric-sapphire-400 to-bright-indigo-400",
-    "from-bright-indigo-400 to-ultrasonic-blue-400",
-    "from-ultrasonic-blue-400 to-vivid-royal-400",
-    "from-vivid-royal-400 to-true-azure-400",
-    "from-true-azure-400 to-indigo-bloom-400",
-    "from-indigo-bloom-400 to-raspberry-plum-400",
-    "from-raspberry-plum-400 to-neon-pink-400",
-    "from-neon-pink-400 to-sky-aqua-400",
+    "from-aquamarine-400 to-turquoise-400",
+    "from-turquoise-400 to-pearl-aqua-400",
+    "from-pearl-aqua-400 to-sky-blue-light-400",
+    "from-sky-blue-light-400 to-sky-surge-400",
+    "from-sky-surge-400 to-fresh-sky-400",
+    "from-fresh-sky-400 to-cloudy-sky-400",
+    "from-cloudy-sky-400 to-slate-blue-400",
+    "from-slate-blue-400 to-indigo-bloom-400",
+    "from-indigo-bloom-400 to-royal-violet-400",
+    "from-royal-violet-400 to-aquamarine-400",
   ];
 
   const handleUseTemplate = async (templateId: string) => {
@@ -107,7 +106,7 @@ const TemplatesSection = () => {
                       <p className="text-sm text-muted-foreground">{getExperienceLevelLabel(template.experience_level)}</p>
                     </div>
                     {template.experience_level === 'student' && (
-                      <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-sky-aqua-500/20 text-sky-aqua-600">
+                      <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-aquamarine-500/20 text-aquamarine-500">
                         <Star className="w-3 h-3 fill-current" />
                         <span className="text-xs font-medium">Popular</span>
                       </div>

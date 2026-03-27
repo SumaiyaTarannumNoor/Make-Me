@@ -32,14 +32,13 @@ const Footer = () => {
     <footer className="bg-muted/30 border-t border-border">
       <div className="container mx-auto px-4 py-16">
         <div className="grid grid-cols-2 md:grid-cols-6 gap-8">
-          {/* Brand Column */}
           <div className="col-span-2">
             <Link to="/" className="flex items-center gap-2 mb-4">
               <div className="relative">
                 <div className="w-10 h-10 rounded-xl gradient-button flex items-center justify-center">
                   <FileText className="w-5 h-5 text-primary-foreground" />
                 </div>
-                <Sparkles className="absolute -top-1 -right-1 w-4 h-4 text-blue-energy-500" />
+                <Sparkles className="absolute -top-1 -right-1 w-4 h-4 text-turquoise-500" />
               </div>
               <span className="font-display font-bold text-xl">
                 Make<span className="text-gradient">Me</span>
@@ -50,25 +49,22 @@ const Footer = () => {
             </p>
             <div className="flex flex-col gap-2 text-sm text-muted-foreground">
               <div className="flex items-center gap-2">
-                <Mail className="w-4 h-4 text-indigo-bloom-500" />
+                <Mail className="w-4 h-4 text-pearl-aqua-500" />
                 <span>hello@makeme.com.bd</span>
               </div>
               <div className="flex items-center gap-2">
-                <MapPin className="w-4 h-4 text-neon-pink-500" />
+                <MapPin className="w-4 h-4 text-royal-violet-600" />
                 <span>Dhaka, Bangladesh</span>
               </div>
             </div>
           </div>
 
-          {/* Links */}
           <div>
             <h4 className="font-semibold text-foreground mb-4">Product</h4>
             <ul className="space-y-3">
               {footerLinks.product.map((link) => (
                 <li key={link.href}>
-                  <Link to={link.href} className="text-sm text-muted-foreground hover:text-sky-aqua-500 transition-colors">
-                    {link.label}
-                  </Link>
+                  <Link to={link.href} className="text-sm text-muted-foreground hover:text-aquamarine-500 transition-colors">{link.label}</Link>
                 </li>
               ))}
             </ul>
@@ -79,9 +75,7 @@ const Footer = () => {
             <ul className="space-y-3">
               {footerLinks.company.map((link) => (
                 <li key={link.href}>
-                  <Link to={link.href} className="text-sm text-muted-foreground hover:text-electric-sapphire-500 transition-colors">
-                    {link.label}
-                  </Link>
+                  <Link to={link.href} className="text-sm text-muted-foreground hover:text-turquoise-500 transition-colors">{link.label}</Link>
                 </li>
               ))}
             </ul>
@@ -92,9 +86,7 @@ const Footer = () => {
             <ul className="space-y-3">
               {footerLinks.resources.map((link) => (
                 <li key={link.href}>
-                  <Link to={link.href} className="text-sm text-muted-foreground hover:text-raspberry-plum-500 transition-colors">
-                    {link.label}
-                  </Link>
+                  <Link to={link.href} className="text-sm text-muted-foreground hover:text-sky-surge-500 transition-colors">{link.label}</Link>
                 </li>
               ))}
             </ul>
@@ -105,23 +97,16 @@ const Footer = () => {
             <ul className="space-y-3">
               {footerLinks.legal.map((link) => (
                 <li key={link.href}>
-                  <Link to={link.href} className="text-sm text-muted-foreground hover:text-vivid-royal-500 transition-colors">
-                    {link.label}
-                  </Link>
+                  <Link to={link.href} className="text-sm text-muted-foreground hover:text-indigo-bloom-600 transition-colors">{link.label}</Link>
                 </li>
               ))}
             </ul>
           </div>
         </div>
 
-        {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} MakeMe. All rights reserved.
-          </p>
-          <p className="text-sm text-muted-foreground">
-            Made with ❤️ in Bangladesh 🇧🇩
-          </p>
+          <p className="text-sm text-muted-foreground">© {new Date().getFullYear()} MakeMe. All rights reserved.</p>
+          <p className="text-sm text-muted-foreground">Made with ❤️ in Bangladesh 🇧🇩</p>
         </div>
       </div>
     </footer>

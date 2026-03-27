@@ -11,14 +11,13 @@ const HeroSection = () => {
 
   return (
     <section className="relative min-h-screen flex items-center pt-16 overflow-hidden">
-      {/* Background Elements - reversed: sky-aqua, blue-energy, electric-sapphire, indigo-bloom, neon-pink */}
+      {/* Background Elements */}
       <div className="absolute inset-0 -z-10">
-        <div className="absolute top-0 left-0 w-full h-full gradient-hero opacity-30" />
-        <div className="absolute top-20 left-10 w-72 h-72 bg-sky-aqua-400/30 rounded-full blur-3xl animate-float" />
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-indigo-bloom-400/30 rounded-full blur-3xl animate-float-delayed" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-neon-pink-400/20 rounded-full blur-3xl" />
-        <div className="absolute top-40 right-1/4 w-64 h-64 bg-true-azure-400/20 rounded-full blur-3xl" />
-        <div className="absolute bottom-40 left-1/4 w-48 h-48 bg-raspberry-plum-400/20 rounded-full blur-3xl" />
+        <div className="absolute top-20 left-10 w-72 h-72 bg-aquamarine-500/20 rounded-full blur-3xl animate-float" />
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-royal-violet-500/20 rounded-full blur-3xl animate-float-delayed" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-slate-blue-500/15 rounded-full blur-3xl" />
+        <div className="absolute top-40 right-1/4 w-64 h-64 bg-sky-surge-500/15 rounded-full blur-3xl" />
+        <div className="absolute bottom-40 left-1/4 w-48 h-48 bg-pearl-aqua-500/15 rounded-full blur-3xl" />
       </div>
 
       <div className="container mx-auto px-4 py-20">
@@ -26,9 +25,9 @@ const HeroSection = () => {
           {/* Left Content */}
           <div className="max-w-2xl">
             {/* Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-ultrasonic-blue-500/20 border border-ultrasonic-blue-400/50 mb-6 animate-fade-in">
-              <Sparkles className="w-4 h-4 text-ultrasonic-blue-600" />
-              <span className="text-sm font-medium text-ultrasonic-blue-600">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-bloom-500/20 border border-indigo-bloom-400/50 mb-6 animate-fade-in">
+              <Sparkles className="w-4 h-4 text-indigo-bloom-600" />
+              <span className="text-sm font-medium text-indigo-bloom-900">
                 Professional Resume Builder
               </span>
             </div>
@@ -49,7 +48,7 @@ const HeroSection = () => {
             {/* Features List */}
             <ul className="flex flex-wrap gap-4 mb-8 animate-fade-in" style={{ animationDelay: "0.3s" }}>
               {features.map((feature, index) => {
-                const colors = ["text-sky-aqua-500", "text-indigo-bloom-500", "text-neon-pink-500"];
+                const colors = ["text-aquamarine-500", "text-turquoise-500", "text-pearl-aqua-500"];
                 return (
                   <li key={index} className="flex items-center gap-2 text-sm text-foreground">
                     <CheckCircle2 className={`w-5 h-5 ${colors[index]}`} />
@@ -80,11 +79,11 @@ const HeroSection = () => {
               <div className="flex items-center gap-6">
                 <div className="flex -space-x-3">
                   {[
-                    "from-sky-aqua-400 to-blue-energy-400",
-                    "from-electric-sapphire-400 to-bright-indigo-400",
-                    "from-vivid-royal-400 to-true-azure-400",
-                    "from-ultrasonic-blue-400 to-indigo-bloom-400",
-                    "from-raspberry-plum-400 to-neon-pink-400",
+                    "from-aquamarine-400 to-turquoise-400",
+                    "from-turquoise-400 to-pearl-aqua-400",
+                    "from-pearl-aqua-400 to-sky-blue-light-400",
+                    "from-sky-surge-400 to-fresh-sky-400",
+                    "from-cloudy-sky-400 to-slate-blue-400",
                   ].map((gradient, i) => (
                     <div
                       key={i}
@@ -108,14 +107,14 @@ const HeroSection = () => {
                 <div className="space-y-6">
                   {/* Header */}
                   <div className="text-center pb-4 border-b border-border">
-                    <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-true-azure-400 to-neon-pink-400" />
+                    <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-cloudy-sky-400 to-aquamarine-400" />
                     <h3 className="font-display font-bold text-xl text-foreground">Joe Rothbart</h3>
                     <p className="text-sm text-muted-foreground">Software Engineer</p>
                   </div>
 
                   {/* Summary */}
                   <div>
-                    <h4 className="font-semibold text-sm text-bright-indigo-500 mb-2">Summary</h4>
+                    <h4 className="font-semibold text-sm text-sky-blue-light-500 mb-2">Summary</h4>
                     <div className="space-y-2">
                       <div className="h-3 bg-muted rounded-full w-full" />
                       <div className="h-3 bg-muted rounded-full w-4/5" />
@@ -124,28 +123,28 @@ const HeroSection = () => {
 
                   {/* Experience */}
                   <div>
-                    <h4 className="font-semibold text-sm text-vivid-royal-500 mb-2">Experience</h4>
+                    <h4 className="font-semibold text-sm text-fresh-sky-500 mb-2">Experience</h4>
                     <div className="space-y-3">
-                      <div className="p-3 rounded-lg bg-indigo-bloom-900/50">
-                        <div className="h-3 bg-indigo-bloom-400/30 rounded w-3/4 mb-2" />
-                        <div className="h-2 bg-indigo-bloom-400/20 rounded w-1/2" />
+                      <div className="p-3 rounded-lg bg-royal-violet-500/10">
+                        <div className="h-3 bg-royal-violet-500/20 rounded w-3/4 mb-2" />
+                        <div className="h-2 bg-royal-violet-500/15 rounded w-1/2" />
                       </div>
-                      <div className="p-3 rounded-lg bg-raspberry-plum-900/50">
-                        <div className="h-3 bg-raspberry-plum-400/30 rounded w-2/3 mb-2" />
-                        <div className="h-2 bg-raspberry-plum-400/20 rounded w-1/2" />
+                      <div className="p-3 rounded-lg bg-indigo-bloom-500/10">
+                        <div className="h-3 bg-indigo-bloom-500/20 rounded w-2/3 mb-2" />
+                        <div className="h-2 bg-indigo-bloom-500/15 rounded w-1/2" />
                       </div>
                     </div>
                   </div>
 
                   {/* Skills */}
                   <div>
-                    <h4 className="font-semibold text-sm text-ultrasonic-blue-500 mb-2">Skills</h4>
+                    <h4 className="font-semibold text-sm text-cloudy-sky-500 mb-2">Skills</h4>
                     <div className="flex flex-wrap gap-2">
                       {[
-                        { skill: "React", color: "bg-sky-aqua-500/20 text-sky-aqua-700" },
-                        { skill: "Python", color: "bg-electric-sapphire-500/20 text-electric-sapphire-700" },
-                        { skill: "AWS", color: "bg-neon-pink-500/20 text-neon-pink-700" },
-                        { skill: "SQL", color: "bg-true-azure-500/20 text-true-azure-700" },
+                        { skill: "React", color: "bg-aquamarine-500/20 text-aquamarine-500" },
+                        { skill: "Python", color: "bg-turquoise-500/20 text-turquoise-500" },
+                        { skill: "AWS", color: "bg-pearl-aqua-500/20 text-pearl-aqua-500" },
+                        { skill: "SQL", color: "bg-sky-surge-500/20 text-sky-surge-500" },
                       ].map(({ skill, color }) => (
                         <span
                           key={skill}
@@ -162,14 +161,14 @@ const HeroSection = () => {
               {/* Floating Elements */}
               <div className="absolute -top-4 -right-4 px-4 py-2 rounded-xl bg-card shadow-lg border border-border animate-float">
                 <div className="flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-blue-energy-500" />
+                  <Sparkles className="w-4 h-4 text-turquoise-500" />
                   <span className="text-sm font-medium">Professional</span>
                 </div>
               </div>
 
               <div className="absolute -bottom-4 -left-4 px-4 py-2 rounded-xl bg-card shadow-lg border border-border animate-float-delayed">
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-neon-pink-500" />
+                  <CheckCircle2 className="w-4 h-4 text-aquamarine-500" />
                   <span className="text-sm font-medium">Ready to Download</span>
                 </div>
               </div>
