@@ -25,7 +25,6 @@ const Signup = () => {
       await signUp(email, password, name);
       navigate("/dashboard");
     } catch (error) {
-      // Error handled in useAuth
     } finally {
       setIsLoading(false);
     }
@@ -33,45 +32,36 @@ const Signup = () => {
 
   return (
     <div className="min-h-screen flex">
-      {/* Left Side - Decorative */}
       <div className="hidden lg:flex flex-1 items-center justify-center relative overflow-hidden gradient-hero">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,hsl(var(--background)/0.3)_100%)]" />
-        
         <div className="relative z-10 text-center p-12">
           <div className="w-32 h-32 rounded-2xl gradient-pink shadow-glow mx-auto mb-8 flex items-center justify-center animate-float">
-            <Sparkles className="w-16 h-16 text-foreground" />
+            <Sparkles className="w-16 h-16 text-primary-foreground" />
           </div>
-          <h2 className="font-display text-3xl font-bold text-foreground mb-4">
-            Start your journey
-          </h2>
-          <p className="text-muted-foreground max-w-sm mx-auto">
-            Join thousands of students building professional resumes with ease.
-          </p>
+          <h2 className="font-display text-3xl font-bold text-foreground mb-4">Start your journey</h2>
+          <p className="text-muted-foreground max-w-sm mx-auto">Join thousands of students building professional resumes with ease.</p>
 
           <div className="grid grid-cols-3 gap-6 mt-12">
             <div className="text-center">
-              <p className="font-display text-2xl font-bold text-sky-aqua-500">10K+</p>
+              <p className="font-display text-2xl font-bold text-aquamarine-500">10K+</p>
               <p className="text-sm text-muted-foreground">Users</p>
             </div>
             <div className="text-center">
-              <p className="font-display text-2xl font-bold text-indigo-bloom-500">50K+</p>
+              <p className="font-display text-2xl font-bold text-turquoise-500">50K+</p>
               <p className="text-sm text-muted-foreground">Resumes</p>
             </div>
             <div className="text-center">
-              <p className="font-display text-2xl font-bold text-neon-pink-500">95%</p>
+              <p className="font-display text-2xl font-bold text-pearl-aqua-500">95%</p>
               <p className="text-sm text-muted-foreground">Success Rate</p>
             </div>
           </div>
         </div>
-
-        {/* Background shapes - reversed colors */}
-        <div className="absolute top-20 right-20 w-40 h-40 bg-blue-energy-400/30 rounded-full blur-3xl animate-float" />
-        <div className="absolute bottom-20 left-20 w-60 h-60 bg-true-azure-400/30 rounded-full blur-3xl animate-float-delayed" />
-        <div className="absolute top-1/3 left-10 w-32 h-32 bg-vivid-royal-400/30 rounded-full blur-3xl" />
-        <div className="absolute bottom-40 right-10 w-24 h-24 bg-bright-indigo-400/30 rounded-full blur-3xl" />
+        <div className="absolute top-20 right-20 w-40 h-40 bg-turquoise-500/20 rounded-full blur-3xl animate-float" />
+        <div className="absolute bottom-20 left-20 w-60 h-60 bg-royal-violet-500/20 rounded-full blur-3xl animate-float-delayed" />
+        <div className="absolute top-1/3 left-10 w-32 h-32 bg-slate-blue-500/20 rounded-full blur-3xl" />
+        <div className="absolute bottom-40 right-10 w-24 h-24 bg-fresh-sky-500/20 rounded-full blur-3xl" />
       </div>
 
-      {/* Right Side - Form */}
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="w-full max-w-md">
           <Link to="/" className="flex items-center gap-2 mb-8">
@@ -79,7 +69,7 @@ const Signup = () => {
               <div className="w-10 h-10 rounded-xl gradient-button flex items-center justify-center">
                 <FileText className="w-5 h-5 text-primary-foreground" />
               </div>
-              <Sparkles className="absolute -top-1 -right-1 w-4 h-4 text-electric-sapphire-500" />
+              <Sparkles className="absolute -top-1 -right-1 w-4 h-4 text-pearl-aqua-500" />
             </div>
             <span className="font-display font-bold text-xl">
               Make<span className="text-gradient">Me</span>
@@ -87,12 +77,8 @@ const Signup = () => {
           </Link>
 
           <div className="mb-8">
-            <h1 className="font-display text-3xl font-bold text-foreground mb-2">
-              Create your account
-            </h1>
-            <p className="text-muted-foreground">
-              Start building your professional resume today
-            </p>
+            <h1 className="font-display text-3xl font-bold text-foreground mb-2">Create your account</h1>
+            <p className="text-muted-foreground">Start building your professional resume today</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
@@ -103,7 +89,6 @@ const Signup = () => {
                 <Input id="name" type="text" placeholder="John Doe" value={name} onChange={(e) => setName(e.target.value)} className="pl-10 h-12" required />
               </div>
             </div>
-
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <div className="relative">
@@ -111,7 +96,6 @@ const Signup = () => {
                 <Input id="email" type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} className="pl-10 h-12" required />
               </div>
             </div>
-
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
               <div className="relative">
@@ -123,17 +107,15 @@ const Signup = () => {
               </div>
               <p className="text-xs text-muted-foreground">Must be at least 6 characters</p>
             </div>
-
             <div className="flex items-start space-x-3">
               <Checkbox id="terms" checked={agreedToTerms} onCheckedChange={(checked) => setAgreedToTerms(checked as boolean)} />
               <Label htmlFor="terms" className="text-sm text-muted-foreground leading-tight">
                 I agree to the{" "}
-                <Link to="/terms" className="text-indigo-bloom-500 hover:underline">Terms of Service</Link>{" "}
+                <Link to="/terms" className="text-sky-surge-500 hover:underline">Terms of Service</Link>{" "}
                 and{" "}
-                <Link to="/privacy" className="text-indigo-bloom-500 hover:underline">Privacy Policy</Link>
+                <Link to="/privacy" className="text-sky-surge-500 hover:underline">Privacy Policy</Link>
               </Label>
             </div>
-
             <Button type="submit" variant="hero" className="w-full" size="lg" disabled={isLoading || !agreedToTerms}>
               {isLoading ? "Creating account..." : "Create account"}
             </Button>
@@ -141,7 +123,7 @@ const Signup = () => {
 
           <p className="text-center text-sm text-muted-foreground mt-8">
             Already have an account?{" "}
-            <Link to="/login" className="text-sky-aqua-500 font-medium hover:underline">Log in</Link>
+            <Link to="/login" className="text-aquamarine-500 font-medium hover:underline">Log in</Link>
           </p>
         </div>
       </div>

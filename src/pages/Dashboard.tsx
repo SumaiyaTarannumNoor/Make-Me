@@ -24,10 +24,7 @@ const Dashboard = () => {
     if (resume) navigate(`/builder/${resume.id}`);
   };
 
-  const handleSignOut = async () => {
-    await signOut();
-    navigate("/");
-  };
+  const handleSignOut = async () => { await signOut(); navigate("/"); };
 
   const filteredResumes = resumes.filter((resume) =>
     resume.title.toLowerCase().includes(searchQuery.toLowerCase())
@@ -45,14 +42,14 @@ const Dashboard = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-muted/20">
+    <div className="min-h-screen">
       <header className="bg-card border-b border-border sticky top-0 z-50">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
@@ -61,20 +58,19 @@ const Dashboard = () => {
                 <div className="w-9 h-9 rounded-lg gradient-button flex items-center justify-center">
                   <FileText className="w-4 h-4 text-primary-foreground" />
                 </div>
-                <Sparkles className="absolute -top-0.5 -right-0.5 w-3 h-3 text-blue-energy-500" />
+                <Sparkles className="absolute -top-0.5 -right-0.5 w-3 h-3 text-turquoise-500" />
               </div>
               <span className="font-display font-bold text-lg">Make<span className="text-gradient">Me</span></span>
             </Link>
 
             <div className="flex items-center gap-4">
               <Button variant="hero" size="sm">
-                <Crown className="w-4 h-4 mr-1" />
-                Upgrade to Pro
+                <Crown className="w-4 h-4 mr-1" />Upgrade to Pro
               </Button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-muted transition-colors">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-true-azure-400 to-indigo-bloom-500" />
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-cloudy-sky-400 to-aquamarine-500" />
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
@@ -83,14 +79,10 @@ const Dashboard = () => {
                     <p className="text-xs text-muted-foreground">Free Plan</p>
                   </div>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Link to="/profile"><User className="w-4 h-4 mr-2" />Profile</Link>
-                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild><Link to="/profile"><User className="w-4 h-4 mr-2" />Profile</Link></DropdownMenuItem>
                   <DropdownMenuItem><Settings className="w-4 h-4 mr-2" />Settings</DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem className="text-destructive" onClick={handleSignOut}>
-                    <LogOut className="w-4 h-4 mr-2" />Log out
-                  </DropdownMenuItem>
+                  <DropdownMenuItem className="text-destructive" onClick={handleSignOut}><LogOut className="w-4 h-4 mr-2" />Log out</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
@@ -104,9 +96,7 @@ const Dashboard = () => {
             <h1 className="font-display text-2xl md:text-3xl font-bold text-foreground">My Resumes</h1>
             <p className="text-muted-foreground mt-1">Create and manage your professional resumes</p>
           </div>
-          <Button variant="hero" onClick={handleCreateResume}>
-            <Plus className="w-5 h-5 mr-1" />New Resume
-          </Button>
+          <Button variant="hero" onClick={handleCreateResume}><Plus className="w-5 h-5 mr-1" />New Resume</Button>
         </div>
 
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
@@ -127,8 +117,8 @@ const Dashboard = () => {
         <div className={viewMode === "grid" ? "grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" : "flex flex-col gap-4"}>
           {viewMode === "grid" && (
             <button onClick={handleCreateResume} className="group aspect-[3/4] rounded-2xl border-2 border-dashed border-border hover:border-primary/50 bg-card/50 hover:bg-card flex flex-col items-center justify-center gap-4 transition-all">
-              <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center group-hover:bg-electric-sapphire-500/20 transition-colors">
-                <Plus className="w-8 h-8 text-muted-foreground group-hover:text-electric-sapphire-500" />
+              <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center group-hover:bg-pearl-aqua-500/20 transition-colors">
+                <Plus className="w-8 h-8 text-muted-foreground group-hover:text-pearl-aqua-500" />
               </div>
               <span className="font-medium text-muted-foreground group-hover:text-foreground">Create New Resume</span>
             </button>
@@ -138,7 +128,7 @@ const Dashboard = () => {
             const completeness = getCompleteness(resume);
             return viewMode === "grid" ? (
               <div key={resume.id} className="group relative aspect-[3/4] rounded-2xl bg-card border border-border hover:border-primary/30 hover:shadow-card-hover overflow-hidden transition-all">
-                <div className="absolute inset-0 p-4 bg-gradient-to-br from-bright-indigo-500/20 to-neon-pink-500/20">
+                <div className="absolute inset-0 p-4 bg-gradient-to-br from-slate-blue-500/20 to-royal-violet-500/20">
                   <div className="w-full h-full bg-card rounded-lg shadow-sm p-3">
                     <div className="space-y-2">
                       <div className="w-8 h-8 rounded-full bg-muted" />
@@ -164,16 +154,12 @@ const Dashboard = () => {
                       </p>
                     </div>
                     <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <button className="p-1 rounded-md hover:bg-muted"><MoreHorizontal className="w-4 h-4 text-muted-foreground" /></button>
-                      </DropdownMenuTrigger>
+                      <DropdownMenuTrigger asChild><button className="p-1 rounded-md hover:bg-muted"><MoreHorizontal className="w-4 h-4 text-muted-foreground" /></button></DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem><Share2 className="w-4 h-4 mr-2" />Share</DropdownMenuItem>
                         <DropdownMenuItem><Download className="w-4 h-4 mr-2" />Download</DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem className="text-destructive" onClick={() => deleteResume(resume.id)}>
-                          <Trash2 className="w-4 h-4 mr-2" />Delete
-                        </DropdownMenuItem>
+                        <DropdownMenuItem className="text-destructive" onClick={() => deleteResume(resume.id)}><Trash2 className="w-4 h-4 mr-2" />Delete</DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
@@ -190,7 +176,7 @@ const Dashboard = () => {
               </div>
             ) : (
               <div key={resume.id} className="flex items-center gap-4 p-4 rounded-xl bg-card border border-border hover:border-primary/30 hover:shadow-card-hover transition-all">
-                <div className="w-16 h-20 rounded-lg bg-gradient-to-br from-vivid-royal-500/20 to-raspberry-plum-500/20 flex-shrink-0 flex items-center justify-center">
+                <div className="w-16 h-20 rounded-lg bg-gradient-to-br from-fresh-sky-500/20 to-indigo-bloom-500/20 flex-shrink-0 flex items-center justify-center">
                   <FileText className="w-6 h-6 text-muted-foreground" />
                 </div>
                 <div className="flex-1 min-w-0">
@@ -225,9 +211,7 @@ const Dashboard = () => {
             </div>
             <h3 className="font-semibold text-lg text-foreground mb-2">No resumes yet</h3>
             <p className="text-muted-foreground mb-6">Create your first resume to get started</p>
-            <Button variant="hero" onClick={handleCreateResume}>
-              <Plus className="w-5 h-5 mr-1" />Create Resume
-            </Button>
+            <Button variant="hero" onClick={handleCreateResume}><Plus className="w-5 h-5 mr-1" />Create Resume</Button>
           </div>
         )}
       </main>

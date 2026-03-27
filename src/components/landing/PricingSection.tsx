@@ -19,7 +19,7 @@ const PricingSection = () => {
       cta: "Start Free",
       variant: "hero-outline" as const,
       popular: false,
-      accentColor: "text-raspberry-plum-500",
+      accentColor: "text-indigo-bloom-600",
     },
     {
       name: "Pro",
@@ -39,7 +39,7 @@ const PricingSection = () => {
       cta: "Go Pro",
       variant: "hero" as const,
       popular: true,
-      accentColor: "text-sky-aqua-500",
+      accentColor: "text-aquamarine-500",
     },
     {
       name: "Lifetime",
@@ -57,7 +57,7 @@ const PricingSection = () => {
       cta: "Get Lifetime",
       variant: "purple" as const,
       popular: false,
-      accentColor: "text-electric-sapphire-500",
+      accentColor: "text-turquoise-500",
     },
   ];
 
@@ -65,15 +65,15 @@ const PricingSection = () => {
     <section className="py-24 relative overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 -z-10">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-br from-bright-indigo-400/10 via-ultrasonic-blue-400/10 to-neon-pink-400/10 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-br from-slate-blue-500/10 via-cloudy-sky-500/10 to-royal-violet-500/10 rounded-full blur-3xl" />
       </div>
 
       <div className="container mx-auto px-4">
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-true-azure-500/20 border border-true-azure-400/30 mb-6">
-            <Zap className="w-4 h-4 text-true-azure-500" />
-            <span className="text-sm font-medium text-true-azure-600">Simple Pricing</span>
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-fresh-sky-500/20 border border-fresh-sky-500/30 mb-6">
+            <Zap className="w-4 h-4 text-fresh-sky-500" />
+            <span className="text-sm font-medium text-fresh-sky-700">Simple Pricing</span>
           </div>
           <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
             Choose your path to
@@ -95,7 +95,6 @@ const PricingSection = () => {
                   : "bg-card border border-border hover:border-primary/30 hover:shadow-card-hover"
               }`}
             >
-              {/* Popular Badge */}
               {plan.popular && (
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full gradient-button">
                   <div className="flex items-center gap-1.5">
@@ -105,21 +104,15 @@ const PricingSection = () => {
                 </div>
               )}
 
-              {/* Plan Header */}
               <div className="text-center mb-8">
-                <h3 className="font-display font-bold text-xl text-foreground mb-2">
-                  {plan.name}
-                </h3>
+                <h3 className="font-display font-bold text-xl text-foreground mb-2">{plan.name}</h3>
                 <div className="flex items-baseline justify-center gap-1 mb-2">
-                  <span className="font-display text-4xl font-bold text-foreground">
-                    {plan.price}
-                  </span>
+                  <span className="font-display text-4xl font-bold text-foreground">{plan.price}</span>
                   <span className="text-muted-foreground">/{plan.period}</span>
                 </div>
                 <p className="text-sm text-muted-foreground">{plan.description}</p>
               </div>
 
-              {/* Features */}
               <ul className="space-y-4 mb-8">
                 {plan.features.map((feature, i) => (
                   <li key={i} className="flex items-start gap-3">
@@ -129,26 +122,16 @@ const PricingSection = () => {
                 ))}
               </ul>
 
-              {/* CTA */}
               <Link to="/signup">
-                <Button variant={plan.variant} className="w-full" size="lg">
-                  {plan.cta}
-                </Button>
+                <Button variant={plan.variant} className="w-full" size="lg">{plan.cta}</Button>
               </Link>
             </div>
           ))}
         </div>
 
-        {/* B2B Note */}
         <div className="mt-16 text-center">
-          <p className="text-muted-foreground mb-4">
-            Looking for team or enterprise plans?
-          </p>
-          <Link to="/contact">
-            <Button variant="ghost">
-              Contact us for B2B pricing
-            </Button>
-          </Link>
+          <p className="text-muted-foreground mb-4">Looking for team or enterprise plans?</p>
+          <Link to="/contact"><Button variant="ghost">Contact us for B2B pricing</Button></Link>
         </div>
       </div>
     </section>
