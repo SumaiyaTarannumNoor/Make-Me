@@ -13,9 +13,6 @@ const About = () => {
           <div className="glass rounded-2xl p-10 border border-border/50">
             <p className="text-lg text-muted-foreground leading-relaxed">
               This was created by{" "}
-              <span className="font-semibold bg-gradient-to-r from-[#3a0ca3] to-[#4361ee] bg-clip-text text-transparent">
-                Sumaiya Tarannum Noor
-              </span>
                <span className="font-semibold bg-gradient-to-r from-[#3a0ca3] via-[#5a3fd0] to-[#4361ee] bg-clip-text text-transparent">
                 Sumaiya Tarannum Noor
               </span>
