@@ -1,5 +1,6 @@
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import { FaLinkedin } from "react-icons/fa";
 
 const About = () => {
   return (
@@ -23,6 +24,18 @@ const About = () => {
                 Sumaiya Tarannum Noor
               </a>
             </p>
+            <p className="text-lg text-muted-foreground leading-relaxed">
+              Connect on LinkedIn{" "}
+              <span>
+                <a 
+                  href="https://www.linkedin.com/in/sumaiyatarannumnoor" 
+                  className="inline-flex items-center gap-2 font-semibold text-aquamarine-400 hover:text-aquamarine-600 transition-colors duration-200"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <FaLinkedin />
+                  LinkedIn
+    </a>
           </div>
         </div>
       </main>
