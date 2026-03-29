@@ -17,11 +17,11 @@ const About = () => {
                 Sumaiya Tarannum Noor
               </span>
             </p>
-            <p className="text-lg text-muted-foreground leading-relaxed">
-              Connect on LinkedIn{" "}
-              <span 
-                <a href="www.linkedin.com/in/sumaiyatarannumnoor" className="font-semibold text-aquamarine-400"></a>
-              </span>
+            <p className="text-lg text-muted-foreground leading-relaxed mt-4">
+              Connect on LinkedIn:{" "}
+              <a href="https://www.linkedin.com/in/sumaiyatarannumnoor" target="_blank" rel="noopener noreferrer" className="font-semibold text-aquamarine-400 hover:underline">
+                Sumaiya Tarannum Noor
+              </a>
             </p>
           </div>
         </div>
