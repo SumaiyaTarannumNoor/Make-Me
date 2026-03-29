@@ -15,6 +15,7 @@ import Builder from "./pages/Builder";
 import Templates from "./pages/Templates";
 import Pricing from "./pages/Pricing";
 import Profile from "./pages/Profile";
+import About from "./pages/About";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -48,6 +49,7 @@ const App = () => (
               </ProtectedRoute>
             } />
             <Route path="/templates" element={<Templates />} />
+            <Route path="/about" element={<About />} />
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/profile" element={
               <ProtectedRoute>
