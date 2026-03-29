@@ -49,6 +49,7 @@ const App = () => (
               </ProtectedRoute>
             } />
             <Route path="/templates" element={<Templates />} />
+            <Route path="/about" element={<About />} />
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/profile" element={
               <ProtectedRoute>
