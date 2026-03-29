@@ -92,7 +92,7 @@ const HeroSection = () => {
                   ))}
                 </div>
                 <div>
-                  <p className="font-semibold text-foreground">10,000+ Students</p>
+                  <p className="font-semibold text-foreground">Students Pack</p>
                   <p className="text-sm text-muted-foreground">Building resumes with MakeMe</p>
                 </div>
               </div>
