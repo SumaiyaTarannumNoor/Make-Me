@@ -23,7 +23,7 @@ const About = () => {
             <p className="text-lg text-muted-foreground leading-relaxed">
               Connect on LinkedIn{" "}
               <span className="font-semibold text-aquamarine-400">
-                www.linkedin.com/in/sumaiyatarannumnoo
+                <a href= "www.linkedin.com/in/sumaiyatarannumnoo"></a>
               </span>
             </p>
           </div>
