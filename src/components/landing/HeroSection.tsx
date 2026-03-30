@@ -12,7 +12,7 @@ const HeroSection = () => {
   return (
     <section className="relative min-h-screen flex items-center pt-16 overflow-hidden">
       {/* Background Elements */}
-      <div className="absolute inset-0 -z-10">
+      <div className="absolute inset-0 z-0 pointer-events-none">
         <div className="absolute top-20 left-10 w-72 h-72 bg-aquamarine-500/20 rounded-full blur-3xl animate-float" />
         <div className="absolute bottom-20 right-10 w-96 h-96 bg-royal-violet-500/20 rounded-full blur-3xl animate-float-delayed" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-slate-blue-500/15 rounded-full blur-3xl" />
@@ -20,17 +20,17 @@ const HeroSection = () => {
         <div className="absolute bottom-40 left-1/4 w-48 h-48 bg-pearl-aqua-500/15 rounded-full blur-3xl" />
 
         {/* Translucent Bubble Animations - CTA section colors */}
-        <div className="absolute top-[10%] left-[15%] w-20 h-20 rounded-full border border-aquamarine-500/30 bg-aquamarine-500/10 opacity-50 animate-bubble-1" />
-        <div className="absolute top-[30%] right-[20%] w-14 h-14 rounded-full border border-turquoise-500/30 bg-turquoise-500/10 opacity-50 animate-bubble-2" />
-        <div className="absolute bottom-[25%] left-[40%] w-24 h-24 rounded-full border border-pearl-aqua-500/30 bg-pearl-aqua-500/10 opacity-50 animate-bubble-3" />
-        <div className="absolute top-[60%] left-[10%] w-16 h-16 rounded-full border border-royal-violet-500/30 bg-royal-violet-500/10 opacity-50 animate-bubble-4" />
-        <div className="absolute top-[20%] right-[35%] w-10 h-10 rounded-full border border-slate-blue-500/30 bg-slate-blue-500/10 opacity-50 animate-bubble-5" />
-        <div className="absolute bottom-[15%] right-[15%] w-28 h-28 rounded-full border border-aquamarine-500/30 bg-aquamarine-500/10 opacity-50 animate-bubble-6" />
-        <div className="absolute top-[45%] right-[5%] w-12 h-12 rounded-full border border-turquoise-500/30 bg-turquoise-500/10 opacity-50 animate-bubble-7" />
-        <div className="absolute bottom-[40%] left-[25%] w-18 h-18 rounded-full border border-royal-violet-500/30 bg-royal-violet-500/10 opacity-50 animate-bubble-8" />
+        <div className="absolute top-[10%] left-[15%] w-20 h-20 rounded-full border border-aquamarine-500/50 bg-aquamarine-500/20 opacity-50 animate-bubble-1" />
+        <div className="absolute top-[30%] right-[20%] w-14 h-14 rounded-full border border-turquoise-500/50 bg-turquoise-500/20 opacity-50 animate-bubble-2" />
+        <div className="absolute bottom-[25%] left-[40%] w-24 h-24 rounded-full border border-pearl-aqua-500/50 bg-pearl-aqua-500/20 opacity-50 animate-bubble-3" />
+        <div className="absolute top-[60%] left-[10%] w-16 h-16 rounded-full border border-royal-violet-500/50 bg-royal-violet-500/20 opacity-50 animate-bubble-4" />
+        <div className="absolute top-[20%] right-[35%] w-10 h-10 rounded-full border border-slate-blue-500/50 bg-slate-blue-500/20 opacity-50 animate-bubble-5" />
+        <div className="absolute bottom-[15%] right-[15%] w-28 h-28 rounded-full border border-aquamarine-500/50 bg-aquamarine-500/20 opacity-50 animate-bubble-6" />
+        <div className="absolute top-[45%] right-[5%] w-12 h-12 rounded-full border border-turquoise-500/50 bg-turquoise-500/20 opacity-50 animate-bubble-7" />
+        <div className="absolute bottom-[40%] left-[25%] w-[4.5rem] h-[4.5rem] rounded-full border border-royal-violet-500/50 bg-royal-violet-500/20 opacity-50 animate-bubble-8" />
       </div>
 
-      <div className="container mx-auto px-4 py-20">
+      <div className="container mx-auto px-4 py-20 relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Left Content */}
           <div className="max-w-2xl">
