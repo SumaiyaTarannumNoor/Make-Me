@@ -22,7 +22,7 @@ const Header = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           <Link to="/" className="flex items-center gap-2 group">
-            <img src={logo} alt="MakeMe Logo" className="w-10 h-10 object-contain" />
+            <img src={logo} alt="MakeMe Logo" className="w-10 h-10 object-cover rounded-full" />
             <span className="font-display font-bold text-xl text-foreground">
               Make<span className="text-gradient">Me</span>
             </span>
