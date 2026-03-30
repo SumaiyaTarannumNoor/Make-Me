@@ -14,28 +14,22 @@ const About = () => {
           <div className="glass rounded-2xl p-10 border border-border/50">
             <p className="text-lg text-muted-foreground leading-relaxed">
               This was created by{" "}
-               <span className="font-semibold bg-gradient-to-r from-[#3a0ca3] via-[#5a3fd0] to-[#4361ee] bg-clip-text text-transparent">
+              <span className="font-semibold bg-gradient-to-r from-[#3a0ca3] via-[#5a3fd0] to-[#4361ee] bg-clip-text text-transparent">
                 Sumaiya Tarannum Noor
               </span>
             </p>
             <p className="text-lg text-muted-foreground leading-relaxed mt-4">
-              Connect on LinkedIn:{" "}
-              <a href="https://www.linkedin.com/in/sumaiyatarannumnoor" target="_blank" rel="noopener noreferrer" className="font-semibold text-aquamarine-400 hover:underline">
-                Sumaiya Tarannum Noor
+              Connect on LinkedIn{" "}
+              <a
+                href="https://www.linkedin.com/in/sumaiyatarannumnoor"
+                className="inline-flex items-center gap-2 font-semibold text-aquamarine-400 hover:text-aquamarine-600 transition-colors duration-200"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <FaLinkedin />
+                LinkedIn
               </a>
             </p>
-            <p className="text-lg text-muted-foreground leading-relaxed">
-              Connect on LinkedIn{" "}
-              <span>
-                <a 
-                  href="https://www.linkedin.com/in/sumaiyatarannumnoor" 
-                  className="inline-flex items-center gap-2 font-semibold text-aquamarine-400 hover:text-aquamarine-600 transition-colors duration-200"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <FaLinkedin />
-                  LinkedIn
-    </a>
           </div>
         </div>
       </main>
