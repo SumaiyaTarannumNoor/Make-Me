@@ -35,7 +35,7 @@ const Footer = () => {
         <div className="grid grid-cols-2 md:grid-cols-6 gap-8">
           <div className="col-span-2">
             <Link to="/" className="flex items-center gap-2 mb-4">
-              <img src={logo} alt="MakeMe Logo" className="w-10 h-10 object-contain" />
+              <img src={logo} alt="MakeMe Logo" className="w-10 h-10 object-cover rounded-full" />
               <span className="font-display font-bold text-xl">
                 Make<span className="text-gradient">Me</span>
               </span>
