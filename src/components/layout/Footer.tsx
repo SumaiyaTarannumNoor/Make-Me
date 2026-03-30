@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
-import { FileText, Sparkles, Mail, MapPin } from "lucide-react";
+import { Mail, MapPin } from "lucide-react";
+import logo from "@/assets/logo.png";
 
 const Footer = () => {
   const footerLinks = {
@@ -34,12 +35,7 @@ const Footer = () => {
         <div className="grid grid-cols-2 md:grid-cols-6 gap-8">
           <div className="col-span-2">
             <Link to="/" className="flex items-center gap-2 mb-4">
-              <div className="relative">
-                <div className="w-10 h-10 rounded-xl gradient-button flex items-center justify-center">
-                  <FileText className="w-5 h-5 text-primary-foreground" />
-                </div>
-                <Sparkles className="absolute -top-1 -right-1 w-4 h-4 text-turquoise-500" />
-              </div>
+              <img src={logo} alt="MakeMe Logo" className="w-10 h-10 object-contain" />
               <span className="font-display font-bold text-xl">
                 Make<span className="text-gradient">Me</span>
               </span>

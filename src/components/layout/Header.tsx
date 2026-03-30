@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X, FileText, Sparkles } from "lucide-react";
+import { Menu, X } from "lucide-react";
+import logo from "@/assets/logo.png";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -21,12 +22,7 @@ const Header = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           <Link to="/" className="flex items-center gap-2 group">
-            <div className="relative">
-              <div className="w-10 h-10 rounded-xl gradient-button flex items-center justify-center shadow-soft group-hover:shadow-lg transition-shadow">
-                <FileText className="w-5 h-5 text-primary-foreground" />
-              </div>
-              <Sparkles className="absolute -top-1 -right-1 w-4 h-4 text-aquamarine-500 animate-pulse-soft" />
-            </div>
+            <img src={logo} alt="MakeMe Logo" className="w-10 h-10 object-contain" />
             <span className="font-display font-bold text-xl text-foreground">
               Make<span className="text-gradient">Me</span>
             </span>
