@@ -19,15 +19,15 @@ const HeroSection = () => {
         <div className="absolute top-40 right-1/4 w-64 h-64 bg-sky-surge-500/15 rounded-full blur-3xl" />
         <div className="absolute bottom-40 left-1/4 w-48 h-48 bg-pearl-aqua-500/15 rounded-full blur-3xl" />
 
-        {/* Translucent Bubble Animations */}
+        {/* Translucent Bubble Animations - CTA section colors */}
         <div className="absolute top-[10%] left-[15%] w-20 h-20 rounded-full border border-aquamarine-500/30 bg-aquamarine-500/10 opacity-50 animate-bubble-1" />
         <div className="absolute top-[30%] right-[20%] w-14 h-14 rounded-full border border-turquoise-500/30 bg-turquoise-500/10 opacity-50 animate-bubble-2" />
         <div className="absolute bottom-[25%] left-[40%] w-24 h-24 rounded-full border border-pearl-aqua-500/30 bg-pearl-aqua-500/10 opacity-50 animate-bubble-3" />
-        <div className="absolute top-[60%] left-[10%] w-16 h-16 rounded-full border border-sky-surge-500/30 bg-sky-surge-500/10 opacity-50 animate-bubble-4" />
-        <div className="absolute top-[20%] right-[35%] w-10 h-10 rounded-full border border-royal-violet-500/30 bg-royal-violet-500/10 opacity-50 animate-bubble-5" />
-        <div className="absolute bottom-[15%] right-[15%] w-28 h-28 rounded-full border border-indigo-bloom-500/30 bg-indigo-bloom-500/10 opacity-50 animate-bubble-6" />
-        <div className="absolute top-[45%] right-[5%] w-12 h-12 rounded-full border border-fresh-sky-500/30 bg-fresh-sky-500/10 opacity-50 animate-bubble-7" />
-        <div className="absolute bottom-[40%] left-[25%] w-18 h-18 rounded-full border border-cloudy-sky-500/30 bg-cloudy-sky-500/10 opacity-50 animate-bubble-8" />
+        <div className="absolute top-[60%] left-[10%] w-16 h-16 rounded-full border border-royal-violet-500/30 bg-royal-violet-500/10 opacity-50 animate-bubble-4" />
+        <div className="absolute top-[20%] right-[35%] w-10 h-10 rounded-full border border-slate-blue-500/30 bg-slate-blue-500/10 opacity-50 animate-bubble-5" />
+        <div className="absolute bottom-[15%] right-[15%] w-28 h-28 rounded-full border border-aquamarine-500/30 bg-aquamarine-500/10 opacity-50 animate-bubble-6" />
+        <div className="absolute top-[45%] right-[5%] w-12 h-12 rounded-full border border-turquoise-500/30 bg-turquoise-500/10 opacity-50 animate-bubble-7" />
+        <div className="absolute bottom-[40%] left-[25%] w-18 h-18 rounded-full border border-royal-violet-500/30 bg-royal-violet-500/10 opacity-50 animate-bubble-8" />
       </div>
 
       <div className="container mx-auto px-4 py-20">
