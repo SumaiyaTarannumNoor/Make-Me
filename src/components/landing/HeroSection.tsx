@@ -30,7 +30,7 @@ const HeroSection = () => {
         <div className="absolute bottom-[40%] left-[25%] w-[4.5rem] h-[4.5rem] rounded-full border border-royal-violet-500/50 bg-royal-violet-500/20 opacity-50 animate-bubble-8" />
       </div>
 
-      <div className="container mx-auto px-4 py-20">
+      <div className="container mx-auto px-4 py-20 relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Left Content */}
           <div className="max-w-2xl">
