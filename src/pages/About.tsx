@@ -26,7 +26,7 @@ const About = () => {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <FaLinkedin />
+                <Linkedin className="w-5 h-5" />
                 LinkedIn
               </a>
             </p>
