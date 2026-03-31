@@ -76,7 +76,7 @@ const Contact = () => {
             </h1>
             <p className="text-lg text-muted-foreground">
               Have a question or need help? We'd love to hear from you. Send us
-              a message and we'll respond as soon as possible.
+              a message.
             </p>
           </div>
 
@@ -92,7 +92,7 @@ const Contact = () => {
                 >
                   <item.icon className={`w-6 h-6 ${item.color}`} />
                 </div>
-                <h3 className="font-display font-semibold text-foreground mb-2">
+                <h3 className="font-display font-semibold text-foreground mb-3">
                   {item.title}
                 </h3>
                 {item.lines.map((line, i) => (
