@@ -17,6 +17,7 @@ import Pricing from "./pages/Pricing";
 import Profile from "./pages/Profile";
 import About from "./pages/About";
 import FAQ from "./pages/FAQ";
+import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -52,6 +53,7 @@ const App = () => (
             <Route path="/templates" element={<Templates />} />
             <Route path="/about" element={<About />} />
             <Route path="/faq" element={<FAQ />} />
+            <Route path="/contact" element={<Contact />} />
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/profile" element={
               <ProtectedRoute>
