@@ -1,6 +1,6 @@
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import { FaLinkedin } from "react-icons/fa";
+import { Linkedin } from "lucide-react";
 
 const About = () => {
   return (
