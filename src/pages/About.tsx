@@ -1,6 +1,6 @@
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import { FaLinkedin } from "react-icons/fa";
+import { Linkedin } from "lucide-react";
 
 const About = () => {
   return (
@@ -26,7 +26,7 @@ const About = () => {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <FaLinkedin />
+                <Linkedin className="w-5 h-5" />
                 LinkedIn
               </a>
             </p>
