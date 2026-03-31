@@ -44,14 +44,14 @@ const Contact = () => {
     {
       icon: Mail,
       title: "Email",
-      lines: ["sumaiya.tarannum@northsouth.edu", "We respond within 24 hours"],
+      lines: ["colourclouddeco@gmail.com", "We respond within 24 hours"],
       color: "text-turquoise-500",
       bg: "bg-turquoise-500/15",
     },
     {
       icon: Clock,
       title: "Working Hours",
-      lines: ["Saturday – Thursday", "9:00 AM – 5:00 PM BST"],
+      lines: ["24/7"],
       color: "text-pearl-aqua-500",
       bg: "bg-pearl-aqua-500/15",
     },
