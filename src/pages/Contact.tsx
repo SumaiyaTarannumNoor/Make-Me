@@ -48,13 +48,13 @@ const Contact = () => {
       color: "text-turquoise-500",
       bg: "bg-turquoise-500/15",
     },
-    {
-      icon: Clock,
-      title: "On Service",
-      lines: ["24/7"],
-      color: "text-pearl-aqua-500",
-      bg: "bg-pearl-aqua-500/15",
-    },
+    // {
+    //   icon: Clock,
+    //   title: "On Service",
+    //   lines: ["24/7"],
+    //   color: "text-pearl-aqua-500",
+    //   bg: "bg-pearl-aqua-500/15",
+    // },
   ];
 
   return (
