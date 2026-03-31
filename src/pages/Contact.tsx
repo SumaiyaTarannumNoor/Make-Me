@@ -34,13 +34,13 @@ const Contact = () => {
       color: "text-royal-violet-600",
       bg: "bg-royal-violet-500/15",
     },
-    {
-      icon: Phone,
-      title: "Phone",
-      lines: ["02-55668200", "Saturday–Thursday, 9 AM–5 PM"],
-      color: "text-aquamarine-500",
-      bg: "bg-aquamarine-500/15",
-    },
+    // {
+    //   icon: Phone,
+    //   title: "Phone",
+    //   lines: ["02-55668200", "Saturday–Thursday, 9 AM–5 PM"],
+    //   color: "text-aquamarine-500",
+    //   bg: "bg-aquamarine-500/15",
+    // },
     {
       icon: Mail,
       title: "Email",
@@ -50,7 +50,7 @@ const Contact = () => {
     },
     {
       icon: Clock,
-      title: "Working Hours",
+      title: "On Service",
       lines: ["24/7"],
       color: "text-pearl-aqua-500",
       bg: "bg-pearl-aqua-500/15",
