@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/useAuth";
-import { FileText, Sparkles, Eye, EyeOff, Mail, Lock } from "lucide-react";
+import { Sparkles, Eye, EyeOff, Mail, Lock } from "lucide-react";
+import logo from "@/assets/logo.png";
 
 const Login = () => {
   const navigate = useNavigate();
