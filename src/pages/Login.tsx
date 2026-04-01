@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/useAuth";
-import { FileText, Sparkles, Eye, EyeOff, Mail, Lock } from "lucide-react";
+import { Sparkles, Eye, EyeOff, Mail, Lock } from "lucide-react";
+import logo from "@/assets/logo.png";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -31,12 +32,7 @@ const Login = () => {
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="w-full max-w-md">
           <Link to="/" className="flex items-center gap-2 mb-8">
-            <div className="relative">
-              <div className="w-10 h-10 rounded-xl gradient-button flex items-center justify-center">
-                <FileText className="w-5 h-5 text-primary-foreground" />
-              </div>
-              <Sparkles className="absolute -top-1 -right-1 w-4 h-4 text-aquamarine-500" />
-            </div>
+            <img src={logo} alt="MakeMe Logo" className="w-10 h-10 object-cover rounded-full" />
             <span className="font-display font-bold text-xl">
               Make<span className="text-gradient">Me</span>
             </span>
@@ -86,7 +82,7 @@ const Login = () => {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,hsl(var(--background)/0.3)_100%)]" />
         <div className="relative z-10 text-center p-12">
           <div className="w-32 h-32 rounded-2xl gradient-button shadow-glow mx-auto mb-8 flex items-center justify-center animate-float">
-            <FileText className="w-16 h-16 text-primary-foreground" />
+            <img src={logo} alt="MakeMe Logo" className="w-20 h-20 object-cover rounded-full" />
           </div>
           <h2 className="font-display text-3xl font-bold text-foreground mb-4">Your resume, reimagined</h2>
           <p className="text-muted-foreground max-w-sm mx-auto">Professional tools to help you craft the perfect resume and land your dream job.</p>

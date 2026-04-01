@@ -34,7 +34,12 @@ export type PremiumColorScheme =
   | "midnight-navy"
   | "rose-gold"
   | "electric-indigo"
-  | "aquamarine";
+  | "aquamarine"
+  | "cherry-blossom"
+  | "arctic-frost"
+  | "bronze-ember"
+  | "mystic-teal"
+  | "violet-haze";
 
 export const colorSchemes: Record<ColorScheme, { name: string; primary: string; light: string; headerBg: string }> = {
   coral: { name: "Coral", primary: "#FF7F50", light: "#FFF0EB", headerBg: "#2D3748" },
@@ -60,6 +65,11 @@ export const premiumColorSchemes: Record<PremiumColorScheme, { name: string; pri
   "rose-gold": { name: "Rose Gold", primary: "#B76E79", secondary: "#D4A0A7", accent: "#E8C4C9", light: "#FDF2F4", headerBg: "#3D2228" },
   "electric-indigo": { name: "Electric Indigo", primary: "#6930c3", secondary: "#7B4FD3", accent: "#9B7DE8", light: "#EDE4FB", headerBg: "#1A0B33" },
   "aquamarine": { name: "Aquamarine", primary: "#00ccb1", secondary: "#33ffe4", accent: "#66ffeb", light: "#e5fffc", headerBg: "#00332c" },
+  "cherry-blossom": { name: "Cherry Blossom", primary: "#E891B2", secondary: "#F0A8C4", accent: "#F7C4D8", light: "#FDF0F5", headerBg: "#3D1A28" },
+  "arctic-frost": { name: "Arctic Frost", primary: "#5B9BD5", secondary: "#7EB3E0", accent: "#A8CCEB", light: "#EBF3FA", headerBg: "#1A2D42" },
+  "bronze-ember": { name: "Bronze Ember", primary: "#CD7F32", secondary: "#D4954D", accent: "#DBAB68", light: "#FBF3E8", headerBg: "#3D2610" },
+  "mystic-teal": { name: "Mystic Teal", primary: "#2E8B8B", secondary: "#4AA8A8", accent: "#6EC5C5", light: "#E8F6F6", headerBg: "#0F2E2E" },
+  "violet-haze": { name: "Violet Haze", primary: "#8A5CF5", secondary: "#A07DF7", accent: "#B69EF9", light: "#F0EAFD", headerBg: "#1E1040" },
 };
 
 interface TemplateCardProps {

@@ -5,7 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { FileText, Sparkles, Lock, Eye, EyeOff, KeyRound, Loader2 } from "lucide-react";
+import { Sparkles, Lock, Eye, EyeOff, KeyRound, Loader2 } from "lucide-react";
+import logo from "@/assets/logo.png";
 
 const ResetPassword = () => {
   const navigate = useNavigate();
@@ -61,12 +62,7 @@ const ResetPassword = () => {
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="w-full max-w-md">
           <Link to="/" className="flex items-center gap-2 mb-8">
-            <div className="relative">
-              <div className="w-10 h-10 rounded-xl gradient-button flex items-center justify-center">
-                <FileText className="w-5 h-5 text-primary-foreground" />
-              </div>
-              <Sparkles className="absolute -top-1 -right-1 w-4 h-4 text-aquamarine-500" />
-            </div>
+            <img src={logo} alt="MakeMe Logo" className="w-10 h-10 object-cover rounded-full" />
             <span className="font-display font-bold text-xl">Make<span className="text-gradient">Me</span></span>
           </Link>
           <div className="mb-8">

@@ -50,13 +50,13 @@ const Templates = () => {
           <div className="text-center max-w-3xl mx-auto mb-12">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-6">
               <LayoutTemplate className="w-4 h-4 text-primary" />
-              <span className="text-sm font-medium text-primary">20 Templates</span>
+              <span className="text-sm font-medium text-primary">25 Templates</span>
             </div>
             <h1 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
               Professional Resume<span className="text-gradient block">Templates</span>
             </h1>
             <p className="text-lg text-muted-foreground">
-              Choose from 10 standard and 10 premium professionally designed templates with advanced layouts.
+              Choose from 10 standard and 15 premium professionally designed templates with advanced layouts.
             </p>
           </div>
 
