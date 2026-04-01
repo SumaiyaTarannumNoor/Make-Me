@@ -34,7 +34,12 @@ export type PremiumColorScheme =
   | "midnight-navy"
   | "rose-gold"
   | "electric-indigo"
-  | "aquamarine";
+  | "aquamarine"
+  | "cherry-blossom"
+  | "arctic-frost"
+  | "bronze-ember"
+  | "mystic-teal"
+  | "violet-haze";
 
 export const colorSchemes: Record<ColorScheme, { name: string; primary: string; light: string; headerBg: string }> = {
   coral: { name: "Coral", primary: "#FF7F50", light: "#FFF0EB", headerBg: "#2D3748" },
