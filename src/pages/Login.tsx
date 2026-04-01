@@ -82,7 +82,7 @@ const Login = () => {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,hsl(var(--background)/0.3)_100%)]" />
         <div className="relative z-10 text-center p-12">
           <div className="w-32 h-32 rounded-2xl gradient-button shadow-glow mx-auto mb-8 flex items-center justify-center animate-float">
-            <FileText className="w-16 h-16 text-primary-foreground" />
+            <img src={logo} alt="MakeMe Logo" className="w-20 h-20 object-cover rounded-full" />
           </div>
           <h2 className="font-display text-3xl font-bold text-foreground mb-4">Your resume, reimagined</h2>
           <p className="text-muted-foreground max-w-sm mx-auto">Professional tools to help you craft the perfect resume and land your dream job.</p>
