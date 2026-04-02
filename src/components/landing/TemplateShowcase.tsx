@@ -315,6 +315,7 @@ const TemplateShowcase = () => {
   };
 
   const allSchemes = Object.keys(colorSchemes) as ColorScheme[];
+  const allPremium = Object.keys(premiumColorSchemes) as PremiumColorScheme[];
 
   return (
     <section className="py-24 bg-muted/30">
@@ -322,13 +323,30 @@ const TemplateShowcase = () => {
         <div className="text-center max-w-2xl mx-auto mb-12">
           <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">Professional Resume Templates</h2>
           <p className="text-lg text-muted-foreground">
-            Choose from 20 color schemes with modern layouts featuring work experience, skills, projects, and certifications.
+            Choose from 25 templates with modern layouts featuring work experience, skills, projects, and certifications.
           </p>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 max-w-6xl mx-auto">
+        {/* Standard Templates */}
+        <div className="flex items-center gap-3 mb-6 max-w-6xl mx-auto">
+          <h3 className="font-display text-xl font-bold text-foreground">Standard Templates</h3>
+          <span className="text-sm text-muted-foreground bg-muted px-3 py-1 rounded-full">{allSchemes.length}</span>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 max-w-6xl mx-auto mb-16">
           {allSchemes.map((scheme) => (
             <TemplateCard key={scheme} colorScheme={scheme} onUse={() => handleUseTemplate(scheme)} />
+          ))}
+        </div>
+
+        {/* Premium Templates */}
+        <div className="flex items-center gap-3 mb-6 max-w-6xl mx-auto">
+          <Crown className="w-5 h-5 text-primary" />
+          <h3 className="font-display text-xl font-bold text-foreground">Premium Templates</h3>
+          <span className="text-sm text-muted-foreground bg-muted px-3 py-1 rounded-full">{allPremium.length}</span>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 max-w-6xl mx-auto">
+          {allPremium.map((scheme) => (
+            <PremiumTemplateCard key={scheme} colorScheme={scheme} onUse={() => handleUseTemplate(scheme)} />
           ))}
         </div>
       </div>
