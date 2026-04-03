@@ -21,6 +21,19 @@ const Login = () => {
     setIsLoading(true);
     try {
       await signIn(email, password);
+      // Check if user is admin
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: roles } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', user.id)
+          .eq('role', 'admin');
+        if (roles && roles.length > 0) {
+          navigate("/admin");
+          return;
+        }
+      }
       navigate("/dashboard");
     } catch (error) {
     } finally {
