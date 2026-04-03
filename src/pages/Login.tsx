@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 import { Sparkles, Eye, EyeOff, Mail, Lock } from "lucide-react";
 import logo from "@/assets/logo.png";
 
@@ -20,6 +21,19 @@ const Login = () => {
     setIsLoading(true);
     try {
       await signIn(email, password);
+      // Check if user is admin
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: roles } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', user.id)
+          .eq('role', 'admin');
+        if (roles && roles.length > 0) {
+          navigate("/admin");
+          return;
+        }
+      }
       navigate("/dashboard");
     } catch (error) {
     } finally {
