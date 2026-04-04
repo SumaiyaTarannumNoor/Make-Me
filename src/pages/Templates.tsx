@@ -116,7 +116,7 @@ const Templates = () => {
               )}
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 max-w-6xl mx-auto">
                 {allPremium.map((scheme) => (
-                  <PremiumTemplateCard key={scheme} colorScheme={scheme} onUse={() => handleUseTemplate(scheme)} />
+                  <PremiumTemplateCard key={scheme} colorScheme={scheme} onUse={() => handleUsePremiumTemplate(scheme)} />
                 ))}
               </div>
             </div>
