@@ -19,9 +19,8 @@ const Dashboard = () => {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [searchQuery, setSearchQuery] = useState("");
 
-  const handleCreateResume = async () => {
-    const resume = await createResume();
-    if (resume) navigate(`/builder/${resume.id}`);
+  const handleCreateResume = () => {
+    navigate("/templates");
   };
 
   const handleSignOut = async () => { await signOut(); navigate("/"); };
