@@ -145,6 +145,7 @@ const AdminDashboard = () => {
                     {filteredUsers?.map((u) => (
                       <TableRow key={u.id}>
                         <TableCell className="font-medium">{u.full_name || '—'}</TableCell>
+                        <TableCell className="text-sm text-muted-foreground font-mono">{u.bkash_transaction_id || '—'}</TableCell>
                         <TableCell>{u.email || '—'}</TableCell>
                         <TableCell>
                           {u.is_premium ? (
