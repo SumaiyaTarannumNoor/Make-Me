@@ -63,6 +63,11 @@ const Dashboard = () => {
               <span className="font-display font-bold text-lg">Make<span className="text-gradient">Me</span></span>
             </Link>
 
+            <nav className="hidden md:flex items-center gap-1 ml-8">
+              <Link to="/dashboard" className="px-3 py-2 rounded-lg text-sm font-medium text-foreground bg-muted">My Resumes</Link>
+              <Link to="/templates" className="px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">Templates</Link>
+            </nav>
+
             <div className="flex items-center gap-4">
               <Button variant="hero" size="sm">
                 <Crown className="w-4 h-4 mr-1" />Upgrade to Pro
