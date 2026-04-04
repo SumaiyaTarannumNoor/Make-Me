@@ -134,6 +134,7 @@ const AdminDashboard = () => {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Name</TableHead>
+                      <TableHead>bKash TxID</TableHead>
                       <TableHead>Email</TableHead>
                       <TableHead>Account Type</TableHead>
                       <TableHead>Joined</TableHead>
