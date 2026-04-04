@@ -63,6 +63,11 @@ const App = () => (
                 <Profile />
               </ProtectedRoute>
             } />
+            <Route path="/payment" element={
+              <ProtectedRoute>
+                <Payment />
+              </ProtectedRoute>
+            } />
             <Route path="/admin" element={
               <AdminRoute>
                 <AdminDashboard />
