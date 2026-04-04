@@ -19,9 +19,8 @@ const Dashboard = () => {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [searchQuery, setSearchQuery] = useState("");
 
-  const handleCreateResume = async () => {
-    const resume = await createResume();
-    if (resume) navigate(`/builder/${resume.id}`);
+  const handleCreateResume = () => {
+    navigate("/templates");
   };
 
   const handleSignOut = async () => { await signOut(); navigate("/"); };
@@ -62,6 +61,11 @@ const Dashboard = () => {
               </div>
               <span className="font-display font-bold text-lg">Make<span className="text-gradient">Me</span></span>
             </Link>
+
+            <nav className="hidden md:flex items-center gap-1 ml-8">
+              <Link to="/dashboard" className="px-3 py-2 rounded-lg text-sm font-medium text-foreground bg-muted">My Resumes</Link>
+              <Link to="/templates" className="px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">Templates</Link>
+            </nav>
 
             <div className="flex items-center gap-4">
               <Button variant="hero" size="sm">
