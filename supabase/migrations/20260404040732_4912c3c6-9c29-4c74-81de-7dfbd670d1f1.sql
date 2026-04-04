@@ -1,0 +1,1 @@
+ALTER TABLE public.profiles ADD COLUMN bkash_transaction_id text DEFAULT NULL;
