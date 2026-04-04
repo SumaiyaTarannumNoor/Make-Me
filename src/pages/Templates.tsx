@@ -36,6 +36,14 @@ const Templates = () => {
     if (resume) navigate(`/builder/${resume.id}?template=${colorScheme}`);
   };
 
+  const handleUsePremiumTemplate = (colorScheme: string) => {
+    if (!user) {
+      navigate("/signup");
+      return;
+    }
+    navigate(`/payment?template=${colorScheme}`);
+  };
+
   const allStandard = Object.keys(colorSchemes) as ColorScheme[];
   const allPremium = Object.keys(premiumColorSchemes) as PremiumColorScheme[];
 
