@@ -314,6 +314,14 @@ const TemplateShowcase = () => {
     }
   };
 
+  const handleUsePremiumTemplate = (colorScheme: string) => {
+    if (!user) {
+      navigate("/signup");
+      return;
+    }
+    navigate(`/payment?template=${colorScheme}`);
+  };
+
   const allSchemes = Object.keys(colorSchemes) as ColorScheme[];
   const allPremium = Object.keys(premiumColorSchemes) as PremiumColorScheme[];
 
