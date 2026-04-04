@@ -26,6 +26,7 @@ interface AdminProfile {
   email: string | null;
   full_name: string | null;
   is_premium: boolean;
+  bkash_transaction_id: string | null;
   created_at: string;
 }
 
