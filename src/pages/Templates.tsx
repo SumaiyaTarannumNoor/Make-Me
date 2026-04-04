@@ -36,6 +36,14 @@ const Templates = () => {
     if (resume) navigate(`/builder/${resume.id}?template=${colorScheme}`);
   };
 
+  const handleUsePremiumTemplate = (colorScheme: string) => {
+    if (!user) {
+      navigate("/signup");
+      return;
+    }
+    navigate(`/payment?template=${colorScheme}`);
+  };
+
   const allStandard = Object.keys(colorSchemes) as ColorScheme[];
   const allPremium = Object.keys(premiumColorSchemes) as PremiumColorScheme[];
 
@@ -108,7 +116,7 @@ const Templates = () => {
               )}
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 max-w-6xl mx-auto">
                 {allPremium.map((scheme) => (
-                  <PremiumTemplateCard key={scheme} colorScheme={scheme} onUse={() => handleUseTemplate(scheme)} />
+                  <PremiumTemplateCard key={scheme} colorScheme={scheme} onUse={() => handleUsePremiumTemplate(scheme)} />
                 ))}
               </div>
             </div>
