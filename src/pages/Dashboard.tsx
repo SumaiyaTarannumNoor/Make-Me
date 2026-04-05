@@ -19,6 +19,7 @@ const Dashboard = () => {
   const { resumes, loading, createResume, deleteResume } = useResumes();
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [searchQuery, setSearchQuery] = useState("");
+  const [activeTab, setActiveTab] = useState<"resumes" | "templates">("resumes");
 
   const handleCreateResume = () => {
     navigate("/templates");
