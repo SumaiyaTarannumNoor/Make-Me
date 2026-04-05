@@ -22,7 +22,7 @@ const Dashboard = () => {
   const [activeTab, setActiveTab] = useState<"resumes" | "templates">("resumes");
 
   const handleCreateResume = () => {
-    navigate("/templates");
+    setActiveTab("templates");
   };
 
   const handleSignOut = async () => { await signOut(); navigate("/"); };
