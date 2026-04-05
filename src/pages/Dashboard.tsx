@@ -6,8 +6,9 @@ import { useAuth } from "@/hooks/useAuth";
 import { useResumes } from "@/hooks/useResumes";
 import {
   FileText, Sparkles, Plus, Search, MoreHorizontal, Download, Share2, Trash2,
-  Edit, Clock, LayoutGrid, List, User, Settings, LogOut, Crown, Loader2,
+  Edit, Clock, LayoutGrid, List, User, Settings, LogOut, Crown, Loader2, LayoutTemplate,
 } from "lucide-react";
+import TemplateGallery from "@/components/resume/TemplateGallery";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -18,9 +19,10 @@ const Dashboard = () => {
   const { resumes, loading, createResume, deleteResume } = useResumes();
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [searchQuery, setSearchQuery] = useState("");
+  const [activeTab, setActiveTab] = useState<"resumes" | "templates">("resumes");
 
   const handleCreateResume = () => {
-    navigate("/templates");
+    setActiveTab("templates");
   };
 
   const handleSignOut = async () => { await signOut(); navigate("/"); };
@@ -63,8 +65,10 @@ const Dashboard = () => {
             </Link>
 
             <nav className="hidden md:flex items-center gap-1 ml-8">
-              <Link to="/dashboard" className="px-3 py-2 rounded-lg text-sm font-medium text-foreground bg-muted">My Resumes</Link>
-              <Link to="/templates" className="px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">Templates</Link>
+              <button onClick={() => setActiveTab("resumes")} className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === "resumes" ? "text-foreground bg-muted" : "text-muted-foreground hover:text-foreground hover:bg-muted"}`}>My Resumes</button>
+              <button onClick={() => setActiveTab("templates")} className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${activeTab === "templates" ? "text-foreground bg-muted" : "text-muted-foreground hover:text-foreground hover:bg-muted"}`}>
+                <LayoutTemplate className="w-4 h-4" />Templates
+              </button>
             </nav>
 
             <div className="flex items-center gap-4">
@@ -95,128 +99,134 @@ const Dashboard = () => {
       </header>
 
       <main className="container mx-auto px-4 py-8">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-          <div>
-            <h1 className="font-display text-2xl md:text-3xl font-bold text-foreground">My Resumes</h1>
-            <p className="text-muted-foreground mt-1">Create and manage your professional resumes</p>
-          </div>
-          <Button variant="hero" onClick={handleCreateResume}><Plus className="w-5 h-5 mr-1" />New Resume</Button>
-        </div>
-
-        <div className="flex flex-col sm:flex-row gap-4 mb-6">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-            <Input type="text" placeholder="Search resumes..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-10 h-11" />
-          </div>
-          <div className="flex bg-muted rounded-lg p-1">
-            <button onClick={() => setViewMode("grid")} className={`p-2 rounded-md transition-colors ${viewMode === "grid" ? "bg-card shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"}`}>
-              <LayoutGrid className="w-5 h-5" />
-            </button>
-            <button onClick={() => setViewMode("list")} className={`p-2 rounded-md transition-colors ${viewMode === "list" ? "bg-card shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"}`}>
-              <List className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
-
-        <div className={viewMode === "grid" ? "grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" : "flex flex-col gap-4"}>
-          {viewMode === "grid" && (
-            <button onClick={handleCreateResume} className="group aspect-[3/4] rounded-2xl border-2 border-dashed border-border hover:border-primary/50 bg-card/50 hover:bg-card flex flex-col items-center justify-center gap-4 transition-all">
-              <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center group-hover:bg-pearl-aqua-500/20 transition-colors">
-                <Plus className="w-8 h-8 text-muted-foreground group-hover:text-pearl-aqua-500" />
+        {activeTab === "templates" ? (
+          <TemplateGallery />
+        ) : (
+          <>
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+              <div>
+                <h1 className="font-display text-2xl md:text-3xl font-bold text-foreground">My Resumes</h1>
+                <p className="text-muted-foreground mt-1">Create and manage your professional resumes</p>
               </div>
-              <span className="font-medium text-muted-foreground group-hover:text-foreground">Create New Resume</span>
-            </button>
-          )}
-
-          {filteredResumes.map((resume) => {
-            const completeness = getCompleteness(resume);
-            return viewMode === "grid" ? (
-              <div key={resume.id} className="group relative aspect-[3/4] rounded-2xl bg-card border border-border hover:border-primary/30 hover:shadow-card-hover overflow-hidden transition-all">
-                <div className="absolute inset-0 p-4 bg-gradient-to-br from-slate-blue-500/20 to-royal-violet-500/20">
-                  <div className="w-full h-full bg-card rounded-lg shadow-sm p-3">
-                    <div className="space-y-2">
-                      <div className="w-8 h-8 rounded-full bg-muted" />
-                      <div className="h-2 bg-muted rounded w-2/3" />
-                      <div className="h-2 bg-muted rounded w-1/2" />
-                    </div>
-                  </div>
-                </div>
-                <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
-                  <div className="flex gap-2 w-full">
-                    <Link to={`/builder/${resume.id}`} className="flex-1">
-                      <Button variant="hero" size="sm" className="w-full"><Edit className="w-4 h-4 mr-1" />Edit</Button>
-                    </Link>
-                    <Button variant="glass" size="sm"><Download className="w-4 h-4" /></Button>
-                  </div>
-                </div>
-                <div className="absolute bottom-0 left-0 right-0 p-4 bg-card border-t border-border">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-sm text-foreground truncate">{resume.title}</h3>
-                      <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
-                        <Clock className="w-3 h-3" />{new Date(resume.updated_at).toLocaleDateString()}
-                      </p>
-                    </div>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild><button className="p-1 rounded-md hover:bg-muted"><MoreHorizontal className="w-4 h-4 text-muted-foreground" /></button></DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem><Share2 className="w-4 h-4 mr-2" />Share</DropdownMenuItem>
-                        <DropdownMenuItem><Download className="w-4 h-4 mr-2" />Download</DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem className="text-destructive" onClick={() => deleteResume(resume.id)}><Trash2 className="w-4 h-4 mr-2" />Delete</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-                  <div className="mt-3">
-                    <div className="flex items-center justify-between text-xs mb-1">
-                      <span className="text-muted-foreground">Completeness</span>
-                      <span className="font-medium text-foreground">{completeness}%</span>
-                    </div>
-                    <div className="h-1.5 bg-muted rounded-full overflow-hidden">
-                      <div className="h-full gradient-button rounded-full transition-all" style={{ width: `${completeness}%` }} />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div key={resume.id} className="flex items-center gap-4 p-4 rounded-xl bg-card border border-border hover:border-primary/30 hover:shadow-card-hover transition-all">
-                <div className="w-16 h-20 rounded-lg bg-gradient-to-br from-fresh-sky-500/20 to-indigo-bloom-500/20 flex-shrink-0 flex items-center justify-center">
-                  <FileText className="w-6 h-6 text-muted-foreground" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold text-foreground">{resume.title}</h3>
-                  <p className="text-sm text-muted-foreground">Updated {new Date(resume.updated_at).toLocaleDateString()}</p>
-                  <div className="flex items-center gap-2 mt-2">
-                    <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden max-w-32">
-                      <div className="h-full gradient-button rounded-full" style={{ width: `${completeness}%` }} />
-                    </div>
-                    <span className="text-xs text-muted-foreground">{completeness}%</span>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Link to={`/builder/${resume.id}`}><Button variant="hero" size="sm"><Edit className="w-4 h-4 mr-1" />Edit</Button></Link>
-                  <Button variant="ghost" size="sm"><Download className="w-4 h-4" /></Button>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild><Button variant="ghost" size="sm"><MoreHorizontal className="w-4 h-4" /></Button></DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem className="text-destructive" onClick={() => deleteResume(resume.id)}><Trash2 className="w-4 h-4 mr-2" />Delete</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {filteredResumes.length === 0 && resumes.length === 0 && (
-          <div className="text-center py-16">
-            <div className="w-20 h-20 rounded-2xl bg-muted flex items-center justify-center mx-auto mb-4">
-              <FileText className="w-10 h-10 text-muted-foreground" />
+              <Button variant="hero" onClick={handleCreateResume}><Plus className="w-5 h-5 mr-1" />New Resume</Button>
             </div>
-            <h3 className="font-semibold text-lg text-foreground mb-2">No resumes yet</h3>
-            <p className="text-muted-foreground mb-6">Create your first resume to get started</p>
-            <Button variant="hero" onClick={handleCreateResume}><Plus className="w-5 h-5 mr-1" />Create Resume</Button>
-          </div>
+
+            <div className="flex flex-col sm:flex-row gap-4 mb-6">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                <Input type="text" placeholder="Search resumes..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-10 h-11" />
+              </div>
+              <div className="flex bg-muted rounded-lg p-1">
+                <button onClick={() => setViewMode("grid")} className={`p-2 rounded-md transition-colors ${viewMode === "grid" ? "bg-card shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"}`}>
+                  <LayoutGrid className="w-5 h-5" />
+                </button>
+                <button onClick={() => setViewMode("list")} className={`p-2 rounded-md transition-colors ${viewMode === "list" ? "bg-card shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"}`}>
+                  <List className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+
+            <div className={viewMode === "grid" ? "grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" : "flex flex-col gap-4"}>
+              {viewMode === "grid" && (
+                <button onClick={handleCreateResume} className="group aspect-[3/4] rounded-2xl border-2 border-dashed border-border hover:border-primary/50 bg-card/50 hover:bg-card flex flex-col items-center justify-center gap-4 transition-all">
+                  <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center group-hover:bg-pearl-aqua-500/20 transition-colors">
+                    <Plus className="w-8 h-8 text-muted-foreground group-hover:text-pearl-aqua-500" />
+                  </div>
+                  <span className="font-medium text-muted-foreground group-hover:text-foreground">Create New Resume</span>
+                </button>
+              )}
+
+              {filteredResumes.map((resume) => {
+                const completeness = getCompleteness(resume);
+                return viewMode === "grid" ? (
+                  <div key={resume.id} className="group relative aspect-[3/4] rounded-2xl bg-card border border-border hover:border-primary/30 hover:shadow-card-hover overflow-hidden transition-all">
+                    <div className="absolute inset-0 p-4 bg-gradient-to-br from-slate-blue-500/20 to-royal-violet-500/20">
+                      <div className="w-full h-full bg-card rounded-lg shadow-sm p-3">
+                        <div className="space-y-2">
+                          <div className="w-8 h-8 rounded-full bg-muted" />
+                          <div className="h-2 bg-muted rounded w-2/3" />
+                          <div className="h-2 bg-muted rounded w-1/2" />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
+                      <div className="flex gap-2 w-full">
+                        <Link to={`/builder/${resume.id}`} className="flex-1">
+                          <Button variant="hero" size="sm" className="w-full"><Edit className="w-4 h-4 mr-1" />Edit</Button>
+                        </Link>
+                        <Button variant="glass" size="sm"><Download className="w-4 h-4" /></Button>
+                      </div>
+                    </div>
+                    <div className="absolute bottom-0 left-0 right-0 p-4 bg-card border-t border-border">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold text-sm text-foreground truncate">{resume.title}</h3>
+                          <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
+                            <Clock className="w-3 h-3" />{new Date(resume.updated_at).toLocaleDateString()}
+                          </p>
+                        </div>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild><button className="p-1 rounded-md hover:bg-muted"><MoreHorizontal className="w-4 h-4 text-muted-foreground" /></button></DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem><Share2 className="w-4 h-4 mr-2" />Share</DropdownMenuItem>
+                            <DropdownMenuItem><Download className="w-4 h-4 mr-2" />Download</DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem className="text-destructive" onClick={() => deleteResume(resume.id)}><Trash2 className="w-4 h-4 mr-2" />Delete</DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
+                      <div className="mt-3">
+                        <div className="flex items-center justify-between text-xs mb-1">
+                          <span className="text-muted-foreground">Completeness</span>
+                          <span className="font-medium text-foreground">{completeness}%</span>
+                        </div>
+                        <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+                          <div className="h-full gradient-button rounded-full transition-all" style={{ width: `${completeness}%` }} />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div key={resume.id} className="flex items-center gap-4 p-4 rounded-xl bg-card border border-border hover:border-primary/30 hover:shadow-card-hover transition-all">
+                    <div className="w-16 h-20 rounded-lg bg-gradient-to-br from-fresh-sky-500/20 to-indigo-bloom-500/20 flex-shrink-0 flex items-center justify-center">
+                      <FileText className="w-6 h-6 text-muted-foreground" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold text-foreground">{resume.title}</h3>
+                      <p className="text-sm text-muted-foreground">Updated {new Date(resume.updated_at).toLocaleDateString()}</p>
+                      <div className="flex items-center gap-2 mt-2">
+                        <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden max-w-32">
+                          <div className="h-full gradient-button rounded-full" style={{ width: `${completeness}%` }} />
+                        </div>
+                        <span className="text-xs text-muted-foreground">{completeness}%</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Link to={`/builder/${resume.id}`}><Button variant="hero" size="sm"><Edit className="w-4 h-4 mr-1" />Edit</Button></Link>
+                      <Button variant="ghost" size="sm"><Download className="w-4 h-4" /></Button>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild><Button variant="ghost" size="sm"><MoreHorizontal className="w-4 h-4" /></Button></DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem className="text-destructive" onClick={() => deleteResume(resume.id)}><Trash2 className="w-4 h-4 mr-2" />Delete</DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {filteredResumes.length === 0 && resumes.length === 0 && (
+              <div className="text-center py-16">
+                <div className="w-20 h-20 rounded-2xl bg-muted flex items-center justify-center mx-auto mb-4">
+                  <FileText className="w-10 h-10 text-muted-foreground" />
+                </div>
+                <h3 className="font-semibold text-lg text-foreground mb-2">No resumes yet</h3>
+                <p className="text-muted-foreground mb-6">Create your first resume to get started</p>
+                <Button variant="hero" onClick={handleCreateResume}><Plus className="w-5 h-5 mr-1" />Create Resume</Button>
+              </div>
+            )}
+          </>
         )}
       </main>
     </div>

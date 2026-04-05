@@ -14,7 +14,7 @@ import jsPDF from "jspdf";
 import {
   ChevronLeft, Download, Plus, Trash2, User, Briefcase,
   GraduationCap, Code, FileCheck, ChevronDown, ChevronUp, Loader2, Save,
-  FolderOpen, Award, Mail, Phone, MapPin, Linkedin, Globe, Camera,
+  FolderOpen, Award, Mail, Phone, MapPin, Linkedin, Globe, Camera, LayoutTemplate,
 } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
@@ -316,6 +316,9 @@ const Builder = () => {
               className="border-0 bg-transparent font-semibold w-40"
             />
             {hasUnsavedChanges && <span className="text-xs text-muted-foreground">(unsaved)</span>}
+            <Link to="/dashboard" onClick={() => {}} className="hidden md:flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
+              <LayoutTemplate className="w-4 h-4" />Templates
+            </Link>
           </div>
           <div className="flex items-center gap-2">
             <select
