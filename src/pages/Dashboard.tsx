@@ -6,8 +6,9 @@ import { useAuth } from "@/hooks/useAuth";
 import { useResumes } from "@/hooks/useResumes";
 import {
   FileText, Sparkles, Plus, Search, MoreHorizontal, Download, Share2, Trash2,
-  Edit, Clock, LayoutGrid, List, User, Settings, LogOut, Crown, Loader2,
+  Edit, Clock, LayoutGrid, List, User, Settings, LogOut, Crown, Loader2, LayoutTemplate,
 } from "lucide-react";
+import TemplateGallery from "@/components/resume/TemplateGallery";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
