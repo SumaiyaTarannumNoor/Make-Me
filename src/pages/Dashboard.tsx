@@ -65,8 +65,10 @@ const Dashboard = () => {
             </Link>
 
             <nav className="hidden md:flex items-center gap-1 ml-8">
-              <Link to="/dashboard" className="px-3 py-2 rounded-lg text-sm font-medium text-foreground bg-muted">My Resumes</Link>
-              <Link to="/templates" className="px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">Templates</Link>
+              <button onClick={() => setActiveTab("resumes")} className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === "resumes" ? "text-foreground bg-muted" : "text-muted-foreground hover:text-foreground hover:bg-muted"}`}>My Resumes</button>
+              <button onClick={() => setActiveTab("templates")} className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${activeTab === "templates" ? "text-foreground bg-muted" : "text-muted-foreground hover:text-foreground hover:bg-muted"}`}>
+                <LayoutTemplate className="w-4 h-4" />Templates
+              </button>
             </nav>
 
             <div className="flex items-center gap-4">
