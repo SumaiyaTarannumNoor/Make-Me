@@ -26,7 +26,7 @@ interface AdminProfile {
   email: string | null;
   full_name: string | null;
   is_premium: boolean;
-  bkash_transaction_id: string | null;
+  
   created_at: string;
 }
 
@@ -36,7 +36,7 @@ export const useAdminUsers = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('profiles')
-        .select('id, user_id, email, full_name, is_premium, bkash_transaction_id, created_at')
+        .select('id, user_id, email, full_name, is_premium, created_at')
         .order('created_at', { ascending: false });
       if (error) throw error;
       return data as AdminProfile[];

@@ -9,7 +9,6 @@ import { HelpCircle } from "lucide-react";
 const Pricing = () => {
   const faqs = [
     { question: "Can I try MakeMe for free?", answer: "Yes! Our Free plan lets you create 1 resume with basic templates. No credit card required." },
-    { question: "What payment methods do you accept?", answer: "We accept bKash, Nagad, Rocket, and all major credit/debit cards including Visa and Mastercard." },
     { question: "Can I cancel my subscription anytime?", answer: "Absolutely! You can cancel your Pro subscription at any time. You'll continue to have access until the end of your billing period." },
     { question: "What's the difference between Pro and Yearly?", answer: "Pro is a monthly subscription at ৳499/month with up to 10 resumes. Yearly is ৳4,000/year with up to 20 resumes and early access to new features." },
     { question: "Do you offer refunds?", answer: "Yes, we offer a 7-day money-back guarantee for all paid plans. If you're not satisfied, contact us for a full refund." },

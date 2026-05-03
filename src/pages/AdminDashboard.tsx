@@ -134,7 +134,6 @@ const AdminDashboard = () => {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Name</TableHead>
-                      <TableHead>bKash TxID</TableHead>
                       <TableHead>Email</TableHead>
                       <TableHead>Account Type</TableHead>
                       <TableHead>Joined</TableHead>
@@ -145,7 +144,6 @@ const AdminDashboard = () => {
                     {filteredUsers?.map((u) => (
                       <TableRow key={u.id}>
                         <TableCell className="font-medium">{u.full_name || '—'}</TableCell>
-                        <TableCell className="text-sm text-muted-foreground font-mono">{u.bkash_transaction_id || '—'}</TableCell>
                         <TableCell>{u.email || '—'}</TableCell>
                         <TableCell>
                           {u.is_premium ? (
