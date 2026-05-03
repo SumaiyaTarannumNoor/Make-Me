@@ -41,12 +41,13 @@ const TemplateGallery = ({ onSelectTemplate }: TemplateGalleryProps) => {
     if (resume) navigate(`/builder/${resume.id}?template=${colorScheme}`);
   };
 
-  const handleUsePremiumTemplate = (colorScheme: string) => {
+  const handleUsePremiumTemplate = async (colorScheme: string) => {
     if (!user) {
       navigate("/signup");
       return;
     }
-    navigate(`/payment?template=${colorScheme}`);
+    const resume = await createResume();
+    if (resume) navigate(`/builder/${resume.id}?template=${colorScheme}`);
   };
 
   const allStandard = Object.keys(colorSchemes) as ColorScheme[];
