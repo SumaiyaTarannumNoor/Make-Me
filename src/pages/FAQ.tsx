@@ -11,7 +11,7 @@ const FAQ = () => {
   const faqs = [
     { question: "Why MakeMe for my resume?", answer: "Because we provide premium service with minimum prices. Our platform is built specifically for job seekers who want professional results without breaking the bank." },
     { question: "Is MakeMe free to use?", answer: "Yes! You can create up to 6 resumes completely free. No credit card required." },
-    { question: "What templates are available?", answer: "We offer a variety of professionally designed templates for students, freshers, and experienced professionals. Premium templates are available with our paid plans." },
+    { question: "What templates are available?", answer: "We offer a variety of professionally designed templates for students, freshers, and experienced professionals. All standard and premium templates are free to use for everyone." },
     { question: "Can I export my resume as PDF?", answer: "Absolutely! All plans support PDF export. Pro and Yearly users can also export in DOCX format without watermarks." },
     { question: "How many pages can my resume be?", answer: "Free users can create up to 2-page resumes. Pro users get up to 3 pages, and Yearly subscribers enjoy unlimited page options." },
     { question: "Do you offer student discounts?", answer: "Yes! Students with a valid .edu email address get 20% off on all paid plans. Contact us with your student email to get your discount code." },
