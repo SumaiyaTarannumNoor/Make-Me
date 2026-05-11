@@ -70,6 +70,10 @@ const Builder = () => {
     { id: 1, company: "", title: "", type: "Full-time", startDate: "", endDate: "", description: "" },
   ]);
 
+  const [learnedExperiences, setLearnedExperiences] = useState([
+    { id: 1, title: "", description: "" },
+  ]);
+
   const [education, setEducation] = useState([
     { id: 1, institution: "", degree: "", year: "", grade: "" },
   ]);
