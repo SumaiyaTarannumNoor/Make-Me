@@ -47,6 +47,7 @@ const Builder = () => {
     { id: "photo", title: "Profile Photo", icon: Camera, isOpen: false },
     { id: "summary", title: "Professional Summary", icon: FileCheck, isOpen: false },
     { id: "experience", title: "Work Experience", icon: Briefcase, isOpen: false },
+    { id: "learned", title: "Learned Experience", icon: Award, isOpen: false },
     { id: "education", title: "Education", icon: GraduationCap, isOpen: false },
     { id: "skills", title: "Skills", icon: Code, isOpen: false },
     { id: "projects", title: "Projects", icon: FolderOpen, isOpen: false },
