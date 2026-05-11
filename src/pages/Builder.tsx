@@ -244,6 +244,7 @@ const Builder = () => {
         linkedin: formData.linkedin,
         portfolio: formData.portfolio,
         tagline: formData.tagline,
+        learnedExperiences,
       },
       summary: formData.summary,
       experience: experiences,
