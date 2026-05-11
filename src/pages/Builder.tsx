@@ -615,6 +615,12 @@ const Builder = () => {
               <div className="flex text-xs">
                 {/* Left Column - 60% */}
                 <div className="w-[60%] p-5 pr-4">
+                  {formData.summary && (
+                    <div className="mb-5">
+                      <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Professional Summary</h2>
+                      <p className="text-[10px] text-gray-700 leading-relaxed whitespace-pre-line">{formData.summary}</p>
+                    </div>
+                  )}
                   <div className="mb-5">
                     <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Work Experience</h2>
                     <div className="space-y-3">
@@ -639,6 +645,26 @@ const Builder = () => {
                       {experiences.filter((e) => e.company || e.title).length === 0 && <p className="text-gray-400 italic text-[10px]">Add your work experience...</p>}
                     </div>
                   </div>
+
+                  {learnedExperiences.some((l) => l.title || l.description) && (
+                    <div className="mb-5">
+                      <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Learned Experience</h2>
+                      <div className="space-y-2">
+                        {learnedExperiences.filter((l) => l.title || l.description).map((item) => (
+                          <div key={item.id}>
+                            {item.title && <h3 className="font-semibold text-gray-900 text-[11px]">{item.title}</h3>}
+                            {item.description && (
+                              <ul className="mt-1 text-[10px] text-gray-600 space-y-0.5">
+                                {item.description.split("\n").filter(Boolean).map((line, i) => (
+                                  <li key={i} className="flex items-start gap-1"><span style={{ color: theme.primary }}>•</span><span>{line.replace(/^[•\-]\s*/, "")}</span></li>
+                                ))}
+                              </ul>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
                   <div>
                     <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Education</h2>
