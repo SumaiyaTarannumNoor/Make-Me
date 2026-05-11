@@ -99,6 +99,7 @@ const Builder = () => {
     const data = {
       formData,
       experiences,
+      learnedExperiences,
       education,
       skillGroups,
       projects,
@@ -108,7 +109,7 @@ const Builder = () => {
     };
     localStorage.setItem(AUTOSAVE_KEY + id, JSON.stringify(data));
     setHasUnsavedChanges(true);
-  }, [id, formData, experiences, education, skillGroups, projects, certifications, colorScheme, photoUrl]);
+  }, [id, formData, experiences, learnedExperiences, education, skillGroups, projects, certifications, colorScheme, photoUrl]);
 
   // Auto-save effect
   useEffect(() => {
