@@ -364,8 +364,8 @@ const Builder = () => {
                       <Input placeholder="John Doe" value={formData.fullName} onChange={(e) => setFormData({ ...formData, fullName: e.target.value })} />
                     </div>
                     <div className="col-span-2">
-                      <Label>Tagline / Headline</Label>
-                      <Input placeholder="A passionate developer..." value={formData.tagline} onChange={(e) => setFormData({ ...formData, tagline: e.target.value })} />
+                      <Label>Designation / Job Title</Label>
+                      <Input placeholder="e.g. Software Engineer (Machine Learning)" value={formData.tagline} onChange={(e) => setFormData({ ...formData, tagline: e.target.value })} />
                     </div>
                     <div>
                       <Label>Email</Label>
@@ -561,7 +561,7 @@ const Builder = () => {
                   </div>
                   <div>
                     <h1 className="text-xl font-bold text-white tracking-wide">{formData.fullName || "YOUR NAME"}</h1>
-                    <p className="text-gray-300 text-sm mt-0.5">{formData.tagline || "Your professional tagline..."}</p>
+                    <p className="text-gray-300 text-sm mt-0.5" style={{ color: theme.primary }}>{formData.tagline || "Your designation / job title..."}</p>
                   </div>
                 </div>
                 <div className="flex flex-wrap gap-4 text-gray-300 text-[10px]">
