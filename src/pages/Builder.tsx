@@ -47,6 +47,7 @@ const Builder = () => {
     { id: "photo", title: "Profile Photo", icon: Camera, isOpen: false },
     { id: "summary", title: "Professional Summary", icon: FileCheck, isOpen: false },
     { id: "experience", title: "Work Experience", icon: Briefcase, isOpen: false },
+    { id: "learned", title: "Learned Experience", icon: Award, isOpen: false },
     { id: "education", title: "Education", icon: GraduationCap, isOpen: false },
     { id: "skills", title: "Skills", icon: Code, isOpen: false },
     { id: "projects", title: "Projects", icon: FolderOpen, isOpen: false },
@@ -67,6 +68,10 @@ const Builder = () => {
 
   const [experiences, setExperiences] = useState([
     { id: 1, company: "", title: "", type: "Full-time", startDate: "", endDate: "", description: "" },
+  ]);
+
+  const [learnedExperiences, setLearnedExperiences] = useState([
+    { id: 1, title: "", description: "" },
   ]);
 
   const [education, setEducation] = useState([
@@ -94,6 +99,7 @@ const Builder = () => {
     const data = {
       formData,
       experiences,
+      learnedExperiences,
       education,
       skillGroups,
       projects,
@@ -103,7 +109,7 @@ const Builder = () => {
     };
     localStorage.setItem(AUTOSAVE_KEY + id, JSON.stringify(data));
     setHasUnsavedChanges(true);
-  }, [id, formData, experiences, education, skillGroups, projects, certifications, colorScheme, photoUrl]);
+  }, [id, formData, experiences, learnedExperiences, education, skillGroups, projects, certifications, colorScheme, photoUrl]);
 
   // Auto-save effect
   useEffect(() => {
@@ -122,6 +128,7 @@ const Builder = () => {
           const data = JSON.parse(saved);
           if (data.formData) setFormData(data.formData);
           if (data.experiences) setExperiences(data.experiences);
+          if (data.learnedExperiences) setLearnedExperiences(data.learnedExperiences);
           if (data.education) setEducation(data.education);
           if (data.skillGroups) setSkillGroups(data.skillGroups);
           if (data.projects) setProjects(data.projects);
@@ -166,6 +173,7 @@ const Builder = () => {
           summary: resume.summary || "",
         });
         if (resume.experience?.length) setExperiences(resume.experience as any);
+        if ((resume.personal_info as any)?.learnedExperiences?.length) setLearnedExperiences((resume.personal_info as any).learnedExperiences);
         if (resume.education?.length) setEducation(resume.education as any);
         if (resume.skills?.length) {
           const skills = resume.skills as any[];
@@ -236,6 +244,7 @@ const Builder = () => {
         linkedin: formData.linkedin,
         portfolio: formData.portfolio,
         tagline: formData.tagline,
+        learnedExperiences,
       },
       summary: formData.summary,
       experience: experiences,
@@ -456,6 +465,29 @@ const Builder = () => {
                   </>
                 )}
 
+                {section.id === "learned" && (
+                  <>
+                    {learnedExperiences.map((item, i) => (
+                      <div key={item.id} className="p-4 border rounded-xl space-y-3">
+                        <div className="flex justify-between">
+                          <span className="text-sm font-medium text-muted-foreground">Item {i + 1}</span>
+                          {learnedExperiences.length > 1 && (
+                            <Button variant="ghost" size="sm" onClick={() => setLearnedExperiences(learnedExperiences.filter((x) => x.id !== item.id))} className="text-destructive">
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          )}
+                        </div>
+                        <Input placeholder="Title (e.g. Leadership, Public Speaking)" value={item.title} onChange={(e) => setLearnedExperiences(learnedExperiences.map((x) => (x.id === item.id ? { ...x, title: e.target.value } : x)))} />
+                        <Textarea placeholder="What you learned or how you applied it..." value={item.description} onChange={(e) => setLearnedExperiences(learnedExperiences.map((x) => (x.id === item.id ? { ...x, description: e.target.value } : x)))} rows={3} />
+                      </div>
+                    ))}
+                    <Button variant="outline" onClick={() => setLearnedExperiences([...learnedExperiences, { id: Date.now(), title: "", description: "" }])}>
+                      <Plus className="w-4 h-4 mr-2" />Add Learned Experience
+                    </Button>
+                  </>
+                )}
+
+
                 {section.id === "education" && (
                   <>
                     {education.map((edu) => (
@@ -583,6 +615,12 @@ const Builder = () => {
               <div className="flex text-xs">
                 {/* Left Column - 60% */}
                 <div className="w-[60%] p-5 pr-4">
+                  {formData.summary && (
+                    <div className="mb-5">
+                      <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Professional Summary</h2>
+                      <p className="text-[10px] text-gray-700 leading-relaxed whitespace-pre-line">{formData.summary}</p>
+                    </div>
+                  )}
                   <div className="mb-5">
                     <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Work Experience</h2>
                     <div className="space-y-3">
@@ -607,6 +645,26 @@ const Builder = () => {
                       {experiences.filter((e) => e.company || e.title).length === 0 && <p className="text-gray-400 italic text-[10px]">Add your work experience...</p>}
                     </div>
                   </div>
+
+                  {learnedExperiences.some((l) => l.title || l.description) && (
+                    <div className="mb-5">
+                      <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Learned Experience</h2>
+                      <div className="space-y-2">
+                        {learnedExperiences.filter((l) => l.title || l.description).map((item) => (
+                          <div key={item.id}>
+                            {item.title && <h3 className="font-semibold text-gray-900 text-[11px]">{item.title}</h3>}
+                            {item.description && (
+                              <ul className="mt-1 text-[10px] text-gray-600 space-y-0.5">
+                                {item.description.split("\n").filter(Boolean).map((line, i) => (
+                                  <li key={i} className="flex items-start gap-1"><span style={{ color: theme.primary }}>•</span><span>{line.replace(/^[•\-]\s*/, "")}</span></li>
+                                ))}
+                              </ul>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
                   <div>
                     <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Education</h2>
