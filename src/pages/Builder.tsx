@@ -173,6 +173,7 @@ const Builder = () => {
           summary: resume.summary || "",
         });
         if (resume.experience?.length) setExperiences(resume.experience as any);
+        if ((resume.personal_info as any)?.learnedExperiences?.length) setLearnedExperiences((resume.personal_info as any).learnedExperiences);
         if (resume.education?.length) setEducation(resume.education as any);
         if (resume.skills?.length) {
           const skills = resume.skills as any[];
