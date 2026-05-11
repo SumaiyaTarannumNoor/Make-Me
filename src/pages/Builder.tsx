@@ -465,6 +465,29 @@ const Builder = () => {
                   </>
                 )}
 
+                {section.id === "learned" && (
+                  <>
+                    {learnedExperiences.map((item, i) => (
+                      <div key={item.id} className="p-4 border rounded-xl space-y-3">
+                        <div className="flex justify-between">
+                          <span className="text-sm font-medium text-muted-foreground">Item {i + 1}</span>
+                          {learnedExperiences.length > 1 && (
+                            <Button variant="ghost" size="sm" onClick={() => setLearnedExperiences(learnedExperiences.filter((x) => x.id !== item.id))} className="text-destructive">
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          )}
+                        </div>
+                        <Input placeholder="Title (e.g. Leadership, Public Speaking)" value={item.title} onChange={(e) => setLearnedExperiences(learnedExperiences.map((x) => (x.id === item.id ? { ...x, title: e.target.value } : x)))} />
+                        <Textarea placeholder="What you learned or how you applied it..." value={item.description} onChange={(e) => setLearnedExperiences(learnedExperiences.map((x) => (x.id === item.id ? { ...x, description: e.target.value } : x)))} rows={3} />
+                      </div>
+                    ))}
+                    <Button variant="outline" onClick={() => setLearnedExperiences([...learnedExperiences, { id: Date.now(), title: "", description: "" }])}>
+                      <Plus className="w-4 h-4 mr-2" />Add Learned Experience
+                    </Button>
+                  </>
+                )}
+
+
                 {section.id === "education" && (
                   <>
                     {education.map((edu) => (
