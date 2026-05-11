@@ -8,7 +8,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useResumes, Resume } from "@/hooks/useResumes";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { ColorScheme, colorSchemes } from "@/components/landing/TemplateShowcase";
+import { ColorScheme, PremiumColorScheme, colorSchemes, premiumColorSchemes } from "@/components/landing/TemplateShowcase";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import {
@@ -19,6 +19,12 @@ import {
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 const AUTOSAVE_KEY = "resume_autosave_";
+type ResumeColorScheme = ColorScheme | PremiumColorScheme;
+
+const resumeColorSchemes: Record<ResumeColorScheme, { name: string; primary: string; light: string; headerBg: string }> = {
+  ...colorSchemes,
+  ...premiumColorSchemes,
+};
 
 const Builder = () => {
   const { id } = useParams();
@@ -32,7 +38,7 @@ const Builder = () => {
   const [saving, setSaving] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [currentResume, setCurrentResume] = useState<Resume | null>(null);
-  const [colorScheme, setColorScheme] = useState<ColorScheme>("coral");
+  const [colorScheme, setColorScheme] = useState<ResumeColorScheme>("coral");
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
@@ -80,7 +86,7 @@ const Builder = () => {
   const [certifications, setCertifications] = useState<string[]>([]);
   const [newCert, setNewCert] = useState("");
 
-  const theme = colorSchemes[colorScheme];
+  const theme = resumeColorSchemes[colorScheme];
 
   // Auto-save to localStorage whenever data changes
   const saveToLocalStorage = useCallback(() => {
@@ -134,8 +140,8 @@ const Builder = () => {
   // Load from template param
   useEffect(() => {
     const templateParam = searchParams.get("template");
-    if (templateParam && Object.keys(colorSchemes).includes(templateParam)) {
-      setColorScheme(templateParam as ColorScheme);
+    if (templateParam && Object.keys(resumeColorSchemes).includes(templateParam)) {
+      setColorScheme(templateParam as ResumeColorScheme);
     }
   }, [searchParams]);
 
@@ -323,10 +329,10 @@ const Builder = () => {
           <div className="flex items-center gap-2">
             <select
               value={colorScheme}
-              onChange={(e) => setColorScheme(e.target.value as ColorScheme)}
+                onChange={(e) => setColorScheme(e.target.value as ResumeColorScheme)}
               className="px-3 py-1.5 rounded-lg bg-muted text-sm font-medium border-0 focus:ring-2 focus:ring-primary"
             >
-              {Object.entries(colorSchemes).map(([key, value]) => (
+              {Object.entries(resumeColorSchemes).map(([key, value]) => (
                 <option key={key} value={key}>{value.name}</option>
               ))}
             </select>
