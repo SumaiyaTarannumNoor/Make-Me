@@ -561,7 +561,7 @@ const Builder = () => {
                   </div>
                   <div>
                     <h1 className="text-xl font-bold text-white tracking-wide">{formData.fullName || "YOUR NAME"}</h1>
-                    <p className="text-gray-300 text-sm mt-0.5">{formData.tagline || "Your professional tagline..."}</p>
+                    <p className="text-gray-300 text-sm mt-0.5" style={{ color: theme.primary }}>{formData.tagline || "Your designation / job title..."}</p>
                   </div>
                 </div>
                 <div className="flex flex-wrap gap-4 text-gray-300 text-[10px]">
