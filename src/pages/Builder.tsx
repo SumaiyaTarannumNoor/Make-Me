@@ -128,6 +128,7 @@ const Builder = () => {
           const data = JSON.parse(saved);
           if (data.formData) setFormData(data.formData);
           if (data.experiences) setExperiences(data.experiences);
+          if (data.learnedExperiences) setLearnedExperiences(data.learnedExperiences);
           if (data.education) setEducation(data.education);
           if (data.skillGroups) setSkillGroups(data.skillGroups);
           if (data.projects) setProjects(data.projects);
