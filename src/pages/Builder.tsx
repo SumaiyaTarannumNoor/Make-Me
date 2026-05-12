@@ -14,7 +14,7 @@ import jsPDF from "jspdf";
 import {
   ChevronLeft, Download, Plus, Trash2, User, Briefcase,
   GraduationCap, Code, FileCheck, ChevronDown, ChevronUp, Loader2, Save,
-  FolderOpen, Award, Mail, Phone, MapPin, Linkedin, Globe, Camera, LayoutTemplate,
+  FolderOpen, Award, Mail, Phone, MapPin, Linkedin, Globe, Camera, LayoutTemplate, Users,
 } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
@@ -52,6 +52,7 @@ const Builder = () => {
     { id: "skills", title: "Skills", icon: Code, isOpen: false },
     { id: "projects", title: "Projects", icon: FolderOpen, isOpen: false },
     { id: "certifications", title: "Certifications", icon: Award, isOpen: false },
+    { id: "references", title: "References", icon: Users, isOpen: false },
   ]);
 
   const [formData, setFormData] = useState({
@@ -91,6 +92,11 @@ const Builder = () => {
   const [certifications, setCertifications] = useState<string[]>([]);
   const [newCert, setNewCert] = useState("");
 
+  const [references, setReferences] = useState([
+    { id: 1, name: "", designation: "", organization: "", email: "", phone: "" },
+  ]);
+
+  const [pageCount, setPageCount] = useState(1);
   const theme = resumeColorSchemes[colorScheme];
 
   // Auto-save to localStorage whenever data changes
@@ -104,12 +110,13 @@ const Builder = () => {
       skillGroups,
       projects,
       certifications,
+      references,
       colorScheme,
       photoUrl,
     };
     localStorage.setItem(AUTOSAVE_KEY + id, JSON.stringify(data));
     setHasUnsavedChanges(true);
-  }, [id, formData, experiences, learnedExperiences, education, skillGroups, projects, certifications, colorScheme, photoUrl]);
+  }, [id, formData, experiences, learnedExperiences, education, skillGroups, projects, certifications, references, colorScheme, photoUrl]);
 
   // Auto-save effect
   useEffect(() => {
@@ -133,6 +140,7 @@ const Builder = () => {
           if (data.skillGroups) setSkillGroups(data.skillGroups);
           if (data.projects) setProjects(data.projects);
           if (data.certifications) setCertifications(data.certifications);
+          if (data.references) setReferences(data.references);
           if (data.colorScheme) setColorScheme(data.colorScheme);
           if (data.photoUrl) setPhotoUrl(data.photoUrl);
           setHasUnsavedChanges(true);
@@ -174,6 +182,7 @@ const Builder = () => {
         });
         if (resume.experience?.length) setExperiences(resume.experience as any);
         if ((resume.personal_info as any)?.learnedExperiences?.length) setLearnedExperiences((resume.personal_info as any).learnedExperiences);
+        if ((resume.personal_info as any)?.references?.length) setReferences((resume.personal_info as any).references);
         if (resume.education?.length) setEducation(resume.education as any);
         if (resume.skills?.length) {
           const skills = resume.skills as any[];
@@ -200,6 +209,20 @@ const Builder = () => {
       if (resume) setCurrentResume(resume);
     }
   }, [id, resumes]);
+
+  // A4 size at 96dpi: 794 x 1123 px
+  const A4_WIDTH = 794;
+  const A4_HEIGHT = 1123;
+
+  useEffect(() => {
+    if (!resumePreviewRef.current) return;
+    const observer = new ResizeObserver(() => {
+      const h = resumePreviewRef.current?.scrollHeight || 0;
+      setPageCount(Math.max(1, Math.ceil(h / A4_HEIGHT)));
+    });
+    observer.observe(resumePreviewRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   const toggleSection = (sectionId: string) =>
     setSections((prev) => prev.map((s) => (s.id === sectionId ? { ...s, isOpen: !s.isOpen } : s)));
@@ -245,6 +268,7 @@ const Builder = () => {
         portfolio: formData.portfolio,
         tagline: formData.tagline,
         learnedExperiences,
+        references,
       },
       summary: formData.summary,
       experience: experiences,
@@ -560,43 +584,86 @@ const Builder = () => {
                     </div>
                   </>
                 )}
+
+                {section.id === "references" && (
+                  <>
+                    {references.map((ref, i) => (
+                      <div key={ref.id} className="p-4 border rounded-xl space-y-3">
+                        <div className="flex justify-between">
+                          <span className="text-sm font-medium text-muted-foreground">Reference {i + 1}</span>
+                          {references.length > 1 && (
+                            <Button variant="ghost" size="sm" onClick={() => setReferences(references.filter((x) => x.id !== ref.id))} className="text-destructive">
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          )}
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                          <Input placeholder="Full Name" value={ref.name} onChange={(e) => setReferences(references.map((x) => x.id === ref.id ? { ...x, name: e.target.value } : x))} />
+                          <Input placeholder="Designation" value={ref.designation} onChange={(e) => setReferences(references.map((x) => x.id === ref.id ? { ...x, designation: e.target.value } : x))} />
+                          <Input placeholder="Organization" value={ref.organization} onChange={(e) => setReferences(references.map((x) => x.id === ref.id ? { ...x, organization: e.target.value } : x))} className="col-span-2" />
+                          <Input placeholder="Email" value={ref.email} onChange={(e) => setReferences(references.map((x) => x.id === ref.id ? { ...x, email: e.target.value } : x))} />
+                          <Input placeholder="Phone" value={ref.phone} onChange={(e) => setReferences(references.map((x) => x.id === ref.id ? { ...x, phone: e.target.value } : x))} />
+                        </div>
+                      </div>
+                    ))}
+                    <Button variant="outline" onClick={() => setReferences([...references, { id: Date.now(), name: "", designation: "", organization: "", email: "", phone: "" }])}>
+                      <Plus className="w-4 h-4 mr-2" />Add Reference
+                    </Button>
+                  </>
+                )}
               </CollapsibleContent>
             </Collapsible>
           ))}
         </div>
 
         {/* Right Panel - Preview */}
-        <div className="hidden lg:flex flex-1 items-start justify-center p-8 bg-muted/30 overflow-auto">
-          <div className="w-full max-w-[600px] shadow-xl rounded-lg overflow-hidden">
-            <div ref={resumePreviewRef} className="bg-white" style={{ fontFamily: "'Inter', sans-serif" }}>
+        <div className="hidden lg:flex flex-1 flex-col items-center p-8 bg-muted/30 overflow-auto">
+          <div className="mb-3 px-3 py-1 rounded-full bg-card border text-xs font-medium text-muted-foreground">
+            A4 Preview · {pageCount} {pageCount === 1 ? "page" : "pages"}
+          </div>
+          <div className="shadow-xl rounded-lg relative bg-white" style={{ width: `${A4_WIDTH}px`, minHeight: `${A4_HEIGHT}px` }}>
+            {Array.from({ length: Math.max(0, pageCount - 1) }).map((_, i) => (
+              <div
+                key={i}
+                className="absolute left-0 right-0 pointer-events-none"
+                style={{ top: `${(i + 1) * A4_HEIGHT}px`, borderTop: "2px dashed hsl(var(--primary) / 0.5)", zIndex: 10 }}
+              />
+            ))}
+            <div ref={resumePreviewRef} className="bg-white rounded-lg overflow-hidden" style={{ fontFamily: "'Inter', sans-serif", width: `${A4_WIDTH}px` }}>
               {/* Header Section */}
               <div className="px-6 py-5" style={{ backgroundColor: theme.headerBg }}>
                 <div className="flex items-center gap-4 mb-3">
-                  <div 
-                    className="rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden" 
-                    style={{ 
-                      backgroundColor: photoUrl ? "transparent" : theme.primary,
-                      width: "64px",
-                      height: "64px",
-                      minWidth: "64px",
-                      minHeight: "64px",
-                    }}
-                  >
-                    {photoUrl ? (
-                      <img 
-                        src={photoUrl} 
-                        alt="Profile" 
-                        style={{ 
-                          width: "64px", 
-                          height: "64px", 
-                          objectFit: "cover",
-                          borderRadius: "50%",
-                        }} 
-                      />
-                    ) : (
+                  {photoUrl ? (
+                    <div
+                      style={{
+                        width: "64px",
+                        height: "64px",
+                        minWidth: "64px",
+                        minHeight: "64px",
+                        borderRadius: "50%",
+                        backgroundImage: `url(${photoUrl})`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "center",
+                        backgroundRepeat: "no-repeat",
+                        flexShrink: 0,
+                      }}
+                    />
+                  ) : (
+                    <div
+                      className="flex items-center justify-center"
+                      style={{
+                        backgroundColor: theme.primary,
+                        width: "64px",
+                        height: "64px",
+                        minWidth: "64px",
+                        minHeight: "64px",
+                        borderRadius: "50%",
+                        flexShrink: 0,
+                      }}
+                    >
                       <User className="w-8 h-8 text-white" />
-                    )}
-                  </div>
+                    </div>
+                  )}
                   <div>
                     <h1 className="text-xl font-bold text-white tracking-wide">{formData.fullName || "YOUR NAME"}</h1>
                     <p className="text-gray-300 text-sm mt-0.5" style={{ color: theme.primary }}>{formData.tagline || "Your designation / job title..."}</p>
@@ -728,6 +795,23 @@ const Builder = () => {
                   )}
                 </div>
               </div>
+
+              {references.some((r) => r.name || r.organization) && (
+                <div className="px-5 py-4 border-t" style={{ borderColor: theme.primary }}>
+                  <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>References</h2>
+                  <div className="grid grid-cols-2 gap-4">
+                    {references.filter((r) => r.name || r.organization).map((r) => (
+                      <div key={r.id} className="text-[10px] text-gray-700">
+                        <p className="font-semibold text-gray-900 text-[11px]">{r.name}</p>
+                        {r.designation && <p className="text-gray-600">{r.designation}</p>}
+                        {r.organization && <p className="text-gray-600">{r.organization}</p>}
+                        {r.email && <p className="flex items-center gap-1"><Mail className="w-2.5 h-2.5" style={{ color: theme.primary }} />{r.email}</p>}
+                        {r.phone && <p className="flex items-center gap-1"><Phone className="w-2.5 h-2.5" style={{ color: theme.primary }} />{r.phone}</p>}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
