@@ -633,31 +633,37 @@ const Builder = () => {
               {/* Header Section */}
               <div className="px-6 py-5" style={{ backgroundColor: theme.headerBg }}>
                 <div className="flex items-center gap-4 mb-3">
-                  <div 
-                    className="rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden" 
-                    style={{ 
-                      backgroundColor: photoUrl ? "transparent" : theme.primary,
-                      width: "64px",
-                      height: "64px",
-                      minWidth: "64px",
-                      minHeight: "64px",
-                    }}
-                  >
-                    {photoUrl ? (
-                      <img 
-                        src={photoUrl} 
-                        alt="Profile" 
-                        style={{ 
-                          width: "64px", 
-                          height: "64px", 
-                          objectFit: "cover",
-                          borderRadius: "50%",
-                        }} 
-                      />
-                    ) : (
+                  {photoUrl ? (
+                    <div
+                      style={{
+                        width: "64px",
+                        height: "64px",
+                        minWidth: "64px",
+                        minHeight: "64px",
+                        borderRadius: "50%",
+                        backgroundImage: `url(${photoUrl})`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "center",
+                        backgroundRepeat: "no-repeat",
+                        flexShrink: 0,
+                      }}
+                    />
+                  ) : (
+                    <div
+                      className="flex items-center justify-center"
+                      style={{
+                        backgroundColor: theme.primary,
+                        width: "64px",
+                        height: "64px",
+                        minWidth: "64px",
+                        minHeight: "64px",
+                        borderRadius: "50%",
+                        flexShrink: 0,
+                      }}
+                    >
                       <User className="w-8 h-8 text-white" />
-                    )}
-                  </div>
+                    </div>
+                  )}
                   <div>
                     <h1 className="text-xl font-bold text-white tracking-wide">{formData.fullName || "YOUR NAME"}</h1>
                     <p className="text-gray-300 text-sm mt-0.5" style={{ color: theme.primary }}>{formData.tagline || "Your designation / job title..."}</p>
