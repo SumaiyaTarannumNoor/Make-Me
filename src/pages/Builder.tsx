@@ -584,15 +584,52 @@ const Builder = () => {
                     </div>
                   </>
                 )}
+
+                {section.id === "references" && (
+                  <>
+                    {references.map((ref, i) => (
+                      <div key={ref.id} className="p-4 border rounded-xl space-y-3">
+                        <div className="flex justify-between">
+                          <span className="text-sm font-medium text-muted-foreground">Reference {i + 1}</span>
+                          {references.length > 1 && (
+                            <Button variant="ghost" size="sm" onClick={() => setReferences(references.filter((x) => x.id !== ref.id))} className="text-destructive">
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          )}
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                          <Input placeholder="Full Name" value={ref.name} onChange={(e) => setReferences(references.map((x) => x.id === ref.id ? { ...x, name: e.target.value } : x))} />
+                          <Input placeholder="Designation" value={ref.designation} onChange={(e) => setReferences(references.map((x) => x.id === ref.id ? { ...x, designation: e.target.value } : x))} />
+                          <Input placeholder="Organization" value={ref.organization} onChange={(e) => setReferences(references.map((x) => x.id === ref.id ? { ...x, organization: e.target.value } : x))} className="col-span-2" />
+                          <Input placeholder="Email" value={ref.email} onChange={(e) => setReferences(references.map((x) => x.id === ref.id ? { ...x, email: e.target.value } : x))} />
+                          <Input placeholder="Phone" value={ref.phone} onChange={(e) => setReferences(references.map((x) => x.id === ref.id ? { ...x, phone: e.target.value } : x))} />
+                        </div>
+                      </div>
+                    ))}
+                    <Button variant="outline" onClick={() => setReferences([...references, { id: Date.now(), name: "", designation: "", organization: "", email: "", phone: "" }])}>
+                      <Plus className="w-4 h-4 mr-2" />Add Reference
+                    </Button>
+                  </>
+                )}
               </CollapsibleContent>
             </Collapsible>
           ))}
         </div>
 
         {/* Right Panel - Preview */}
-        <div className="hidden lg:flex flex-1 items-start justify-center p-8 bg-muted/30 overflow-auto">
-          <div className="w-full max-w-[600px] shadow-xl rounded-lg overflow-hidden">
-            <div ref={resumePreviewRef} className="bg-white" style={{ fontFamily: "'Inter', sans-serif" }}>
+        <div className="hidden lg:flex flex-1 flex-col items-center p-8 bg-muted/30 overflow-auto">
+          <div className="mb-3 px-3 py-1 rounded-full bg-card border text-xs font-medium text-muted-foreground">
+            A4 Preview · {pageCount} {pageCount === 1 ? "page" : "pages"}
+          </div>
+          <div className="shadow-xl rounded-lg relative bg-white" style={{ width: `${A4_WIDTH}px`, minHeight: `${A4_HEIGHT}px` }}>
+            {Array.from({ length: Math.max(0, pageCount - 1) }).map((_, i) => (
+              <div
+                key={i}
+                className="absolute left-0 right-0 pointer-events-none"
+                style={{ top: `${(i + 1) * A4_HEIGHT}px`, borderTop: "2px dashed hsl(var(--primary) / 0.5)", zIndex: 10 }}
+              />
+            ))}
+            <div ref={resumePreviewRef} className="bg-white rounded-lg overflow-hidden" style={{ fontFamily: "'Inter', sans-serif", width: `${A4_WIDTH}px` }}>
               {/* Header Section */}
               <div className="px-6 py-5" style={{ backgroundColor: theme.headerBg }}>
                 <div className="flex items-center gap-4 mb-3">
