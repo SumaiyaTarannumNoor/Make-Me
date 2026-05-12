@@ -140,6 +140,7 @@ const Builder = () => {
           if (data.skillGroups) setSkillGroups(data.skillGroups);
           if (data.projects) setProjects(data.projects);
           if (data.certifications) setCertifications(data.certifications);
+          if (data.references) setReferences(data.references);
           if (data.colorScheme) setColorScheme(data.colorScheme);
           if (data.photoUrl) setPhotoUrl(data.photoUrl);
           setHasUnsavedChanges(true);
