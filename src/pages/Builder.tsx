@@ -97,6 +97,7 @@ const Builder = () => {
   ]);
 
   const [pageCount, setPageCount] = useState(1);
+  const [zoom, setZoom] = useState(1);
   const theme = resumeColorSchemes[colorScheme];
 
   // Auto-save to localStorage whenever data changes
