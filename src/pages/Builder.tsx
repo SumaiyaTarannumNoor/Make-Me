@@ -638,18 +638,35 @@ const Builder = () => {
 
         {/* Right Panel - Preview */}
         <div className="hidden lg:flex flex-1 flex-col items-center p-8 bg-muted/30 overflow-auto">
-          <div className="mb-3 px-3 py-1 rounded-full bg-card border text-xs font-medium text-muted-foreground">
-            A4 Preview · {pageCount} {pageCount === 1 ? "page" : "pages"}
+          <div className="mb-3 flex items-center gap-3">
+            <div className="px-3 py-1 rounded-full bg-card border text-xs font-medium text-muted-foreground">
+              A4 Preview · {pageCount} {pageCount === 1 ? "page" : "pages"}
+            </div>
+            <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-card border">
+              <Button size="sm" variant="ghost" className="h-6 w-6 p-0" onClick={() => setZoom((z) => Math.max(0.3, +(z - 0.1).toFixed(2)))}>−</Button>
+              <span className="text-xs font-medium w-10 text-center">{Math.round(zoom * 100)}%</span>
+              <Button size="sm" variant="ghost" className="h-6 w-6 p-0" onClick={() => setZoom((z) => Math.min(1.5, +(z + 0.1).toFixed(2)))}>+</Button>
+              <Button size="sm" variant="ghost" className="h-6 px-2 text-xs" onClick={() => setZoom(1)}>Reset</Button>
+            </div>
           </div>
-          <div className="shadow-xl rounded-lg relative bg-white" style={{ width: `${A4_WIDTH}px`, minHeight: `${A4_HEIGHT}px` }}>
-            {Array.from({ length: Math.max(0, pageCount - 1) }).map((_, i) => (
-              <div
-                key={i}
-                className="absolute left-0 right-0 pointer-events-none"
-                style={{ top: `${(i + 1) * A4_HEIGHT}px`, borderTop: "2px dashed hsl(var(--primary) / 0.5)", zIndex: 10 }}
-              />
-            ))}
-            <div ref={resumePreviewRef} className="bg-white rounded-lg overflow-hidden" style={{ fontFamily: "'Inter', sans-serif", width: `${A4_WIDTH}px` }}>
+          <div style={{ width: `${A4_WIDTH * zoom}px`, height: `${Math.max(A4_HEIGHT, A4_HEIGHT * pageCount) * zoom}px` }}>
+            <div
+              className="shadow-xl relative bg-white"
+              style={{
+                width: `${A4_WIDTH}px`,
+                minHeight: `${A4_HEIGHT}px`,
+                transform: `scale(${zoom})`,
+                transformOrigin: "top left",
+              }}
+            >
+              {Array.from({ length: Math.max(0, pageCount - 1) }).map((_, i) => (
+                <div
+                  key={i}
+                  className="absolute left-0 right-0 pointer-events-none"
+                  style={{ top: `${(i + 1) * A4_HEIGHT}px`, borderTop: "2px dashed hsl(var(--primary) / 0.5)", zIndex: 10 }}
+                />
+              ))}
+              <div ref={resumePreviewRef} className="bg-white" style={{ fontFamily: "'Inter', sans-serif", width: `${A4_WIDTH}px` }}>
               {/* Header Section */}
               <div className="px-6 py-5" style={{ backgroundColor: theme.headerBg }}>
                 <div className="flex items-center gap-4 mb-3">
