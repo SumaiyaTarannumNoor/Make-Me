@@ -210,6 +210,20 @@ const Builder = () => {
     }
   }, [id, resumes]);
 
+  // A4 size at 96dpi: 794 x 1123 px
+  const A4_WIDTH = 794;
+  const A4_HEIGHT = 1123;
+
+  useEffect(() => {
+    if (!resumePreviewRef.current) return;
+    const observer = new ResizeObserver(() => {
+      const h = resumePreviewRef.current?.scrollHeight || 0;
+      setPageCount(Math.max(1, Math.ceil(h / A4_HEIGHT)));
+    });
+    observer.observe(resumePreviewRef.current);
+    return () => observer.disconnect();
+  }, []);
+
   const toggleSection = (sectionId: string) =>
     setSections((prev) => prev.map((s) => (s.id === sectionId ? { ...s, isOpen: !s.isOpen } : s)));
 
