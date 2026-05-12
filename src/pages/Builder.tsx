@@ -52,6 +52,7 @@ const Builder = () => {
     { id: "skills", title: "Skills", icon: Code, isOpen: false },
     { id: "projects", title: "Projects", icon: FolderOpen, isOpen: false },
     { id: "certifications", title: "Certifications", icon: Award, isOpen: false },
+    { id: "references", title: "References", icon: Users, isOpen: false },
   ]);
 
   const [formData, setFormData] = useState({
