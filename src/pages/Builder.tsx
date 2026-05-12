@@ -308,8 +308,18 @@ const Builder = () => {
 
       const imgData = canvas.toDataURL("image/png", 1.0);
 
+      const hslToRgb = (hsl: string): [number, number, number] => {
+        const m = hsl.match(/hsl\(\s*(\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)%\s*,\s*(\d+(?:\.\d+)?)%/i);
+        if (!m) return [255, 255, 255];
+        const h = parseFloat(m[1]) / 360, s = parseFloat(m[2]) / 100, l = parseFloat(m[3]) / 100;
+        const k = (n: number) => (n + h * 12) % 12;
+        const a = s * Math.min(l, 1 - l);
+        const f = (n: number) => l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
+        return [Math.round(255 * f(0)), Math.round(255 * f(8)), Math.round(255 * f(4))];
+      };
+      const [br, bg, bb] = hslToRgb(theme.headerBg);
       const fillBg = () => {
-        pdf.setFillColor(theme.headerBg);
+        pdf.setFillColor(br, bg, bb);
         pdf.rect(0, 0, pageWidth, pageHeight, "F");
       };
 
