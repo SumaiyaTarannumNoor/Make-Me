@@ -182,6 +182,7 @@ const Builder = () => {
         });
         if (resume.experience?.length) setExperiences(resume.experience as any);
         if ((resume.personal_info as any)?.learnedExperiences?.length) setLearnedExperiences((resume.personal_info as any).learnedExperiences);
+        if ((resume.personal_info as any)?.references?.length) setReferences((resume.personal_info as any).references);
         if (resume.education?.length) setEducation(resume.education as any);
         if (resume.skills?.length) {
           const skills = resume.skills as any[];
