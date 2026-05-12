@@ -92,6 +92,11 @@ const Builder = () => {
   const [certifications, setCertifications] = useState<string[]>([]);
   const [newCert, setNewCert] = useState("");
 
+  const [references, setReferences] = useState([
+    { id: 1, name: "", designation: "", organization: "", email: "", phone: "" },
+  ]);
+
+  const [pageCount, setPageCount] = useState(1);
   const theme = resumeColorSchemes[colorScheme];
 
   // Auto-save to localStorage whenever data changes
