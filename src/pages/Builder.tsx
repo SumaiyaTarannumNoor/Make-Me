@@ -110,12 +110,13 @@ const Builder = () => {
       skillGroups,
       projects,
       certifications,
+      references,
       colorScheme,
       photoUrl,
     };
     localStorage.setItem(AUTOSAVE_KEY + id, JSON.stringify(data));
     setHasUnsavedChanges(true);
-  }, [id, formData, experiences, learnedExperiences, education, skillGroups, projects, certifications, colorScheme, photoUrl]);
+  }, [id, formData, experiences, learnedExperiences, education, skillGroups, projects, certifications, references, colorScheme, photoUrl]);
 
   // Auto-save effect
   useEffect(() => {
