@@ -289,39 +289,48 @@ const Builder = () => {
     if (!resumePreviewRef.current || !currentResume || !user) return;
     setGenerating(true);
     try {
-      // Higher scale for better quality, especially for photos
-      const canvas = await html2canvas(resumePreviewRef.current, { 
-        scale: 3, 
+      const canvas = await html2canvas(resumePreviewRef.current, {
+        scale: 3,
         useCORS: true,
         allowTaint: true,
         logging: false,
         imageTimeout: 0,
+        backgroundColor: theme.headerBg,
       });
-      
+
       const pdf = new jsPDF("p", "mm", "a4");
       const pageWidth = 210;
       const pageHeight = 297;
-      const imgWidth = pageWidth;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      
-      // Handle multi-page if content is longer than A4
-      if (imgHeight <= pageHeight) {
-        pdf.addImage(canvas.toDataURL("image/png", 1.0), "PNG", 0, 0, imgWidth, imgHeight, undefined, "FAST");
+      const margin = 12.7; // 0.5 inch
+      const contentWidth = pageWidth - margin * 2;
+      const contentHeight = pageHeight - margin * 2;
+      const imgHeight = (canvas.height * contentWidth) / canvas.width;
+
+      const imgData = canvas.toDataURL("image/png", 1.0);
+
+      const fillBg = () => {
+        pdf.setFillColor(theme.headerBg);
+        pdf.rect(0, 0, pageWidth, pageHeight, "F");
+      };
+
+      if (imgHeight <= contentHeight) {
+        fillBg();
+        pdf.addImage(imgData, "PNG", margin, margin, contentWidth, imgHeight, undefined, "FAST");
       } else {
         let heightLeft = imgHeight;
-        let position = 0;
-        
-        pdf.addImage(canvas.toDataURL("image/png", 1.0), "PNG", 0, position, imgWidth, imgHeight, undefined, "FAST");
-        heightLeft -= pageHeight;
-        
+        let position = margin;
+        fillBg();
+        pdf.addImage(imgData, "PNG", margin, position, contentWidth, imgHeight, undefined, "FAST");
+        heightLeft -= contentHeight;
         while (heightLeft > 0) {
-          position = -pageHeight + (imgHeight - heightLeft - pageHeight);
+          position = margin - (imgHeight - heightLeft);
           pdf.addPage();
-          pdf.addImage(canvas.toDataURL("image/png", 1.0), "PNG", 0, position, imgWidth, imgHeight, undefined, "FAST");
-          heightLeft -= pageHeight;
+          fillBg();
+          pdf.addImage(imgData, "PNG", margin, position, contentWidth, imgHeight, undefined, "FAST");
+          heightLeft -= contentHeight;
         }
       }
-      
+
       pdf.save(`${formData.title}.pdf`);
       const pdfBlob = pdf.output("blob");
       await supabase.storage.from("resumes").upload(`${user.id}/${currentResume.id}.pdf`, pdfBlob, { upsert: true });
