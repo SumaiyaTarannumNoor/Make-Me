@@ -850,6 +850,7 @@ const Builder = () => {
                 </div>
               )}
             </div>
+            </div>
           </div>
         </div>
       </div>
