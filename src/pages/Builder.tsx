@@ -97,6 +97,7 @@ const Builder = () => {
   ]);
 
   const [pageCount, setPageCount] = useState(1);
+  const [zoom, setZoom] = useState(1);
   const theme = resumeColorSchemes[colorScheme];
 
   // Auto-save to localStorage whenever data changes
@@ -288,39 +289,58 @@ const Builder = () => {
     if (!resumePreviewRef.current || !currentResume || !user) return;
     setGenerating(true);
     try {
-      // Higher scale for better quality, especially for photos
-      const canvas = await html2canvas(resumePreviewRef.current, { 
-        scale: 3, 
+      const canvas = await html2canvas(resumePreviewRef.current, {
+        scale: 3,
         useCORS: true,
         allowTaint: true,
         logging: false,
         imageTimeout: 0,
+        backgroundColor: theme.headerBg,
       });
-      
+
       const pdf = new jsPDF("p", "mm", "a4");
       const pageWidth = 210;
       const pageHeight = 297;
-      const imgWidth = pageWidth;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      
-      // Handle multi-page if content is longer than A4
-      if (imgHeight <= pageHeight) {
-        pdf.addImage(canvas.toDataURL("image/png", 1.0), "PNG", 0, 0, imgWidth, imgHeight, undefined, "FAST");
+      const margin = 12.7; // 0.5 inch
+      const contentWidth = pageWidth - margin * 2;
+      const contentHeight = pageHeight - margin * 2;
+      const imgHeight = (canvas.height * contentWidth) / canvas.width;
+
+      const imgData = canvas.toDataURL("image/png", 1.0);
+
+      const hslToRgb = (hsl: string): [number, number, number] => {
+        const m = hsl.match(/hsl\(\s*(\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)%\s*,\s*(\d+(?:\.\d+)?)%/i);
+        if (!m) return [255, 255, 255];
+        const h = parseFloat(m[1]) / 360, s = parseFloat(m[2]) / 100, l = parseFloat(m[3]) / 100;
+        const k = (n: number) => (n + h * 12) % 12;
+        const a = s * Math.min(l, 1 - l);
+        const f = (n: number) => l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
+        return [Math.round(255 * f(0)), Math.round(255 * f(8)), Math.round(255 * f(4))];
+      };
+      const [br, bg, bb] = hslToRgb(theme.headerBg);
+      const fillBg = () => {
+        pdf.setFillColor(br, bg, bb);
+        pdf.rect(0, 0, pageWidth, pageHeight, "F");
+      };
+
+      if (imgHeight <= contentHeight) {
+        fillBg();
+        pdf.addImage(imgData, "PNG", margin, margin, contentWidth, imgHeight, undefined, "FAST");
       } else {
         let heightLeft = imgHeight;
-        let position = 0;
-        
-        pdf.addImage(canvas.toDataURL("image/png", 1.0), "PNG", 0, position, imgWidth, imgHeight, undefined, "FAST");
-        heightLeft -= pageHeight;
-        
+        let position = margin;
+        fillBg();
+        pdf.addImage(imgData, "PNG", margin, position, contentWidth, imgHeight, undefined, "FAST");
+        heightLeft -= contentHeight;
         while (heightLeft > 0) {
-          position = -pageHeight + (imgHeight - heightLeft - pageHeight);
+          position = margin - (imgHeight - heightLeft);
           pdf.addPage();
-          pdf.addImage(canvas.toDataURL("image/png", 1.0), "PNG", 0, position, imgWidth, imgHeight, undefined, "FAST");
-          heightLeft -= pageHeight;
+          fillBg();
+          pdf.addImage(imgData, "PNG", margin, position, contentWidth, imgHeight, undefined, "FAST");
+          heightLeft -= contentHeight;
         }
       }
-      
+
       pdf.save(`${formData.title}.pdf`);
       const pdfBlob = pdf.output("blob");
       await supabase.storage.from("resumes").upload(`${user.id}/${currentResume.id}.pdf`, pdfBlob, { upsert: true });
@@ -618,18 +638,35 @@ const Builder = () => {
 
         {/* Right Panel - Preview */}
         <div className="hidden lg:flex flex-1 flex-col items-center p-8 bg-muted/30 overflow-auto">
-          <div className="mb-3 px-3 py-1 rounded-full bg-card border text-xs font-medium text-muted-foreground">
-            A4 Preview · {pageCount} {pageCount === 1 ? "page" : "pages"}
+          <div className="mb-3 flex items-center gap-3">
+            <div className="px-3 py-1 rounded-full bg-card border text-xs font-medium text-muted-foreground">
+              A4 Preview · {pageCount} {pageCount === 1 ? "page" : "pages"}
+            </div>
+            <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-card border">
+              <Button size="sm" variant="ghost" className="h-6 w-6 p-0" onClick={() => setZoom((z) => Math.max(0.3, +(z - 0.1).toFixed(2)))}>−</Button>
+              <span className="text-xs font-medium w-10 text-center">{Math.round(zoom * 100)}%</span>
+              <Button size="sm" variant="ghost" className="h-6 w-6 p-0" onClick={() => setZoom((z) => Math.min(1.5, +(z + 0.1).toFixed(2)))}>+</Button>
+              <Button size="sm" variant="ghost" className="h-6 px-2 text-xs" onClick={() => setZoom(1)}>Reset</Button>
+            </div>
           </div>
-          <div className="shadow-xl rounded-lg relative bg-white" style={{ width: `${A4_WIDTH}px`, minHeight: `${A4_HEIGHT}px` }}>
-            {Array.from({ length: Math.max(0, pageCount - 1) }).map((_, i) => (
-              <div
-                key={i}
-                className="absolute left-0 right-0 pointer-events-none"
-                style={{ top: `${(i + 1) * A4_HEIGHT}px`, borderTop: "2px dashed hsl(var(--primary) / 0.5)", zIndex: 10 }}
-              />
-            ))}
-            <div ref={resumePreviewRef} className="bg-white rounded-lg overflow-hidden" style={{ fontFamily: "'Inter', sans-serif", width: `${A4_WIDTH}px` }}>
+          <div style={{ width: `${A4_WIDTH * zoom}px`, height: `${Math.max(A4_HEIGHT, A4_HEIGHT * pageCount) * zoom}px` }}>
+            <div
+              className="shadow-xl relative bg-white"
+              style={{
+                width: `${A4_WIDTH}px`,
+                minHeight: `${A4_HEIGHT}px`,
+                transform: `scale(${zoom})`,
+                transformOrigin: "top left",
+              }}
+            >
+              {Array.from({ length: Math.max(0, pageCount - 1) }).map((_, i) => (
+                <div
+                  key={i}
+                  className="absolute left-0 right-0 pointer-events-none"
+                  style={{ top: `${(i + 1) * A4_HEIGHT}px`, borderTop: "2px dashed hsl(var(--primary) / 0.5)", zIndex: 10 }}
+                />
+              ))}
+              <div ref={resumePreviewRef} className="bg-white" style={{ fontFamily: "'Inter', sans-serif", width: `${A4_WIDTH}px` }}>
               {/* Header Section */}
               <div className="px-6 py-5" style={{ backgroundColor: theme.headerBg }}>
                 <div className="flex items-center gap-4 mb-3">
@@ -812,6 +849,7 @@ const Builder = () => {
                   </div>
                 </div>
               )}
+            </div>
             </div>
           </div>
         </div>
