@@ -301,43 +301,23 @@ const Builder = () => {
       const pdf = new jsPDF("p", "mm", "a4");
       const pageWidth = 210;
       const pageHeight = 297;
-      const margin = 12.7; // 0.5 inch
-      const contentWidth = pageWidth - margin * 2;
-      const contentHeight = pageHeight - margin * 2;
-      const imgHeight = (canvas.height * contentWidth) / canvas.width;
+      const imgWidth = pageWidth;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
       const imgData = canvas.toDataURL("image/png", 1.0);
 
-      const hslToRgb = (hsl: string): [number, number, number] => {
-        const m = hsl.match(/hsl\(\s*(\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)%\s*,\s*(\d+(?:\.\d+)?)%/i);
-        if (!m) return [255, 255, 255];
-        const h = parseFloat(m[1]) / 360, s = parseFloat(m[2]) / 100, l = parseFloat(m[3]) / 100;
-        const k = (n: number) => (n + h * 12) % 12;
-        const a = s * Math.min(l, 1 - l);
-        const f = (n: number) => l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
-        return [Math.round(255 * f(0)), Math.round(255 * f(8)), Math.round(255 * f(4))];
-      };
-      const [br, bg, bb] = hslToRgb(theme.headerBg);
-      const fillBg = () => {
-        pdf.setFillColor(br, bg, bb);
-        pdf.rect(0, 0, pageWidth, pageHeight, "F");
-      };
-
-      if (imgHeight <= contentHeight) {
-        fillBg();
-        pdf.addImage(imgData, "PNG", margin, margin, contentWidth, imgHeight, undefined, "FAST");
+      if (imgHeight <= pageHeight) {
+        pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight, undefined, "FAST");
       } else {
         let heightLeft = imgHeight;
-        let position = margin;
-        fillBg();
-        pdf.addImage(imgData, "PNG", margin, position, contentWidth, imgHeight, undefined, "FAST");
-        heightLeft -= contentHeight;
+        let position = 0;
+        pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight, undefined, "FAST");
+        heightLeft -= pageHeight;
         while (heightLeft > 0) {
-          position = margin - (imgHeight - heightLeft);
+          position = -(imgHeight - heightLeft);
           pdf.addPage();
-          fillBg();
-          pdf.addImage(imgData, "PNG", margin, position, contentWidth, imgHeight, undefined, "FAST");
-          heightLeft -= contentHeight;
+          pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight, undefined, "FAST");
+          heightLeft -= pageHeight;
         }
       }
 
