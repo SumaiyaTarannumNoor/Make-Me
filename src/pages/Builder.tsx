@@ -301,43 +301,23 @@ const Builder = () => {
       const pdf = new jsPDF("p", "mm", "a4");
       const pageWidth = 210;
       const pageHeight = 297;
-      const margin = 12.7; // 0.5 inch
-      const contentWidth = pageWidth - margin * 2;
-      const contentHeight = pageHeight - margin * 2;
-      const imgHeight = (canvas.height * contentWidth) / canvas.width;
+      const imgWidth = pageWidth;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
       const imgData = canvas.toDataURL("image/png", 1.0);
 
-      const hslToRgb = (hsl: string): [number, number, number] => {
-        const m = hsl.match(/hsl\(\s*(\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)%\s*,\s*(\d+(?:\.\d+)?)%/i);
-        if (!m) return [255, 255, 255];
-        const h = parseFloat(m[1]) / 360, s = parseFloat(m[2]) / 100, l = parseFloat(m[3]) / 100;
-        const k = (n: number) => (n + h * 12) % 12;
-        const a = s * Math.min(l, 1 - l);
-        const f = (n: number) => l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
-        return [Math.round(255 * f(0)), Math.round(255 * f(8)), Math.round(255 * f(4))];
-      };
-      const [br, bg, bb] = hslToRgb(theme.headerBg);
-      const fillBg = () => {
-        pdf.setFillColor(br, bg, bb);
-        pdf.rect(0, 0, pageWidth, pageHeight, "F");
-      };
-
-      if (imgHeight <= contentHeight) {
-        fillBg();
-        pdf.addImage(imgData, "PNG", margin, margin, contentWidth, imgHeight, undefined, "FAST");
+      if (imgHeight <= pageHeight) {
+        pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight, undefined, "FAST");
       } else {
         let heightLeft = imgHeight;
-        let position = margin;
-        fillBg();
-        pdf.addImage(imgData, "PNG", margin, position, contentWidth, imgHeight, undefined, "FAST");
-        heightLeft -= contentHeight;
+        let position = 0;
+        pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight, undefined, "FAST");
+        heightLeft -= pageHeight;
         while (heightLeft > 0) {
-          position = margin - (imgHeight - heightLeft);
+          position = -(imgHeight - heightLeft);
           pdf.addPage();
-          fillBg();
-          pdf.addImage(imgData, "PNG", margin, position, contentWidth, imgHeight, undefined, "FAST");
-          heightLeft -= contentHeight;
+          pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight, undefined, "FAST");
+          heightLeft -= pageHeight;
         }
       }
 
@@ -669,20 +649,25 @@ const Builder = () => {
               <div ref={resumePreviewRef} className="bg-white" style={{ fontFamily: "'Inter', sans-serif", width: `${A4_WIDTH}px` }}>
               {/* Header Section */}
               <div className="px-6 py-5" style={{ backgroundColor: theme.headerBg }}>
-                <div className="flex items-center gap-4 mb-3">
+                <div className="flex items-center justify-between gap-4 mb-3">
+                  <div className="flex-1 min-w-0">
+                    <h1 className="text-2xl font-bold text-white tracking-wide">{formData.fullName || "YOUR NAME"}</h1>
+                    <p className="text-sm mt-1" style={{ color: theme.primary }}>{formData.tagline || "Your designation / job title..."}</p>
+                  </div>
                   {photoUrl ? (
-                    <div
+                    <img
+                      src={photoUrl}
+                      alt="Profile"
+                      crossOrigin="anonymous"
                       style={{
-                        width: "64px",
-                        height: "64px",
-                        minWidth: "64px",
-                        minHeight: "64px",
+                        width: "128px",
+                        height: "128px",
+                        minWidth: "128px",
+                        minHeight: "128px",
                         borderRadius: "50%",
-                        backgroundImage: `url(${photoUrl})`,
-                        backgroundSize: "cover",
-                        backgroundPosition: "center",
-                        backgroundRepeat: "no-repeat",
+                        objectFit: "cover",
                         flexShrink: 0,
+                        border: `3px solid ${theme.primary}`,
                       }}
                     />
                   ) : (
@@ -690,21 +675,17 @@ const Builder = () => {
                       className="flex items-center justify-center"
                       style={{
                         backgroundColor: theme.primary,
-                        width: "64px",
-                        height: "64px",
-                        minWidth: "64px",
-                        minHeight: "64px",
+                        width: "128px",
+                        height: "128px",
+                        minWidth: "128px",
+                        minHeight: "128px",
                         borderRadius: "50%",
                         flexShrink: 0,
                       }}
                     >
-                      <User className="w-8 h-8 text-white" />
+                      <User className="w-16 h-16 text-white" />
                     </div>
                   )}
-                  <div>
-                    <h1 className="text-xl font-bold text-white tracking-wide">{formData.fullName || "YOUR NAME"}</h1>
-                    <p className="text-gray-300 text-sm mt-0.5" style={{ color: theme.primary }}>{formData.tagline || "Your designation / job title..."}</p>
-                  </div>
                 </div>
                 <div className="flex flex-wrap gap-4 text-gray-300 text-[10px]">
                   {formData.email && <div className="flex items-center gap-1.5"><Mail className="w-3.5 h-3.5" style={{ color: theme.primary }} /><span>{formData.email}</span></div>}
