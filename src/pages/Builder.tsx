@@ -242,11 +242,16 @@ const Builder = () => {
   const fitToPage = useCallback(() => {
     const pane = previewPaneRef.current;
     if (!pane) return;
-    const availableWidth = pane.clientWidth - 64;
-    const availableHeight = pane.clientHeight - 104;
+    const availableWidth = pane.clientWidth - 48;
+    const availableHeight = pane.clientHeight - 96;
     const nextZoom = Math.min(1, availableWidth / activePaper.widthPx, availableHeight / activePaper.heightPx);
     setZoom(Math.max(0.25, Number(nextZoom.toFixed(2))));
   }, [activePaper.heightPx, activePaper.widthPx]);
+
+  useEffect(() => {
+    const frame = requestAnimationFrame(fitToPage);
+    return () => cancelAnimationFrame(frame);
+  }, [fitToPage, paperSize]);
 
   const toggleSection = (sectionId: string) =>
     setSections((prev) => prev.map((s) => (s.id === sectionId ? { ...s, isOpen: !s.isOpen } : s)));
@@ -604,7 +609,7 @@ const Builder = () => {
 
       <div className="flex-1 flex">
         {/* Left Panel - Editor */}
-        <div className="w-full lg:w-1/2 border-r border-border bg-card overflow-auto p-6 space-y-4">
+        <div className="w-full md:w-1/2 border-r border-border bg-card overflow-auto p-6 space-y-4">
           {sections.map((section) => (
             <Collapsible key={section.id} open={section.isOpen} onOpenChange={() => toggleSection(section.id)}>
               <CollapsibleTrigger className="w-full flex items-center justify-between p-4 rounded-xl bg-muted/50">
@@ -838,8 +843,8 @@ const Builder = () => {
         </div>
 
         {/* Right Panel - Preview */}
-        <div ref={previewPaneRef} className="hidden lg:flex flex-1 flex-col items-center p-8 bg-muted/30 overflow-auto">
-          <div className="mb-3 flex flex-wrap items-center justify-center gap-3">
+        <div ref={previewPaneRef} className="hidden md:flex flex-1 flex-col items-center p-4 bg-muted/30 overflow-auto">
+          <div className="mb-3 flex flex-wrap items-center justify-center gap-2">
             <div className="px-3 py-1 rounded-full bg-card border text-xs font-medium text-muted-foreground">
               {activePaper.label} Preview · {pageCount} {pageCount === 1 ? "page" : "pages"}
             </div>
