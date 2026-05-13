@@ -197,6 +197,7 @@ const Builder = () => {
         if (resume.experience?.length) setExperiences(resume.experience as any);
         if ((resume.personal_info as any)?.learnedExperiences?.length) setLearnedExperiences((resume.personal_info as any).learnedExperiences);
         if ((resume.personal_info as any)?.references?.length) setReferences((resume.personal_info as any).references);
+        if ((resume.personal_info as any)?.paperSize && PAPER_SIZES[(resume.personal_info as any).paperSize as PaperSize]) setPaperSize((resume.personal_info as any).paperSize);
         if (resume.education?.length) setEducation(resume.education as any);
         if (resume.skills?.length) {
           const skills = resume.skills as any[];
@@ -292,6 +293,7 @@ const Builder = () => {
         tagline: formData.tagline,
         learnedExperiences,
         references,
+        paperSize,
       },
       summary: formData.summary,
       experience: experiences,
@@ -352,6 +354,204 @@ const Builder = () => {
       setGenerating(false);
     }
   };
+
+  const renderResumeContent = (contentRef: typeof resumePreviewRef | null = null, offsetY = 0) => (
+    <div
+      ref={contentRef ?? undefined}
+      className="bg-white"
+      style={{
+        fontFamily: "'Inter', sans-serif",
+        width: `${activePaper.widthPx}px`,
+        transform: offsetY ? `translateY(-${offsetY}px)` : undefined,
+      }}
+    >
+      {/* Header Section */}
+      <div className="px-6 py-5" style={{ backgroundColor: theme.headerBg }}>
+        <div className="flex items-center justify-between gap-4 mb-3">
+          <div className="flex-1 min-w-0">
+            <h1 className="text-2xl font-bold text-white tracking-wide">{formData.fullName || "YOUR NAME"}</h1>
+            <p className="text-sm mt-1" style={{ color: theme.primary }}>{formData.tagline || "Your designation / job title..."}</p>
+          </div>
+          {photoUrl ? (
+            <div
+              role="img"
+              aria-label="Profile"
+              style={{
+                width: "128px",
+                height: "128px",
+                minWidth: "128px",
+                minHeight: "128px",
+                borderRadius: "50%",
+                backgroundImage: `url(${photoUrl})`,
+                backgroundPosition: "center",
+                backgroundSize: "cover",
+                backgroundRepeat: "no-repeat",
+                flexShrink: 0,
+                border: `3px solid ${theme.primary}`,
+              }}
+            />
+          ) : (
+            <div
+              className="flex items-center justify-center"
+              style={{
+                backgroundColor: theme.primary,
+                width: "128px",
+                height: "128px",
+                minWidth: "128px",
+                minHeight: "128px",
+                borderRadius: "50%",
+                flexShrink: 0,
+              }}
+            >
+              <User className="w-16 h-16 text-white" />
+            </div>
+          )}
+        </div>
+        <div className="flex flex-wrap gap-4 text-gray-300 text-[10px]">
+          {formData.email && <div className="flex items-center gap-1.5"><Mail className="w-3.5 h-3.5" style={{ color: theme.primary }} /><span>{formData.email}</span></div>}
+          {formData.phone && <div className="flex items-center gap-1.5"><Phone className="w-3.5 h-3.5" style={{ color: theme.primary }} /><span>{formData.phone}</span></div>}
+          {formData.location && <div className="flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" style={{ color: theme.primary }} /><span>{formData.location}</span></div>}
+          {formData.linkedin && <div className="flex items-center gap-1.5"><Linkedin className="w-3.5 h-3.5" style={{ color: theme.primary }} /><span>{formData.linkedin}</span></div>}
+          {formData.portfolio && <div className="flex items-center gap-1.5"><Globe className="w-3.5 h-3.5" style={{ color: theme.primary }} /><span>{formData.portfolio}</span></div>}
+        </div>
+      </div>
+
+      {/* Two Column Layout */}
+      <div className="flex text-xs">
+        {/* Left Column - 60% */}
+        <div className="w-[60%] p-5 pr-4">
+          {formData.summary && (
+            <div className="mb-5">
+              <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Professional Summary</h2>
+              <p className="text-[10px] text-gray-700 leading-relaxed whitespace-pre-line">{formData.summary}</p>
+            </div>
+          )}
+          <div className="mb-5">
+            <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Work Experience</h2>
+            <div className="space-y-3">
+              {experiences.filter((e) => e.company || e.title).map((exp) => (
+                <div key={exp.id}>
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h3 className="font-semibold text-gray-900">{exp.title || "Job Title"} {exp.type && `(${exp.type})`}</h3>
+                      <p className="text-gray-600 text-[10px]">{exp.company}</p>
+                    </div>
+                    <span className="text-[9px] text-gray-500 whitespace-nowrap">{exp.startDate} - {exp.endDate || "Present"}</span>
+                  </div>
+                  {exp.description && (
+                    <ul className="mt-1.5 text-[10px] text-gray-600 space-y-0.5">
+                      {exp.description.split("\n").filter(Boolean).map((line, i) => (
+                        <li key={i} className="flex items-start gap-1"><span style={{ color: theme.primary }}>•</span><span>{line.replace(/^[•\-]\s*/, "")}</span></li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              ))}
+              {experiences.filter((e) => e.company || e.title).length === 0 && <p className="text-gray-400 italic text-[10px]">Add your work experience...</p>}
+            </div>
+          </div>
+
+          {learnedExperiences.some((l) => l.title || l.description) && (
+            <div className="mb-5">
+              <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Learned Experience</h2>
+              <div className="space-y-2">
+                {learnedExperiences.filter((l) => l.title || l.description).map((item) => (
+                  <div key={item.id}>
+                    {item.title && <h3 className="font-semibold text-gray-900 text-[11px]">{item.title}</h3>}
+                    {item.description && (
+                      <ul className="mt-1 text-[10px] text-gray-600 space-y-0.5">
+                        {item.description.split("\n").filter(Boolean).map((line, i) => (
+                          <li key={i} className="flex items-start gap-1"><span style={{ color: theme.primary }}>•</span><span>{line.replace(/^[•\-]\s*/, "")}</span></li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div>
+            <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Education</h2>
+            <div className="space-y-2">
+              {education.filter((e) => e.institution || e.degree).map((edu) => (
+                <div key={edu.id} className="flex justify-between items-start">
+                  <div>
+                    <h3 className="font-semibold text-gray-900 text-[11px]">{edu.degree || "Degree"}</h3>
+                    <p className="text-gray-600 text-[10px]">{edu.institution}</p>
+                    {edu.grade && <p className="text-gray-500 text-[9px]">CGPA: {edu.grade}</p>}
+                  </div>
+                  <span className="text-[9px] text-gray-500">{edu.year}</span>
+                </div>
+              ))}
+              {education.filter((e) => e.institution || e.degree).length === 0 && <p className="text-gray-400 italic text-[10px]">Add your education...</p>}
+            </div>
+          </div>
+        </div>
+
+        {/* Right Column - 40% */}
+        <div className="w-[40%] p-5 pl-4" style={{ backgroundColor: theme.light }}>
+          <div className="mb-5">
+            <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Skills</h2>
+            <div className="space-y-2">
+              {skillGroups.map((group) => (
+                <div key={group.id}>
+                  {group.category && <p className="font-medium text-gray-700 text-[10px] mb-1">{group.category}</p>}
+                  <div className="flex flex-wrap gap-1">
+                    {group.items.map((skill, j) => <span key={j} className="px-1.5 py-0.5 rounded text-[9px] text-gray-700 bg-white/70">{skill}</span>)}
+                  </div>
+                </div>
+              ))}
+              {skillGroups.every((g) => g.items.length === 0) && <p className="text-gray-400 italic text-[10px]">Add your skills...</p>}
+            </div>
+          </div>
+
+          {projects.some((p) => p.name) && (
+            <div className="mb-5">
+              <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Projects</h2>
+              <div className="space-y-2">
+                {projects.filter((p) => p.name).map((project) => (
+                  <div key={project.id}>
+                    <h3 className="font-semibold text-gray-900 text-[10px]">{project.name}</h3>
+                    <p className="text-gray-600 text-[9px]">{project.description}</p>
+                    {project.link && <p className="text-[8px]" style={{ color: theme.primary }}>{project.link}</p>}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {certifications.length > 0 && (
+            <div>
+              <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Training & Certificates</h2>
+              <ul className="space-y-1">
+                {certifications.map((cert, i) => (
+                  <li key={i} className="flex items-start gap-1 text-[10px] text-gray-700"><span style={{ color: theme.primary }}>•</span><span>{cert}</span></li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {references.some((r) => r.name || r.organization) && (
+        <div className="px-5 py-4 border-t" style={{ borderColor: theme.primary }}>
+          <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>References</h2>
+          <div className="grid grid-cols-2 gap-4">
+            {references.filter((r) => r.name || r.organization).map((r) => (
+              <div key={r.id} className="text-[10px] text-gray-700">
+                <p className="font-semibold text-gray-900 text-[11px]">{r.name}</p>
+                {r.designation && <p className="text-gray-600">{r.designation}</p>}
+                {r.organization && <p className="text-gray-600">{r.organization}</p>}
+                {r.email && <p className="flex items-center gap-1"><Mail className="w-2.5 h-2.5" style={{ color: theme.primary }} />{r.email}</p>}
+                {r.phone && <p className="flex items-center gap-1"><Phone className="w-2.5 h-2.5" style={{ color: theme.primary }} />{r.phone}</p>}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
 
   if (!user)
     return (
@@ -638,221 +838,66 @@ const Builder = () => {
         </div>
 
         {/* Right Panel - Preview */}
-        <div className="hidden lg:flex flex-1 flex-col items-center p-8 bg-muted/30 overflow-auto">
-          <div className="mb-3 flex items-center gap-3">
+        <div ref={previewPaneRef} className="hidden lg:flex flex-1 flex-col items-center p-8 bg-muted/30 overflow-auto">
+          <div className="mb-3 flex flex-wrap items-center justify-center gap-3">
             <div className="px-3 py-1 rounded-full bg-card border text-xs font-medium text-muted-foreground">
-              A4 Preview · {pageCount} {pageCount === 1 ? "page" : "pages"}
+              {activePaper.label} Preview · {pageCount} {pageCount === 1 ? "page" : "pages"}
             </div>
+            <select
+              value={paperSize}
+              onChange={(e) => setPaperSize(e.target.value as PaperSize)}
+              className="h-8 px-3 rounded-full bg-card border text-xs font-medium text-foreground focus:ring-2 focus:ring-primary"
+            >
+              {Object.entries(PAPER_SIZES).map(([key, paper]) => (
+                <option key={key} value={key}>{paper.label}</option>
+              ))}
+            </select>
             <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-card border">
-              <Button size="sm" variant="ghost" className="h-6 w-6 p-0" onClick={() => setZoom((z) => Math.max(0.3, +(z - 0.1).toFixed(2)))}>−</Button>
+              <Button size="sm" variant="ghost" className="h-6 w-6 p-0" onClick={() => setZoom((z) => Math.max(0.25, +(z - 0.05).toFixed(2)))}>−</Button>
               <span className="text-xs font-medium w-10 text-center">{Math.round(zoom * 100)}%</span>
-              <Button size="sm" variant="ghost" className="h-6 w-6 p-0" onClick={() => setZoom((z) => Math.min(1.5, +(z + 0.1).toFixed(2)))}>+</Button>
-              <Button size="sm" variant="ghost" className="h-6 px-2 text-xs" onClick={() => setZoom(1)}>Reset</Button>
+              <Button size="sm" variant="ghost" className="h-6 w-6 p-0" onClick={() => setZoom((z) => Math.min(1.5, +(z + 0.05).toFixed(2)))}>+</Button>
+              <Button size="sm" variant="ghost" className="h-6 px-2 text-xs" onClick={fitToPage}>Fit</Button>
+              <Button size="sm" variant="ghost" className="h-6 px-2 text-xs" onClick={() => setZoom(1)}>100%</Button>
             </div>
           </div>
-          <div style={{ width: `${A4_WIDTH * zoom}px`, height: `${Math.max(A4_HEIGHT, A4_HEIGHT * pageCount) * zoom}px` }}>
-            <div
-              className="shadow-xl relative bg-white"
-              style={{
-                width: `${A4_WIDTH}px`,
-                minHeight: `${A4_HEIGHT}px`,
-                transform: `scale(${zoom})`,
-                transformOrigin: "top left",
-              }}
-            >
-              {Array.from({ length: Math.max(0, pageCount - 1) }).map((_, i) => (
+
+          <div
+            className="fixed top-0 pointer-events-none"
+            style={{ left: "-10000px", width: `${activePaper.widthPx}px` }}
+            aria-hidden="true"
+          >
+            {renderResumeContent(resumePreviewRef)}
+            {Array.from({ length: pageCount }).map((_, i) => (
+              <div
+                key={`export-${paperSize}-${i}`}
+                ref={(node) => { pageRefs.current[i] = node; }}
+                className="relative bg-white overflow-hidden"
+                style={{ width: `${activePaper.widthPx}px`, height: `${activePaper.heightPx}px` }}
+              >
+                {renderResumeContent(null, i * activePaper.heightPx)}
+              </div>
+            ))}
+          </div>
+
+          <div className="space-y-6" style={{ width: `${activePaper.widthPx * zoom}px` }}>
+            {Array.from({ length: pageCount }).map((_, i) => (
+              <div
+                key={`preview-${paperSize}-${i}`}
+                style={{ width: `${activePaper.widthPx * zoom}px`, height: `${activePaper.heightPx * zoom}px` }}
+              >
                 <div
-                  key={i}
-                  className="absolute left-0 right-0 pointer-events-none"
-                  style={{ top: `${(i + 1) * A4_HEIGHT}px`, borderTop: "2px dashed hsl(var(--primary) / 0.5)", zIndex: 10 }}
-                />
-              ))}
-              <div ref={resumePreviewRef} className="bg-white" style={{ fontFamily: "'Inter', sans-serif", width: `${A4_WIDTH}px` }}>
-              {/* Header Section */}
-              <div className="px-6 py-5" style={{ backgroundColor: theme.headerBg }}>
-                <div className="flex items-center justify-between gap-4 mb-3">
-                  <div className="flex-1 min-w-0">
-                    <h1 className="text-2xl font-bold text-white tracking-wide">{formData.fullName || "YOUR NAME"}</h1>
-                    <p className="text-sm mt-1" style={{ color: theme.primary }}>{formData.tagline || "Your designation / job title..."}</p>
-                  </div>
-                  {photoUrl ? (
-                    <img
-                      src={photoUrl}
-                      alt="Profile"
-                      crossOrigin="anonymous"
-                      style={{
-                        width: "128px",
-                        height: "128px",
-                        minWidth: "128px",
-                        minHeight: "128px",
-                        borderRadius: "50%",
-                        objectFit: "cover",
-                        flexShrink: 0,
-                        border: `3px solid ${theme.primary}`,
-                      }}
-                    />
-                  ) : (
-                    <div
-                      className="flex items-center justify-center"
-                      style={{
-                        backgroundColor: theme.primary,
-                        width: "128px",
-                        height: "128px",
-                        minWidth: "128px",
-                        minHeight: "128px",
-                        borderRadius: "50%",
-                        flexShrink: 0,
-                      }}
-                    >
-                      <User className="w-16 h-16 text-white" />
-                    </div>
-                  )}
-                </div>
-                <div className="flex flex-wrap gap-4 text-gray-300 text-[10px]">
-                  {formData.email && <div className="flex items-center gap-1.5"><Mail className="w-3.5 h-3.5" style={{ color: theme.primary }} /><span>{formData.email}</span></div>}
-                  {formData.phone && <div className="flex items-center gap-1.5"><Phone className="w-3.5 h-3.5" style={{ color: theme.primary }} /><span>{formData.phone}</span></div>}
-                  {formData.location && <div className="flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" style={{ color: theme.primary }} /><span>{formData.location}</span></div>}
-                  {formData.linkedin && <div className="flex items-center gap-1.5"><Linkedin className="w-3.5 h-3.5" style={{ color: theme.primary }} /><span>{formData.linkedin}</span></div>}
-                  {formData.portfolio && <div className="flex items-center gap-1.5"><Globe className="w-3.5 h-3.5" style={{ color: theme.primary }} /><span>{formData.portfolio}</span></div>}
+                  className="relative shadow-xl bg-white overflow-hidden"
+                  style={{
+                    width: `${activePaper.widthPx}px`,
+                    height: `${activePaper.heightPx}px`,
+                    transform: `scale(${zoom})`,
+                    transformOrigin: "top left",
+                  }}
+                >
+                  {renderResumeContent(null, i * activePaper.heightPx)}
                 </div>
               </div>
-
-              {/* Two Column Layout */}
-              <div className="flex text-xs">
-                {/* Left Column - 60% */}
-                <div className="w-[60%] p-5 pr-4">
-                  {formData.summary && (
-                    <div className="mb-5">
-                      <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Professional Summary</h2>
-                      <p className="text-[10px] text-gray-700 leading-relaxed whitespace-pre-line">{formData.summary}</p>
-                    </div>
-                  )}
-                  <div className="mb-5">
-                    <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Work Experience</h2>
-                    <div className="space-y-3">
-                      {experiences.filter((e) => e.company || e.title).map((exp) => (
-                        <div key={exp.id}>
-                          <div className="flex justify-between items-start">
-                            <div>
-                              <h3 className="font-semibold text-gray-900">{exp.title || "Job Title"} {exp.type && `(${exp.type})`}</h3>
-                              <p className="text-gray-600 text-[10px]">{exp.company}</p>
-                            </div>
-                            <span className="text-[9px] text-gray-500 whitespace-nowrap">{exp.startDate} - {exp.endDate || "Present"}</span>
-                          </div>
-                          {exp.description && (
-                            <ul className="mt-1.5 text-[10px] text-gray-600 space-y-0.5">
-                              {exp.description.split("\n").filter(Boolean).map((line, i) => (
-                                <li key={i} className="flex items-start gap-1"><span style={{ color: theme.primary }}>•</span><span>{line.replace(/^[•\-]\s*/, "")}</span></li>
-                              ))}
-                            </ul>
-                          )}
-                        </div>
-                      ))}
-                      {experiences.filter((e) => e.company || e.title).length === 0 && <p className="text-gray-400 italic text-[10px]">Add your work experience...</p>}
-                    </div>
-                  </div>
-
-                  {learnedExperiences.some((l) => l.title || l.description) && (
-                    <div className="mb-5">
-                      <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Learned Experience</h2>
-                      <div className="space-y-2">
-                        {learnedExperiences.filter((l) => l.title || l.description).map((item) => (
-                          <div key={item.id}>
-                            {item.title && <h3 className="font-semibold text-gray-900 text-[11px]">{item.title}</h3>}
-                            {item.description && (
-                              <ul className="mt-1 text-[10px] text-gray-600 space-y-0.5">
-                                {item.description.split("\n").filter(Boolean).map((line, i) => (
-                                  <li key={i} className="flex items-start gap-1"><span style={{ color: theme.primary }}>•</span><span>{line.replace(/^[•\-]\s*/, "")}</span></li>
-                                ))}
-                              </ul>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  <div>
-                    <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Education</h2>
-                    <div className="space-y-2">
-                      {education.filter((e) => e.institution || e.degree).map((edu) => (
-                        <div key={edu.id} className="flex justify-between items-start">
-                          <div>
-                            <h3 className="font-semibold text-gray-900 text-[11px]">{edu.degree || "Degree"}</h3>
-                            <p className="text-gray-600 text-[10px]">{edu.institution}</p>
-                            {edu.grade && <p className="text-gray-500 text-[9px]">CGPA: {edu.grade}</p>}
-                          </div>
-                          <span className="text-[9px] text-gray-500">{edu.year}</span>
-                        </div>
-                      ))}
-                      {education.filter((e) => e.institution || e.degree).length === 0 && <p className="text-gray-400 italic text-[10px]">Add your education...</p>}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Right Column - 40% */}
-                <div className="w-[40%] p-5 pl-4" style={{ backgroundColor: theme.light }}>
-                  <div className="mb-5">
-                    <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Skills</h2>
-                    <div className="space-y-2">
-                      {skillGroups.map((group) => (
-                        <div key={group.id}>
-                          {group.category && <p className="font-medium text-gray-700 text-[10px] mb-1">{group.category}</p>}
-                          <div className="flex flex-wrap gap-1">
-                            {group.items.map((skill, j) => <span key={j} className="px-1.5 py-0.5 rounded text-[9px] text-gray-700 bg-white/70">{skill}</span>)}
-                          </div>
-                        </div>
-                      ))}
-                      {skillGroups.every((g) => g.items.length === 0) && <p className="text-gray-400 italic text-[10px]">Add your skills...</p>}
-                    </div>
-                  </div>
-
-                  {projects.some((p) => p.name) && (
-                    <div className="mb-5">
-                      <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Projects</h2>
-                      <div className="space-y-2">
-                        {projects.filter((p) => p.name).map((project) => (
-                          <div key={project.id}>
-                            <h3 className="font-semibold text-gray-900 text-[10px]">{project.name}</h3>
-                            <p className="text-gray-600 text-[9px]">{project.description}</p>
-                            {project.link && <p className="text-[8px]" style={{ color: theme.primary }}>{project.link}</p>}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {certifications.length > 0 && (
-                    <div>
-                      <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Training & Certificates</h2>
-                      <ul className="space-y-1">
-                        {certifications.map((cert, i) => (
-                          <li key={i} className="flex items-start gap-1 text-[10px] text-gray-700"><span style={{ color: theme.primary }}>•</span><span>{cert}</span></li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {references.some((r) => r.name || r.organization) && (
-                <div className="px-5 py-4 border-t" style={{ borderColor: theme.primary }}>
-                  <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>References</h2>
-                  <div className="grid grid-cols-2 gap-4">
-                    {references.filter((r) => r.name || r.organization).map((r) => (
-                      <div key={r.id} className="text-[10px] text-gray-700">
-                        <p className="font-semibold text-gray-900 text-[11px]">{r.name}</p>
-                        {r.designation && <p className="text-gray-600">{r.designation}</p>}
-                        {r.organization && <p className="text-gray-600">{r.organization}</p>}
-                        {r.email && <p className="flex items-center gap-1"><Mail className="w-2.5 h-2.5" style={{ color: theme.primary }} />{r.email}</p>}
-                        {r.phone && <p className="flex items-center gap-1"><Phone className="w-2.5 h-2.5" style={{ color: theme.primary }} />{r.phone}</p>}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-            </div>
+            ))}
           </div>
         </div>
       </div>
