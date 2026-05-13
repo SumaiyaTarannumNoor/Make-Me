@@ -26,6 +26,13 @@ const resumeColorSchemes: Record<ResumeColorScheme, { name: string; primary: str
   ...premiumColorSchemes,
 };
 
+type PaperSize = "a4" | "letter";
+
+const PAPER_SIZES: Record<PaperSize, { label: string; widthPx: number; heightPx: number; widthMm: number; heightMm: number }> = {
+  a4: { label: "A4", widthPx: 794, heightPx: 1123, widthMm: 210, heightMm: 297 },
+  letter: { label: "US Letter", widthPx: 816, heightPx: 1056, widthMm: 215.9, heightMm: 279.4 },
+};
+
 const Builder = () => {
   const { id } = useParams();
   const [searchParams] = useSearchParams();
@@ -34,6 +41,8 @@ const Builder = () => {
   const { resumes, updateResume, createResume } = useResumes();
   const { toast } = useToast();
   const resumePreviewRef = useRef<HTMLDivElement>(null);
+  const pageRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const previewPaneRef = useRef<HTMLDivElement>(null);
   const photoInputRef = useRef<HTMLInputElement>(null);
   const [saving, setSaving] = useState(false);
   const [generating, setGenerating] = useState(false);
@@ -97,8 +106,10 @@ const Builder = () => {
   ]);
 
   const [pageCount, setPageCount] = useState(1);
-  const [zoom, setZoom] = useState(1);
+  const [zoom, setZoom] = useState(0.55);
+  const [paperSize, setPaperSize] = useState<PaperSize>("a4");
   const theme = resumeColorSchemes[colorScheme];
+  const activePaper = PAPER_SIZES[paperSize];
 
   // Auto-save to localStorage whenever data changes
   const saveToLocalStorage = useCallback(() => {
@@ -114,10 +125,11 @@ const Builder = () => {
       references,
       colorScheme,
       photoUrl,
+      paperSize,
     };
     localStorage.setItem(AUTOSAVE_KEY + id, JSON.stringify(data));
     setHasUnsavedChanges(true);
-  }, [id, formData, experiences, learnedExperiences, education, skillGroups, projects, certifications, references, colorScheme, photoUrl]);
+  }, [id, formData, experiences, learnedExperiences, education, skillGroups, projects, certifications, references, colorScheme, photoUrl, paperSize]);
 
   // Auto-save effect
   useEffect(() => {
@@ -144,6 +156,7 @@ const Builder = () => {
           if (data.references) setReferences(data.references);
           if (data.colorScheme) setColorScheme(data.colorScheme);
           if (data.photoUrl) setPhotoUrl(data.photoUrl);
+          if (data.paperSize && PAPER_SIZES[data.paperSize as PaperSize]) setPaperSize(data.paperSize);
           setHasUnsavedChanges(true);
           return; // Use localStorage data instead of database
         } catch (e) {
@@ -184,6 +197,7 @@ const Builder = () => {
         if (resume.experience?.length) setExperiences(resume.experience as any);
         if ((resume.personal_info as any)?.learnedExperiences?.length) setLearnedExperiences((resume.personal_info as any).learnedExperiences);
         if ((resume.personal_info as any)?.references?.length) setReferences((resume.personal_info as any).references);
+        if ((resume.personal_info as any)?.paperSize && PAPER_SIZES[(resume.personal_info as any).paperSize as PaperSize]) setPaperSize((resume.personal_info as any).paperSize);
         if (resume.education?.length) setEducation(resume.education as any);
         if (resume.skills?.length) {
           const skills = resume.skills as any[];
@@ -211,19 +225,33 @@ const Builder = () => {
     }
   }, [id, resumes]);
 
-  // A4 size at 96dpi: 794 x 1123 px
-  const A4_WIDTH = 794;
-  const A4_HEIGHT = 1123;
-
   useEffect(() => {
     if (!resumePreviewRef.current) return;
-    const observer = new ResizeObserver(() => {
-      const h = resumePreviewRef.current?.scrollHeight || 0;
-      setPageCount(Math.max(1, Math.ceil(h / A4_HEIGHT)));
-    });
+
+    const updatePageCount = () => {
+      const h = resumePreviewRef.current?.scrollHeight || activePaper.heightPx;
+      setPageCount(Math.max(1, Math.ceil(h / activePaper.heightPx)));
+    };
+
+    updatePageCount();
+    const observer = new ResizeObserver(updatePageCount);
     observer.observe(resumePreviewRef.current);
     return () => observer.disconnect();
-  }, []);
+  }, [activePaper.heightPx, activePaper.widthPx]);
+
+  const fitToPage = useCallback(() => {
+    const pane = previewPaneRef.current;
+    if (!pane) return;
+    const availableWidth = pane.clientWidth - 48;
+    const availableHeight = pane.clientHeight - 96;
+    const nextZoom = Math.min(1, availableWidth / activePaper.widthPx, availableHeight / activePaper.heightPx);
+    setZoom(Math.max(0.25, Number(nextZoom.toFixed(2))));
+  }, [activePaper.heightPx, activePaper.widthPx]);
+
+  useEffect(() => {
+    const frame = requestAnimationFrame(fitToPage);
+    return () => cancelAnimationFrame(frame);
+  }, [fitToPage, paperSize]);
 
   const toggleSection = (sectionId: string) =>
     setSections((prev) => prev.map((s) => (s.id === sectionId ? { ...s, isOpen: !s.isOpen } : s)));
@@ -270,6 +298,7 @@ const Builder = () => {
         tagline: formData.tagline,
         learnedExperiences,
         references,
+        paperSize,
       },
       summary: formData.summary,
       experience: experiences,
@@ -286,51 +315,248 @@ const Builder = () => {
   };
 
   const handleDownloadPDF = async () => {
-    if (!resumePreviewRef.current || !currentResume || !user) return;
+    if (!currentResume || !user) return;
+    const pages = pageRefs.current.slice(0, pageCount).filter(Boolean) as HTMLDivElement[];
+    if (!pages.length) return;
+
     setGenerating(true);
     try {
-      const canvas = await html2canvas(resumePreviewRef.current, {
-        scale: 3,
-        useCORS: true,
-        allowTaint: true,
-        logging: false,
-        imageTimeout: 0,
-        backgroundColor: theme.headerBg,
-      });
+      const pdf = new jsPDF("p", "mm", [activePaper.widthMm, activePaper.heightMm]);
 
-      const pdf = new jsPDF("p", "mm", "a4");
-      const pageWidth = 210;
-      const pageHeight = 297;
-      const imgWidth = pageWidth;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      for (let i = 0; i < pages.length; i += 1) {
+        const canvas = await html2canvas(pages[i], {
+          scale: 4,
+          useCORS: true,
+          allowTaint: true,
+          logging: false,
+          imageTimeout: 15000,
+          backgroundColor: "#ffffff",
+          windowWidth: activePaper.widthPx,
+          windowHeight: activePaper.heightPx,
+        });
 
-      const imgData = canvas.toDataURL("image/png", 1.0);
-
-      if (imgHeight <= pageHeight) {
-        pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight, undefined, "FAST");
-      } else {
-        let heightLeft = imgHeight;
-        let position = 0;
-        pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight, undefined, "FAST");
-        heightLeft -= pageHeight;
-        while (heightLeft > 0) {
-          position = -(imgHeight - heightLeft);
-          pdf.addPage();
-          pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight, undefined, "FAST");
-          heightLeft -= pageHeight;
-        }
+        if (i > 0) pdf.addPage([activePaper.widthMm, activePaper.heightMm], "p");
+        pdf.addImage(
+          canvas.toDataURL("image/png", 1.0),
+          "PNG",
+          0,
+          0,
+          activePaper.widthMm,
+          activePaper.heightMm,
+          undefined,
+          "NONE"
+        );
       }
 
-      pdf.save(`${formData.title}.pdf`);
       const pdfBlob = pdf.output("blob");
+      pdf.save(`${formData.title}.pdf`);
       await supabase.storage.from("resumes").upload(`${user.id}/${currentResume.id}.pdf`, pdfBlob, { upsert: true });
       toast({ title: "PDF saved!" });
     } catch (e) {
       console.error("PDF generation error:", e);
       toast({ title: "Error generating PDF", variant: "destructive" });
+    } finally {
+      setGenerating(false);
     }
-    setGenerating(false);
   };
+
+  const renderResumeContent = (contentRef: typeof resumePreviewRef | null = null, offsetY = 0) => (
+    <div
+      ref={contentRef ?? undefined}
+      className="bg-white"
+      style={{
+        fontFamily: "'Inter', sans-serif",
+        width: `${activePaper.widthPx}px`,
+        transform: offsetY ? `translateY(-${offsetY}px)` : undefined,
+      }}
+    >
+      {/* Header Section */}
+      <div className="px-6 py-5" style={{ backgroundColor: theme.headerBg }}>
+        <div className="flex items-center justify-between gap-4 mb-3">
+          <div className="flex-1 min-w-0">
+            <h1 className="text-2xl font-bold text-white tracking-wide">{formData.fullName || "YOUR NAME"}</h1>
+            <p className="text-sm mt-1" style={{ color: theme.primary }}>{formData.tagline || "Your designation / job title..."}</p>
+          </div>
+          {photoUrl ? (
+            <div
+              role="img"
+              aria-label="Profile"
+              style={{
+                width: "128px",
+                height: "128px",
+                minWidth: "128px",
+                minHeight: "128px",
+                borderRadius: "50%",
+                backgroundImage: `url(${photoUrl})`,
+                backgroundPosition: "center",
+                backgroundSize: "cover",
+                backgroundRepeat: "no-repeat",
+                flexShrink: 0,
+                border: `3px solid ${theme.primary}`,
+              }}
+            />
+          ) : (
+            <div
+              className="flex items-center justify-center"
+              style={{
+                backgroundColor: theme.primary,
+                width: "128px",
+                height: "128px",
+                minWidth: "128px",
+                minHeight: "128px",
+                borderRadius: "50%",
+                flexShrink: 0,
+              }}
+            >
+              <User className="w-16 h-16 text-white" />
+            </div>
+          )}
+        </div>
+        <div className="flex flex-wrap gap-4 text-gray-300 text-[10px]">
+          {formData.email && <div className="flex items-center gap-1.5"><Mail className="w-3.5 h-3.5" style={{ color: theme.primary }} /><span>{formData.email}</span></div>}
+          {formData.phone && <div className="flex items-center gap-1.5"><Phone className="w-3.5 h-3.5" style={{ color: theme.primary }} /><span>{formData.phone}</span></div>}
+          {formData.location && <div className="flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" style={{ color: theme.primary }} /><span>{formData.location}</span></div>}
+          {formData.linkedin && <div className="flex items-center gap-1.5"><Linkedin className="w-3.5 h-3.5" style={{ color: theme.primary }} /><span>{formData.linkedin}</span></div>}
+          {formData.portfolio && <div className="flex items-center gap-1.5"><Globe className="w-3.5 h-3.5" style={{ color: theme.primary }} /><span>{formData.portfolio}</span></div>}
+        </div>
+      </div>
+
+      {/* Two Column Layout */}
+      <div className="flex text-xs">
+        {/* Left Column - 60% */}
+        <div className="w-[60%] p-5 pr-4">
+          {formData.summary && (
+            <div className="mb-5">
+              <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Professional Summary</h2>
+              <p className="text-[10px] text-gray-700 leading-relaxed whitespace-pre-line">{formData.summary}</p>
+            </div>
+          )}
+          <div className="mb-5">
+            <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Work Experience</h2>
+            <div className="space-y-3">
+              {experiences.filter((e) => e.company || e.title).map((exp) => (
+                <div key={exp.id}>
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h3 className="font-semibold text-gray-900">{exp.title || "Job Title"} {exp.type && `(${exp.type})`}</h3>
+                      <p className="text-gray-600 text-[10px]">{exp.company}</p>
+                    </div>
+                    <span className="text-[9px] text-gray-500 whitespace-nowrap">{exp.startDate} - {exp.endDate || "Present"}</span>
+                  </div>
+                  {exp.description && (
+                    <ul className="mt-1.5 text-[10px] text-gray-600 space-y-0.5">
+                      {exp.description.split("\n").filter(Boolean).map((line, i) => (
+                        <li key={i} className="flex items-start gap-1"><span style={{ color: theme.primary }}>•</span><span>{line.replace(/^[•-]\s*/, "")}</span></li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              ))}
+              {experiences.filter((e) => e.company || e.title).length === 0 && <p className="text-gray-400 italic text-[10px]">Add your work experience...</p>}
+            </div>
+          </div>
+
+          {learnedExperiences.some((l) => l.title || l.description) && (
+            <div className="mb-5">
+              <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Learned Experience</h2>
+              <div className="space-y-2">
+                {learnedExperiences.filter((l) => l.title || l.description).map((item) => (
+                  <div key={item.id}>
+                    {item.title && <h3 className="font-semibold text-gray-900 text-[11px]">{item.title}</h3>}
+                    {item.description && (
+                      <ul className="mt-1 text-[10px] text-gray-600 space-y-0.5">
+                        {item.description.split("\n").filter(Boolean).map((line, i) => (
+                          <li key={i} className="flex items-start gap-1"><span style={{ color: theme.primary }}>•</span><span>{line.replace(/^[•-]\s*/, "")}</span></li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div>
+            <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Education</h2>
+            <div className="space-y-2">
+              {education.filter((e) => e.institution || e.degree).map((edu) => (
+                <div key={edu.id} className="flex justify-between items-start">
+                  <div>
+                    <h3 className="font-semibold text-gray-900 text-[11px]">{edu.degree || "Degree"}</h3>
+                    <p className="text-gray-600 text-[10px]">{edu.institution}</p>
+                    {edu.grade && <p className="text-gray-500 text-[9px]">CGPA: {edu.grade}</p>}
+                  </div>
+                  <span className="text-[9px] text-gray-500">{edu.year}</span>
+                </div>
+              ))}
+              {education.filter((e) => e.institution || e.degree).length === 0 && <p className="text-gray-400 italic text-[10px]">Add your education...</p>}
+            </div>
+          </div>
+        </div>
+
+        {/* Right Column - 40% */}
+        <div className="w-[40%] p-5 pl-4" style={{ backgroundColor: theme.light }}>
+          <div className="mb-5">
+            <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Skills</h2>
+            <div className="space-y-2">
+              {skillGroups.map((group) => (
+                <div key={group.id}>
+                  {group.category && <p className="font-medium text-gray-700 text-[10px] mb-1">{group.category}</p>}
+                  <div className="flex flex-wrap gap-1">
+                    {group.items.map((skill, j) => <span key={j} className="px-1.5 py-0.5 rounded text-[9px] text-gray-700 bg-white/70">{skill}</span>)}
+                  </div>
+                </div>
+              ))}
+              {skillGroups.every((g) => g.items.length === 0) && <p className="text-gray-400 italic text-[10px]">Add your skills...</p>}
+            </div>
+          </div>
+
+          {projects.some((p) => p.name) && (
+            <div className="mb-5">
+              <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Projects</h2>
+              <div className="space-y-2">
+                {projects.filter((p) => p.name).map((project) => (
+                  <div key={project.id}>
+                    <h3 className="font-semibold text-gray-900 text-[10px]">{project.name}</h3>
+                    <p className="text-gray-600 text-[9px]">{project.description}</p>
+                    {project.link && <p className="text-[8px]" style={{ color: theme.primary }}>{project.link}</p>}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {certifications.length > 0 && (
+            <div>
+              <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Training & Certificates</h2>
+              <ul className="space-y-1">
+                {certifications.map((cert, i) => (
+                  <li key={i} className="flex items-start gap-1 text-[10px] text-gray-700"><span style={{ color: theme.primary }}>•</span><span>{cert}</span></li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {references.some((r) => r.name || r.organization) && (
+        <div className="px-5 py-4 border-t" style={{ borderColor: theme.primary }}>
+          <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>References</h2>
+          <div className="grid grid-cols-2 gap-4">
+            {references.filter((r) => r.name || r.organization).map((r) => (
+              <div key={r.id} className="text-[10px] text-gray-700">
+                <p className="font-semibold text-gray-900 text-[11px]">{r.name}</p>
+                {r.designation && <p className="text-gray-600">{r.designation}</p>}
+                {r.organization && <p className="text-gray-600">{r.organization}</p>}
+                {r.email && <p className="flex items-center gap-1"><Mail className="w-2.5 h-2.5" style={{ color: theme.primary }} />{r.email}</p>}
+                {r.phone && <p className="flex items-center gap-1"><Phone className="w-2.5 h-2.5" style={{ color: theme.primary }} />{r.phone}</p>}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
 
   if (!user)
     return (
@@ -383,7 +609,7 @@ const Builder = () => {
 
       <div className="flex-1 flex">
         {/* Left Panel - Editor */}
-        <div className="w-full lg:w-1/2 border-r border-border bg-card overflow-auto p-6 space-y-4">
+        <div className="w-full md:w-1/2 border-r border-border bg-card overflow-auto p-6 space-y-4">
           {sections.map((section) => (
             <Collapsible key={section.id} open={section.isOpen} onOpenChange={() => toggleSection(section.id)}>
               <CollapsibleTrigger className="w-full flex items-center justify-between p-4 rounded-xl bg-muted/50">
@@ -617,221 +843,66 @@ const Builder = () => {
         </div>
 
         {/* Right Panel - Preview */}
-        <div className="hidden lg:flex flex-1 flex-col items-center p-8 bg-muted/30 overflow-auto">
-          <div className="mb-3 flex items-center gap-3">
+        <div ref={previewPaneRef} className="hidden md:flex flex-1 flex-col items-center p-4 bg-muted/30 overflow-auto">
+          <div className="mb-3 flex flex-wrap items-center justify-center gap-2">
             <div className="px-3 py-1 rounded-full bg-card border text-xs font-medium text-muted-foreground">
-              A4 Preview · {pageCount} {pageCount === 1 ? "page" : "pages"}
+              {activePaper.label} Preview · {pageCount} {pageCount === 1 ? "page" : "pages"}
             </div>
+            <select
+              value={paperSize}
+              onChange={(e) => setPaperSize(e.target.value as PaperSize)}
+              className="h-8 px-3 rounded-full bg-card border text-xs font-medium text-foreground focus:ring-2 focus:ring-primary"
+            >
+              {Object.entries(PAPER_SIZES).map(([key, paper]) => (
+                <option key={key} value={key}>{paper.label}</option>
+              ))}
+            </select>
             <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-card border">
-              <Button size="sm" variant="ghost" className="h-6 w-6 p-0" onClick={() => setZoom((z) => Math.max(0.3, +(z - 0.1).toFixed(2)))}>−</Button>
+              <Button size="sm" variant="ghost" className="h-6 w-6 p-0" onClick={() => setZoom((z) => Math.max(0.25, +(z - 0.05).toFixed(2)))}>−</Button>
               <span className="text-xs font-medium w-10 text-center">{Math.round(zoom * 100)}%</span>
-              <Button size="sm" variant="ghost" className="h-6 w-6 p-0" onClick={() => setZoom((z) => Math.min(1.5, +(z + 0.1).toFixed(2)))}>+</Button>
-              <Button size="sm" variant="ghost" className="h-6 px-2 text-xs" onClick={() => setZoom(1)}>Reset</Button>
+              <Button size="sm" variant="ghost" className="h-6 w-6 p-0" onClick={() => setZoom((z) => Math.min(1.5, +(z + 0.05).toFixed(2)))}>+</Button>
+              <Button size="sm" variant="ghost" className="h-6 px-2 text-xs" onClick={fitToPage}>Fit</Button>
+              <Button size="sm" variant="ghost" className="h-6 px-2 text-xs" onClick={() => setZoom(1)}>100%</Button>
             </div>
           </div>
-          <div style={{ width: `${A4_WIDTH * zoom}px`, height: `${Math.max(A4_HEIGHT, A4_HEIGHT * pageCount) * zoom}px` }}>
-            <div
-              className="shadow-xl relative bg-white"
-              style={{
-                width: `${A4_WIDTH}px`,
-                minHeight: `${A4_HEIGHT}px`,
-                transform: `scale(${zoom})`,
-                transformOrigin: "top left",
-              }}
-            >
-              {Array.from({ length: Math.max(0, pageCount - 1) }).map((_, i) => (
+
+          <div
+            className="fixed top-0 pointer-events-none"
+            style={{ left: "-10000px", width: `${activePaper.widthPx}px` }}
+            aria-hidden="true"
+          >
+            {renderResumeContent(resumePreviewRef)}
+            {Array.from({ length: pageCount }).map((_, i) => (
+              <div
+                key={`export-${paperSize}-${i}`}
+                ref={(node) => { pageRefs.current[i] = node; }}
+                className="relative bg-white overflow-hidden"
+                style={{ width: `${activePaper.widthPx}px`, height: `${activePaper.heightPx}px` }}
+              >
+                {renderResumeContent(null, i * activePaper.heightPx)}
+              </div>
+            ))}
+          </div>
+
+          <div className="space-y-6" style={{ width: `${activePaper.widthPx * zoom}px` }}>
+            {Array.from({ length: pageCount }).map((_, i) => (
+              <div
+                key={`preview-${paperSize}-${i}`}
+                style={{ width: `${activePaper.widthPx * zoom}px`, height: `${activePaper.heightPx * zoom}px` }}
+              >
                 <div
-                  key={i}
-                  className="absolute left-0 right-0 pointer-events-none"
-                  style={{ top: `${(i + 1) * A4_HEIGHT}px`, borderTop: "2px dashed hsl(var(--primary) / 0.5)", zIndex: 10 }}
-                />
-              ))}
-              <div ref={resumePreviewRef} className="bg-white" style={{ fontFamily: "'Inter', sans-serif", width: `${A4_WIDTH}px` }}>
-              {/* Header Section */}
-              <div className="px-6 py-5" style={{ backgroundColor: theme.headerBg }}>
-                <div className="flex items-center justify-between gap-4 mb-3">
-                  <div className="flex-1 min-w-0">
-                    <h1 className="text-2xl font-bold text-white tracking-wide">{formData.fullName || "YOUR NAME"}</h1>
-                    <p className="text-sm mt-1" style={{ color: theme.primary }}>{formData.tagline || "Your designation / job title..."}</p>
-                  </div>
-                  {photoUrl ? (
-                    <img
-                      src={photoUrl}
-                      alt="Profile"
-                      crossOrigin="anonymous"
-                      style={{
-                        width: "128px",
-                        height: "128px",
-                        minWidth: "128px",
-                        minHeight: "128px",
-                        borderRadius: "50%",
-                        objectFit: "cover",
-                        flexShrink: 0,
-                        border: `3px solid ${theme.primary}`,
-                      }}
-                    />
-                  ) : (
-                    <div
-                      className="flex items-center justify-center"
-                      style={{
-                        backgroundColor: theme.primary,
-                        width: "128px",
-                        height: "128px",
-                        minWidth: "128px",
-                        minHeight: "128px",
-                        borderRadius: "50%",
-                        flexShrink: 0,
-                      }}
-                    >
-                      <User className="w-16 h-16 text-white" />
-                    </div>
-                  )}
-                </div>
-                <div className="flex flex-wrap gap-4 text-gray-300 text-[10px]">
-                  {formData.email && <div className="flex items-center gap-1.5"><Mail className="w-3.5 h-3.5" style={{ color: theme.primary }} /><span>{formData.email}</span></div>}
-                  {formData.phone && <div className="flex items-center gap-1.5"><Phone className="w-3.5 h-3.5" style={{ color: theme.primary }} /><span>{formData.phone}</span></div>}
-                  {formData.location && <div className="flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" style={{ color: theme.primary }} /><span>{formData.location}</span></div>}
-                  {formData.linkedin && <div className="flex items-center gap-1.5"><Linkedin className="w-3.5 h-3.5" style={{ color: theme.primary }} /><span>{formData.linkedin}</span></div>}
-                  {formData.portfolio && <div className="flex items-center gap-1.5"><Globe className="w-3.5 h-3.5" style={{ color: theme.primary }} /><span>{formData.portfolio}</span></div>}
+                  className="relative shadow-xl bg-white overflow-hidden"
+                  style={{
+                    width: `${activePaper.widthPx}px`,
+                    height: `${activePaper.heightPx}px`,
+                    transform: `scale(${zoom})`,
+                    transformOrigin: "top left",
+                  }}
+                >
+                  {renderResumeContent(null, i * activePaper.heightPx)}
                 </div>
               </div>
-
-              {/* Two Column Layout */}
-              <div className="flex text-xs">
-                {/* Left Column - 60% */}
-                <div className="w-[60%] p-5 pr-4">
-                  {formData.summary && (
-                    <div className="mb-5">
-                      <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Professional Summary</h2>
-                      <p className="text-[10px] text-gray-700 leading-relaxed whitespace-pre-line">{formData.summary}</p>
-                    </div>
-                  )}
-                  <div className="mb-5">
-                    <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Work Experience</h2>
-                    <div className="space-y-3">
-                      {experiences.filter((e) => e.company || e.title).map((exp) => (
-                        <div key={exp.id}>
-                          <div className="flex justify-between items-start">
-                            <div>
-                              <h3 className="font-semibold text-gray-900">{exp.title || "Job Title"} {exp.type && `(${exp.type})`}</h3>
-                              <p className="text-gray-600 text-[10px]">{exp.company}</p>
-                            </div>
-                            <span className="text-[9px] text-gray-500 whitespace-nowrap">{exp.startDate} - {exp.endDate || "Present"}</span>
-                          </div>
-                          {exp.description && (
-                            <ul className="mt-1.5 text-[10px] text-gray-600 space-y-0.5">
-                              {exp.description.split("\n").filter(Boolean).map((line, i) => (
-                                <li key={i} className="flex items-start gap-1"><span style={{ color: theme.primary }}>•</span><span>{line.replace(/^[•\-]\s*/, "")}</span></li>
-                              ))}
-                            </ul>
-                          )}
-                        </div>
-                      ))}
-                      {experiences.filter((e) => e.company || e.title).length === 0 && <p className="text-gray-400 italic text-[10px]">Add your work experience...</p>}
-                    </div>
-                  </div>
-
-                  {learnedExperiences.some((l) => l.title || l.description) && (
-                    <div className="mb-5">
-                      <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Learned Experience</h2>
-                      <div className="space-y-2">
-                        {learnedExperiences.filter((l) => l.title || l.description).map((item) => (
-                          <div key={item.id}>
-                            {item.title && <h3 className="font-semibold text-gray-900 text-[11px]">{item.title}</h3>}
-                            {item.description && (
-                              <ul className="mt-1 text-[10px] text-gray-600 space-y-0.5">
-                                {item.description.split("\n").filter(Boolean).map((line, i) => (
-                                  <li key={i} className="flex items-start gap-1"><span style={{ color: theme.primary }}>•</span><span>{line.replace(/^[•\-]\s*/, "")}</span></li>
-                                ))}
-                              </ul>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  <div>
-                    <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Education</h2>
-                    <div className="space-y-2">
-                      {education.filter((e) => e.institution || e.degree).map((edu) => (
-                        <div key={edu.id} className="flex justify-between items-start">
-                          <div>
-                            <h3 className="font-semibold text-gray-900 text-[11px]">{edu.degree || "Degree"}</h3>
-                            <p className="text-gray-600 text-[10px]">{edu.institution}</p>
-                            {edu.grade && <p className="text-gray-500 text-[9px]">CGPA: {edu.grade}</p>}
-                          </div>
-                          <span className="text-[9px] text-gray-500">{edu.year}</span>
-                        </div>
-                      ))}
-                      {education.filter((e) => e.institution || e.degree).length === 0 && <p className="text-gray-400 italic text-[10px]">Add your education...</p>}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Right Column - 40% */}
-                <div className="w-[40%] p-5 pl-4" style={{ backgroundColor: theme.light }}>
-                  <div className="mb-5">
-                    <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Skills</h2>
-                    <div className="space-y-2">
-                      {skillGroups.map((group) => (
-                        <div key={group.id}>
-                          {group.category && <p className="font-medium text-gray-700 text-[10px] mb-1">{group.category}</p>}
-                          <div className="flex flex-wrap gap-1">
-                            {group.items.map((skill, j) => <span key={j} className="px-1.5 py-0.5 rounded text-[9px] text-gray-700 bg-white/70">{skill}</span>)}
-                          </div>
-                        </div>
-                      ))}
-                      {skillGroups.every((g) => g.items.length === 0) && <p className="text-gray-400 italic text-[10px]">Add your skills...</p>}
-                    </div>
-                  </div>
-
-                  {projects.some((p) => p.name) && (
-                    <div className="mb-5">
-                      <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Projects</h2>
-                      <div className="space-y-2">
-                        {projects.filter((p) => p.name).map((project) => (
-                          <div key={project.id}>
-                            <h3 className="font-semibold text-gray-900 text-[10px]">{project.name}</h3>
-                            <p className="text-gray-600 text-[9px]">{project.description}</p>
-                            {project.link && <p className="text-[8px]" style={{ color: theme.primary }}>{project.link}</p>}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {certifications.length > 0 && (
-                    <div>
-                      <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Training & Certificates</h2>
-                      <ul className="space-y-1">
-                        {certifications.map((cert, i) => (
-                          <li key={i} className="flex items-start gap-1 text-[10px] text-gray-700"><span style={{ color: theme.primary }}>•</span><span>{cert}</span></li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {references.some((r) => r.name || r.organization) && (
-                <div className="px-5 py-4 border-t" style={{ borderColor: theme.primary }}>
-                  <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>References</h2>
-                  <div className="grid grid-cols-2 gap-4">
-                    {references.filter((r) => r.name || r.organization).map((r) => (
-                      <div key={r.id} className="text-[10px] text-gray-700">
-                        <p className="font-semibold text-gray-900 text-[11px]">{r.name}</p>
-                        {r.designation && <p className="text-gray-600">{r.designation}</p>}
-                        {r.organization && <p className="text-gray-600">{r.organization}</p>}
-                        {r.email && <p className="flex items-center gap-1"><Mail className="w-2.5 h-2.5" style={{ color: theme.primary }} />{r.email}</p>}
-                        {r.phone && <p className="flex items-center gap-1"><Phone className="w-2.5 h-2.5" style={{ color: theme.primary }} />{r.phone}</p>}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-            </div>
+            ))}
           </div>
         </div>
       </div>
