@@ -26,6 +26,13 @@ const resumeColorSchemes: Record<ResumeColorScheme, { name: string; primary: str
   ...premiumColorSchemes,
 };
 
+type PaperSize = "a4" | "letter";
+
+const PAPER_SIZES: Record<PaperSize, { label: string; widthPx: number; heightPx: number; widthMm: number; heightMm: number }> = {
+  a4: { label: "A4", widthPx: 794, heightPx: 1123, widthMm: 210, heightMm: 297 },
+  letter: { label: "US Letter", widthPx: 816, heightPx: 1056, widthMm: 215.9, heightMm: 279.4 },
+};
+
 const Builder = () => {
   const { id } = useParams();
   const [searchParams] = useSearchParams();
@@ -34,6 +41,8 @@ const Builder = () => {
   const { resumes, updateResume, createResume } = useResumes();
   const { toast } = useToast();
   const resumePreviewRef = useRef<HTMLDivElement>(null);
+  const pageRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const previewPaneRef = useRef<HTMLDivElement>(null);
   const photoInputRef = useRef<HTMLInputElement>(null);
   const [saving, setSaving] = useState(false);
   const [generating, setGenerating] = useState(false);
@@ -97,8 +106,10 @@ const Builder = () => {
   ]);
 
   const [pageCount, setPageCount] = useState(1);
-  const [zoom, setZoom] = useState(1);
+  const [zoom, setZoom] = useState(0.55);
+  const [paperSize, setPaperSize] = useState<PaperSize>("a4");
   const theme = resumeColorSchemes[colorScheme];
+  const activePaper = PAPER_SIZES[paperSize];
 
   // Auto-save to localStorage whenever data changes
   const saveToLocalStorage = useCallback(() => {
@@ -114,10 +125,11 @@ const Builder = () => {
       references,
       colorScheme,
       photoUrl,
+      paperSize,
     };
     localStorage.setItem(AUTOSAVE_KEY + id, JSON.stringify(data));
     setHasUnsavedChanges(true);
-  }, [id, formData, experiences, learnedExperiences, education, skillGroups, projects, certifications, references, colorScheme, photoUrl]);
+  }, [id, formData, experiences, learnedExperiences, education, skillGroups, projects, certifications, references, colorScheme, photoUrl, paperSize]);
 
   // Auto-save effect
   useEffect(() => {
@@ -144,6 +156,7 @@ const Builder = () => {
           if (data.references) setReferences(data.references);
           if (data.colorScheme) setColorScheme(data.colorScheme);
           if (data.photoUrl) setPhotoUrl(data.photoUrl);
+          if (data.paperSize && PAPER_SIZES[data.paperSize as PaperSize]) setPaperSize(data.paperSize);
           setHasUnsavedChanges(true);
           return; // Use localStorage data instead of database
         } catch (e) {
@@ -211,19 +224,28 @@ const Builder = () => {
     }
   }, [id, resumes]);
 
-  // A4 size at 96dpi: 794 x 1123 px
-  const A4_WIDTH = 794;
-  const A4_HEIGHT = 1123;
-
   useEffect(() => {
     if (!resumePreviewRef.current) return;
-    const observer = new ResizeObserver(() => {
-      const h = resumePreviewRef.current?.scrollHeight || 0;
-      setPageCount(Math.max(1, Math.ceil(h / A4_HEIGHT)));
-    });
+
+    const updatePageCount = () => {
+      const h = resumePreviewRef.current?.scrollHeight || activePaper.heightPx;
+      setPageCount(Math.max(1, Math.ceil(h / activePaper.heightPx)));
+    };
+
+    updatePageCount();
+    const observer = new ResizeObserver(updatePageCount);
     observer.observe(resumePreviewRef.current);
     return () => observer.disconnect();
-  }, []);
+  }, [activePaper.heightPx, activePaper.widthPx]);
+
+  const fitToPage = useCallback(() => {
+    const pane = previewPaneRef.current;
+    if (!pane) return;
+    const availableWidth = pane.clientWidth - 64;
+    const availableHeight = pane.clientHeight - 104;
+    const nextZoom = Math.min(1, availableWidth / activePaper.widthPx, availableHeight / activePaper.heightPx);
+    setZoom(Math.max(0.25, Number(nextZoom.toFixed(2))));
+  }, [activePaper.heightPx, activePaper.widthPx]);
 
   const toggleSection = (sectionId: string) =>
     setSections((prev) => prev.map((s) => (s.id === sectionId ? { ...s, isOpen: !s.isOpen } : s)));
@@ -286,50 +308,49 @@ const Builder = () => {
   };
 
   const handleDownloadPDF = async () => {
-    if (!resumePreviewRef.current || !currentResume || !user) return;
+    if (!currentResume || !user) return;
+    const pages = pageRefs.current.slice(0, pageCount).filter(Boolean) as HTMLDivElement[];
+    if (!pages.length) return;
+
     setGenerating(true);
     try {
-      const canvas = await html2canvas(resumePreviewRef.current, {
-        scale: 3,
-        useCORS: true,
-        allowTaint: true,
-        logging: false,
-        imageTimeout: 0,
-        backgroundColor: theme.headerBg,
-      });
+      const pdf = new jsPDF("p", "mm", [activePaper.widthMm, activePaper.heightMm]);
 
-      const pdf = new jsPDF("p", "mm", "a4");
-      const pageWidth = 210;
-      const pageHeight = 297;
-      const imgWidth = pageWidth;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      for (let i = 0; i < pages.length; i += 1) {
+        const canvas = await html2canvas(pages[i], {
+          scale: 4,
+          useCORS: true,
+          allowTaint: true,
+          logging: false,
+          imageTimeout: 15000,
+          backgroundColor: "#ffffff",
+          windowWidth: activePaper.widthPx,
+          windowHeight: activePaper.heightPx,
+        });
 
-      const imgData = canvas.toDataURL("image/png", 1.0);
-
-      if (imgHeight <= pageHeight) {
-        pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight, undefined, "FAST");
-      } else {
-        let heightLeft = imgHeight;
-        let position = 0;
-        pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight, undefined, "FAST");
-        heightLeft -= pageHeight;
-        while (heightLeft > 0) {
-          position = -(imgHeight - heightLeft);
-          pdf.addPage();
-          pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight, undefined, "FAST");
-          heightLeft -= pageHeight;
-        }
+        if (i > 0) pdf.addPage([activePaper.widthMm, activePaper.heightMm], "p");
+        pdf.addImage(
+          canvas.toDataURL("image/png", 1.0),
+          "PNG",
+          0,
+          0,
+          activePaper.widthMm,
+          activePaper.heightMm,
+          undefined,
+          "NONE"
+        );
       }
 
-      pdf.save(`${formData.title}.pdf`);
       const pdfBlob = pdf.output("blob");
+      pdf.save(`${formData.title}.pdf`);
       await supabase.storage.from("resumes").upload(`${user.id}/${currentResume.id}.pdf`, pdfBlob, { upsert: true });
       toast({ title: "PDF saved!" });
     } catch (e) {
       console.error("PDF generation error:", e);
       toast({ title: "Error generating PDF", variant: "destructive" });
+    } finally {
+      setGenerating(false);
     }
-    setGenerating(false);
   };
 
   if (!user)
