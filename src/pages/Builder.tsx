@@ -257,34 +257,35 @@ const Builder = () => {
 
       const resume = resumes.find((r) => r.id === id);
       if (resume) {
+        const personalInfo = resume.personal_info as ResumePersonalInfo;
         setCurrentResume(resume);
         setFormData({
           title: resume.title || "Untitled Resume",
-          fullName: resume.personal_info?.fullName || "",
-          email: resume.personal_info?.email || "",
-          phone: resume.personal_info?.phone || "",
-          location: resume.personal_info?.location || "",
-          linkedin: resume.personal_info?.linkedin || "",
-          portfolio: resume.personal_info?.portfolio || "",
-          tagline: resume.personal_info?.tagline || "",
+          fullName: personalInfo.fullName || "",
+          email: personalInfo.email || "",
+          phone: personalInfo.phone || "",
+          location: personalInfo.location || "",
+          linkedin: personalInfo.linkedin || "",
+          portfolio: personalInfo.portfolio || "",
+          tagline: personalInfo.tagline || "",
           summary: resume.summary || "",
         });
-        if (resume.experience?.length) setExperiences(resume.experience as any);
-        if ((resume.personal_info as any)?.learnedExperiences?.length) setLearnedExperiences((resume.personal_info as any).learnedExperiences);
-        if ((resume.personal_info as any)?.references?.length) setReferences((resume.personal_info as any).references);
-        if ((resume.personal_info as any)?.paperSize && PAPER_SIZES[(resume.personal_info as any).paperSize as PaperSize]) setPaperSize((resume.personal_info as any).paperSize);
-        if ((resume.personal_info as any)?.sectionScales) setSectionScales((resume.personal_info as any).sectionScales);
-        if (resume.education?.length) setEducation(resume.education as any);
+        if (resume.experience?.length) setExperiences(resume.experience as ExperienceItem[]);
+        if (personalInfo.learnedExperiences?.length) setLearnedExperiences(personalInfo.learnedExperiences);
+        if (personalInfo.references?.length) setReferences(personalInfo.references);
+        if (personalInfo.paperSize && PAPER_SIZES[personalInfo.paperSize]) setPaperSize(personalInfo.paperSize);
+        if (personalInfo.sectionScales) setSectionScales(personalInfo.sectionScales);
+        if (resume.education?.length) setEducation(resume.education as EducationItem[]);
         if (resume.skills?.length) {
-          const skills = resume.skills as any[];
+          const skills = resume.skills as (SkillGroup | { name?: string } | string)[];
           if (skills[0]?.category) {
-            setSkillGroups(skills);
+            setSkillGroups(skills as SkillGroup[]);
           } else {
-            setSkillGroups([{ id: 1, category: "Technical Skills", items: skills.map((s) => s.name || s) }]);
+            setSkillGroups([{ id: 1, category: "Technical Skills", items: skills.map((s) => typeof s === "string" ? s : s.name || "").filter(Boolean) }]);
           }
         }
-        if (resume.projects?.length) setProjects(resume.projects as any);
-        if (resume.certifications?.length) setCertifications((resume.certifications as any[]).map((c) => c.name || c));
+        if (resume.projects?.length) setProjects(resume.projects as ProjectItem[]);
+        if (resume.certifications?.length) setCertifications((resume.certifications as ({ name?: string } | string)[]).map((c) => typeof c === "string" ? c : c.name || "").filter(Boolean));
       }
     } else if (!id && user) {
       createResume().then((resume) => {
