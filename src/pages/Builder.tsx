@@ -477,134 +477,150 @@ const Builder = () => {
         {/* Left Column - 60% */}
         <div className="w-[60%] p-5 pr-4">
           {formData.summary && (
-            <div className="mb-5">
-              <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Professional Summary</h2>
-              <p className="text-[10px] text-gray-700 leading-relaxed whitespace-pre-line">{formData.summary}</p>
-            </div>
+            <ResizableSection id="summary">
+              <div className="mb-5">
+                <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Professional Summary</h2>
+                <p className="text-[10px] text-gray-700 leading-relaxed whitespace-pre-line">{formData.summary}</p>
+              </div>
+            </ResizableSection>
           )}
-          <div className="mb-5">
-            <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Work Experience</h2>
-            <div className="space-y-3">
-              {experiences.filter((e) => e.company || e.title).map((exp) => (
-                <div key={exp.id}>
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h3 className="font-semibold text-gray-900">{exp.title || "Job Title"} {exp.type && `(${exp.type})`}</h3>
-                      <p className="text-gray-600 text-[10px]">{exp.company}</p>
-                    </div>
-                    <span className="text-[9px] text-gray-500 whitespace-nowrap">{exp.startDate} - {exp.endDate || "Present"}</span>
-                  </div>
-                  {exp.description && (
-                    <ul className="mt-1.5 text-[10px] text-gray-600 space-y-0.5">
-                      {exp.description.split("\n").filter(Boolean).map((line, i) => (
-                        <li key={i} className="flex items-start gap-1"><span style={{ color: theme.primary }}>•</span><span>{line.replace(/^[•-]\s*/, "")}</span></li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              ))}
-              {experiences.filter((e) => e.company || e.title).length === 0 && <p className="text-gray-400 italic text-[10px]">Add your work experience...</p>}
-            </div>
-          </div>
-
-          {learnedExperiences.some((l) => l.title || l.description) && (
+          <ResizableSection id="experience">
             <div className="mb-5">
-              <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Learned Experience</h2>
-              <div className="space-y-2">
-                {learnedExperiences.filter((l) => l.title || l.description).map((item) => (
-                  <div key={item.id}>
-                    {item.title && <h3 className="font-semibold text-gray-900 text-[11px]">{item.title}</h3>}
-                    {item.description && (
-                      <ul className="mt-1 text-[10px] text-gray-600 space-y-0.5">
-                        {item.description.split("\n").filter(Boolean).map((line, i) => (
+              <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Work Experience</h2>
+              <div className="space-y-3">
+                {experiences.filter((e) => e.company || e.title).map((exp) => (
+                  <div key={exp.id}>
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="font-semibold text-gray-900">{exp.title || "Job Title"} {exp.type && `(${exp.type})`}</h3>
+                        <p className="text-gray-600 text-[10px]">{exp.company}</p>
+                      </div>
+                      <span className="text-[9px] text-gray-500 whitespace-nowrap">{exp.startDate} - {exp.endDate || "Present"}</span>
+                    </div>
+                    {exp.description && (
+                      <ul className="mt-1.5 text-[10px] text-gray-600 space-y-0.5">
+                        {exp.description.split("\n").filter(Boolean).map((line, i) => (
                           <li key={i} className="flex items-start gap-1"><span style={{ color: theme.primary }}>•</span><span>{line.replace(/^[•-]\s*/, "")}</span></li>
                         ))}
                       </ul>
                     )}
                   </div>
                 ))}
+                {experiences.filter((e) => e.company || e.title).length === 0 && <p className="text-gray-400 italic text-[10px]">Add your work experience...</p>}
               </div>
             </div>
+          </ResizableSection>
+
+          {learnedExperiences.some((l) => l.title || l.description) && (
+            <ResizableSection id="learned">
+              <div className="mb-5">
+                <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Learned Experience</h2>
+                <div className="space-y-2">
+                  {learnedExperiences.filter((l) => l.title || l.description).map((item) => (
+                    <div key={item.id}>
+                      {item.title && <h3 className="font-semibold text-gray-900 text-[11px]">{item.title}</h3>}
+                      {item.description && (
+                        <ul className="mt-1 text-[10px] text-gray-600 space-y-0.5">
+                          {item.description.split("\n").filter(Boolean).map((line, i) => (
+                            <li key={i} className="flex items-start gap-1"><span style={{ color: theme.primary }}>•</span><span>{line.replace(/^[•-]\s*/, "")}</span></li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </ResizableSection>
           )}
 
-          <div>
-            <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Education</h2>
-            <div className="space-y-2">
-              {education.filter((e) => e.institution || e.degree).map((edu) => (
-                <div key={edu.id} className="flex justify-between items-start">
-                  <div>
-                    <h3 className="font-semibold text-gray-900 text-[11px]">{edu.degree || "Degree"}</h3>
-                    <p className="text-gray-600 text-[10px]">{edu.institution}</p>
-                    {edu.grade && <p className="text-gray-500 text-[9px]">CGPA: {edu.grade}</p>}
+          <ResizableSection id="education">
+            <div>
+              <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Education</h2>
+              <div className="space-y-2">
+                {education.filter((e) => e.institution || e.degree).map((edu) => (
+                  <div key={edu.id} className="flex justify-between items-start">
+                    <div>
+                      <h3 className="font-semibold text-gray-900 text-[11px]">{edu.degree || "Degree"}</h3>
+                      <p className="text-gray-600 text-[10px]">{edu.institution}</p>
+                      {edu.grade && <p className="text-gray-500 text-[9px]">CGPA: {edu.grade}</p>}
+                    </div>
+                    <span className="text-[9px] text-gray-500">{edu.year}</span>
                   </div>
-                  <span className="text-[9px] text-gray-500">{edu.year}</span>
-                </div>
-              ))}
-              {education.filter((e) => e.institution || e.degree).length === 0 && <p className="text-gray-400 italic text-[10px]">Add your education...</p>}
+                ))}
+                {education.filter((e) => e.institution || e.degree).length === 0 && <p className="text-gray-400 italic text-[10px]">Add your education...</p>}
+              </div>
             </div>
-          </div>
+          </ResizableSection>
         </div>
 
         {/* Right Column - 40% */}
         <div className="w-[40%] p-5 pl-4" style={{ backgroundColor: theme.light }}>
-          <div className="mb-5">
-            <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Skills</h2>
-            <div className="space-y-2">
-              {skillGroups.map((group) => (
-                <div key={group.id}>
-                  {group.category && <p className="font-medium text-gray-700 text-[10px] mb-1">{group.category}</p>}
-                  <div className="flex flex-wrap gap-1">
-                    {group.items.map((skill, j) => <span key={j} className="px-1.5 py-0.5 rounded text-[9px] text-gray-700 bg-white/70">{skill}</span>)}
-                  </div>
-                </div>
-              ))}
-              {skillGroups.every((g) => g.items.length === 0) && <p className="text-gray-400 italic text-[10px]">Add your skills...</p>}
-            </div>
-          </div>
-
-          {projects.some((p) => p.name) && (
+          <ResizableSection id="skills">
             <div className="mb-5">
-              <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Projects</h2>
+              <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Skills</h2>
               <div className="space-y-2">
-                {projects.filter((p) => p.name).map((project) => (
-                  <div key={project.id}>
-                    <h3 className="font-semibold text-gray-900 text-[10px]">{project.name}</h3>
-                    <p className="text-gray-600 text-[9px]">{project.description}</p>
-                    {project.link && <p className="text-[8px]" style={{ color: theme.primary }}>{project.link}</p>}
+                {skillGroups.map((group) => (
+                  <div key={group.id}>
+                    {group.category && <p className="font-medium text-gray-700 text-[10px] mb-1">{group.category}</p>}
+                    <div className="flex flex-wrap gap-1">
+                      {group.items.map((skill, j) => <span key={j} className="px-1.5 py-0.5 rounded text-[9px] text-gray-700 bg-white/70">{skill}</span>)}
+                    </div>
                   </div>
                 ))}
+                {skillGroups.every((g) => g.items.length === 0) && <p className="text-gray-400 italic text-[10px]">Add your skills...</p>}
               </div>
             </div>
+          </ResizableSection>
+
+          {projects.some((p) => p.name) && (
+            <ResizableSection id="projects">
+              <div className="mb-5">
+                <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Projects</h2>
+                <div className="space-y-2">
+                  {projects.filter((p) => p.name).map((project) => (
+                    <div key={project.id}>
+                      <h3 className="font-semibold text-gray-900 text-[10px]">{project.name}</h3>
+                      <p className="text-gray-600 text-[9px]">{project.description}</p>
+                      {project.link && <p className="text-[8px]" style={{ color: theme.primary }}>{project.link}</p>}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </ResizableSection>
           )}
 
           {certifications.length > 0 && (
-            <div>
-              <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Training & Certificates</h2>
-              <ul className="space-y-1">
-                {certifications.map((cert, i) => (
-                  <li key={i} className="flex items-start gap-1 text-[10px] text-gray-700"><span style={{ color: theme.primary }}>•</span><span>{cert}</span></li>
-                ))}
-              </ul>
-            </div>
+            <ResizableSection id="certifications">
+              <div>
+                <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Training & Certificates</h2>
+                <ul className="space-y-1">
+                  {certifications.map((cert, i) => (
+                    <li key={i} className="flex items-start gap-1 text-[10px] text-gray-700"><span style={{ color: theme.primary }}>•</span><span>{cert}</span></li>
+                  ))}
+                </ul>
+              </div>
+            </ResizableSection>
           )}
         </div>
       </div>
 
       {references.some((r) => r.name || r.organization) && (
-        <div className="px-5 py-4 border-t" style={{ borderColor: theme.primary }}>
-          <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>References</h2>
-          <div className="grid grid-cols-2 gap-4">
-            {references.filter((r) => r.name || r.organization).map((r) => (
-              <div key={r.id} className="text-[10px] text-gray-700">
-                <p className="font-semibold text-gray-900 text-[11px]">{r.name}</p>
-                {r.designation && <p className="text-gray-600">{r.designation}</p>}
-                {r.organization && <p className="text-gray-600">{r.organization}</p>}
-                {r.email && <p className="flex items-center gap-1"><Mail className="w-2.5 h-2.5" style={{ color: theme.primary }} />{r.email}</p>}
-                {r.phone && <p className="flex items-center gap-1"><Phone className="w-2.5 h-2.5" style={{ color: theme.primary }} />{r.phone}</p>}
-              </div>
-            ))}
+        <ResizableSection id="references">
+          <div className="px-5 py-4 border-t" style={{ borderColor: theme.primary }}>
+            <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>References</h2>
+            <div className="grid grid-cols-2 gap-4">
+              {references.filter((r) => r.name || r.organization).map((r) => (
+                <div key={r.id} className="text-[10px] text-gray-700">
+                  <p className="font-semibold text-gray-900 text-[11px]">{r.name}</p>
+                  {r.designation && <p className="text-gray-600">{r.designation}</p>}
+                  {r.organization && <p className="text-gray-600">{r.organization}</p>}
+                  {r.email && <p className="flex items-center gap-1"><Mail className="w-2.5 h-2.5" style={{ color: theme.primary }} />{r.email}</p>}
+                  {r.phone && <p className="flex items-center gap-1"><Phone className="w-2.5 h-2.5" style={{ color: theme.primary }} />{r.phone}</p>}
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
+        </ResizableSection>
       )}
     </div>
   );
