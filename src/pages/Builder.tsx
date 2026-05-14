@@ -278,10 +278,10 @@ const Builder = () => {
         if (resume.education?.length) setEducation(resume.education as EducationItem[]);
         if (resume.skills?.length) {
           const skills = resume.skills as (SkillGroup | { name?: string } | string)[];
-          if (skills[0]?.category) {
+          if (typeof skills[0] === "object" && skills[0] !== null && "category" in skills[0]) {
             setSkillGroups(skills as SkillGroup[]);
           } else {
-            setSkillGroups([{ id: 1, category: "Technical Skills", items: skills.map((s) => typeof s === "string" ? s : s.name || "").filter(Boolean) }]);
+            setSkillGroups([{ id: 1, category: "Technical Skills", items: skills.map((s) => typeof s === "string" ? s : "name" in s ? s.name || "" : "").filter(Boolean) }]);
           }
         }
         if (resume.projects?.length) setProjects(resume.projects as ProjectItem[]);
