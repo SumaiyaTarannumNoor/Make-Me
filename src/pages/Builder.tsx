@@ -946,7 +946,11 @@ const Builder = () => {
                 className="relative bg-white overflow-hidden"
                 style={{ width: `${activePaper.widthPx}px`, height: `${activePaper.heightPx}px` }}
               >
-                {renderResumeContent(null, i * activePaper.heightPx)}
+                <div style={{ paddingTop: `${pageTopPad(i)}px`, height: `${activePaper.heightPx}px`, overflow: "hidden" }}>
+                  <div style={{ height: `${pageContentH(i)}px`, overflow: "hidden" }}>
+                    {renderResumeContent(null, pageOffsetY(i))}
+                  </div>
+                </div>
               </div>
             ))}
           </div>
@@ -966,7 +970,18 @@ const Builder = () => {
                     transformOrigin: "top left",
                   }}
                 >
-                  {renderResumeContent(null, i * activePaper.heightPx)}
+                  <div style={{ paddingTop: `${pageTopPad(i)}px`, height: `${activePaper.heightPx}px`, overflow: "hidden" }}>
+                    <div style={{ height: `${pageContentH(i)}px`, overflow: "hidden" }}>
+                      {renderResumeContent(null, pageOffsetY(i))}
+                    </div>
+                  </div>
+                  {/* Visual gutter indicators */}
+                  {i > 0 && (
+                    <div className="absolute top-0 left-0 right-0 pointer-events-none border-b border-dashed border-muted-foreground/30" style={{ height: `${PAGE_GAP_PX}px`, background: "rgba(0,0,0,0.02)" }} />
+                  )}
+                  {i < pageCount - 1 && (
+                    <div className="absolute bottom-0 left-0 right-0 pointer-events-none border-t border-dashed border-muted-foreground/30" style={{ height: `${PAGE_GAP_PX}px`, background: "rgba(0,0,0,0.02)" }} />
+                  )}
                 </div>
               </div>
             ))}
