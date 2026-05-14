@@ -367,7 +367,7 @@ const Builder = () => {
       cancelAnimationFrame(frame);
       observer.disconnect();
     };
-  }, [activePaper.heightPx, activePaper.widthPx, firstPageContentH, otherPageContentH, sectionScales, formData, experiences, learnedExperiences, education, skillGroups, projects, certifications, references]);
+  }, [activePaper.heightPx, activePaper.widthPx, firstPageContentH, otherPageContentH, pageContentH, sectionScales, formData, experiences, learnedExperiences, education, skillGroups, projects, certifications, references]);
 
   const fitToPage = useCallback(() => {
     const pane = previewPaneRef.current;
