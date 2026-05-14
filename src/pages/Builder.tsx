@@ -109,6 +109,7 @@ const Builder = () => {
   const [zoom, setZoom] = useState(0.55);
   const [paperSize, setPaperSize] = useState<PaperSize>("a4");
   const [sectionScales, setSectionScales] = useState<Record<string, number>>({});
+  const [pageOffsets, setPageOffsets] = useState<number[]>([0]);
   const theme = resumeColorSchemes[colorScheme];
   const activePaper = PAPER_SIZES[paperSize];
 
@@ -118,12 +119,17 @@ const Builder = () => {
   const otherPageContentH = activePaper.heightPx - PAGE_GAP_PX * 2;
 
   // Returns the y-offset (in source content) where page i begins
-  const pageOffsetY = (i: number) => (i === 0 ? 0 : firstPageContentH + (i - 1) * otherPageContentH);
+  const pageOffsetY = (i: number) => pageOffsets[i] ?? 0;
   const pageContentH = (i: number) => (i === 0 ? firstPageContentH : otherPageContentH);
   const pageTopPad = (i: number) => (i === 0 ? 0 : PAGE_GAP_PX);
+  const pageVisibleContentH = (i: number) => {
+    const nextOffset = pageOffsets[i + 1];
+    if (typeof nextOffset !== "number") return pageContentH(i);
+    return Math.max(0, Math.min(pageContentH(i), nextOffset - pageOffsetY(i)));
+  };
 
   // Inline component: wraps a resume section so user can drag a handle to resize it.
-  const ResizableSection = ({ id, children }: { id: string; children: React.ReactNode }) => {
+  const ResizableSection = ({ id, children, interactive = false }: { id: string; children: React.ReactNode; interactive?: boolean }) => {
     const scale = sectionScales[id] ?? 1;
     const onMouseDown = (e: React.MouseEvent) => {
       e.preventDefault();
@@ -131,8 +137,8 @@ const Builder = () => {
       const startY = e.clientY;
       const startScale = scale;
       const onMove = (ev: MouseEvent) => {
-        const dy = ev.clientY - startY;
-        const next = Math.max(0.6, Math.min(1.6, +(startScale + dy * 0.004).toFixed(3)));
+        const dy = (ev.clientY - startY) / Math.max(zoom, 0.25);
+        const next = Math.max(0.55, Math.min(1.65, +(startScale + dy * 0.0035).toFixed(3)));
         setSectionScales((prev) => ({ ...prev, [id]: next }));
       };
       const onUp = () => {
@@ -143,14 +149,17 @@ const Builder = () => {
       window.addEventListener("mouseup", onUp);
     };
     return (
-      <div className="relative group" style={{ zoom: scale }}>
+      <div className="relative group" style={{ zoom: scale } as React.CSSProperties & { zoom: number }}>
         {children}
-        <div
-          onMouseDown={onMouseDown}
-          title="Drag up/down to resize this section"
-          className="absolute -bottom-1 right-0 h-3 w-12 cursor-ns-resize opacity-0 group-hover:opacity-100 transition-opacity rounded"
-          style={{ background: "rgba(99,102,241,0.55)", border: "1px solid rgba(255,255,255,0.6)" }}
-        />
+        {interactive && (
+          <div
+            onMouseDown={onMouseDown}
+            title="Drag up/down to make this resume section smaller or bigger"
+            className="absolute -bottom-2 right-0 z-20 flex h-5 w-16 cursor-ns-resize items-center justify-center rounded border border-primary-foreground/70 bg-primary/90 text-[10px] font-bold text-primary-foreground opacity-0 shadow-sm transition-opacity group-hover:opacity-100"
+          >
+            ↕ resize
+          </div>
+        )}
       </div>
     );
   };
@@ -244,6 +253,7 @@ const Builder = () => {
         if ((resume.personal_info as any)?.learnedExperiences?.length) setLearnedExperiences((resume.personal_info as any).learnedExperiences);
         if ((resume.personal_info as any)?.references?.length) setReferences((resume.personal_info as any).references);
         if ((resume.personal_info as any)?.paperSize && PAPER_SIZES[(resume.personal_info as any).paperSize as PaperSize]) setPaperSize((resume.personal_info as any).paperSize);
+        if ((resume.personal_info as any)?.sectionScales) setSectionScales((resume.personal_info as any).sectionScales);
         if (resume.education?.length) setEducation(resume.education as any);
         if (resume.skills?.length) {
           const skills = resume.skills as any[];
@@ -274,21 +284,69 @@ const Builder = () => {
   useEffect(() => {
     if (!resumePreviewRef.current) return;
 
-    const updatePageCount = () => {
-      const h = resumePreviewRef.current?.scrollHeight || activePaper.heightPx;
-      if (h <= firstPageContentH) {
-        setPageCount(1);
-      } else {
-        const remaining = h - firstPageContentH;
-        setPageCount(1 + Math.ceil(remaining / otherPageContentH));
+    const updatePages = () => {
+      const source = resumePreviewRef.current;
+      if (!source) return;
+
+      const contentHeight = Math.max(source.scrollHeight, activePaper.heightPx);
+      const sourceRect = source.getBoundingClientRect();
+      const blocks = Array.from(source.querySelectorAll<HTMLElement>("[data-resume-block]"))
+        .map((block) => {
+          const rect = block.getBoundingClientRect();
+          return {
+            top: Math.max(0, rect.top - sourceRect.top),
+            bottom: Math.max(0, rect.bottom - sourceRect.top),
+          };
+        })
+        .filter((block) => block.bottom - block.top > 4)
+        .sort((a, b) => a.top - b.top);
+
+      const nextOffsets = [0];
+      let currentOffset = 0;
+      let guard = 0;
+
+      while (currentOffset + pageContentH(nextOffsets.length - 1) < contentHeight - 2 && guard < 30) {
+        const currentPage = nextOffsets.length - 1;
+        const capacity = pageContentH(currentPage);
+        const idealBreak = currentOffset + capacity;
+        let breakAt = idealBreak;
+
+        const crossingBlock = blocks.find(
+          (block) =>
+            block.top < idealBreak &&
+            block.bottom > idealBreak &&
+            block.top > currentOffset + 48 &&
+            block.bottom - block.top < capacity - 48
+        );
+
+        if (crossingBlock) {
+          breakAt = crossingBlock.top;
+        }
+
+        if (breakAt <= currentOffset + 48) {
+          breakAt = idealBreak;
+        }
+
+        currentOffset = Math.ceil(breakAt);
+        nextOffsets.push(currentOffset);
+        guard += 1;
       }
+
+      setPageOffsets((prev) => {
+        const isSame = prev.length === nextOffsets.length && prev.every((offset, index) => offset === nextOffsets[index]);
+        return isSame ? prev : nextOffsets;
+      });
+      setPageCount(nextOffsets.length);
     };
 
-    updatePageCount();
-    const observer = new ResizeObserver(updatePageCount);
+    const frame = requestAnimationFrame(updatePages);
+    const observer = new ResizeObserver(updatePages);
     observer.observe(resumePreviewRef.current);
-    return () => observer.disconnect();
-  }, [activePaper.heightPx, activePaper.widthPx, firstPageContentH, otherPageContentH, sectionScales]);
+    return () => {
+      cancelAnimationFrame(frame);
+      observer.disconnect();
+    };
+  }, [activePaper.heightPx, activePaper.widthPx, firstPageContentH, otherPageContentH, sectionScales, formData, experiences, learnedExperiences, education, skillGroups, projects, certifications, references]);
 
   const fitToPage = useCallback(() => {
     const pane = previewPaneRef.current;
@@ -350,6 +408,7 @@ const Builder = () => {
         learnedExperiences,
         references,
         paperSize,
+        sectionScales,
       },
       summary: formData.summary,
       experience: experiences,
@@ -411,7 +470,7 @@ const Builder = () => {
     }
   };
 
-  const renderResumeContent = (contentRef: typeof resumePreviewRef | null = null, offsetY = 0) => (
+  const renderResumeContent = (contentRef: typeof resumePreviewRef | null = null, offsetY = 0, interactive = false) => (
     <div
       ref={contentRef ?? undefined}
       className="bg-white"
@@ -422,7 +481,8 @@ const Builder = () => {
       }}
     >
       {/* Header Section */}
-      <div className="px-6 py-5" style={{ backgroundColor: theme.headerBg }}>
+      <ResizableSection id="header" interactive={interactive}>
+      <div data-resume-block className="px-6 py-5" style={{ backgroundColor: theme.headerBg }}>
         <div className="flex items-center justify-between gap-4 mb-3">
           <div className="flex-1 min-w-0">
             <h1 className="text-2xl font-bold text-white tracking-wide">{formData.fullName || "YOUR NAME"}</h1>
@@ -471,25 +531,26 @@ const Builder = () => {
           {formData.portfolio && <div className="flex items-center gap-1.5"><Globe className="w-3.5 h-3.5" style={{ color: theme.primary }} /><span>{formData.portfolio}</span></div>}
         </div>
       </div>
+      </ResizableSection>
 
       {/* Two Column Layout */}
       <div className="flex text-xs">
         {/* Left Column - 60% */}
         <div className="w-[60%] p-5 pr-4">
           {formData.summary && (
-            <ResizableSection id="summary">
-              <div className="mb-5">
+            <ResizableSection id="summary" interactive={interactive}>
+              <div data-resume-block className="mb-5">
                 <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Professional Summary</h2>
                 <p className="text-[10px] text-gray-700 leading-relaxed whitespace-pre-line">{formData.summary}</p>
               </div>
             </ResizableSection>
           )}
-          <ResizableSection id="experience">
+          <ResizableSection id="experience" interactive={interactive}>
             <div className="mb-5">
               <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Work Experience</h2>
               <div className="space-y-3">
                 {experiences.filter((e) => e.company || e.title).map((exp) => (
-                  <div key={exp.id}>
+                  <div key={exp.id} data-resume-block>
                     <div className="flex justify-between items-start">
                       <div>
                         <h3 className="font-semibold text-gray-900">{exp.title || "Job Title"} {exp.type && `(${exp.type})`}</h3>
@@ -512,12 +573,12 @@ const Builder = () => {
           </ResizableSection>
 
           {learnedExperiences.some((l) => l.title || l.description) && (
-            <ResizableSection id="learned">
+            <ResizableSection id="learned" interactive={interactive}>
               <div className="mb-5">
                 <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Learned Experience</h2>
                 <div className="space-y-2">
                   {learnedExperiences.filter((l) => l.title || l.description).map((item) => (
-                    <div key={item.id}>
+                    <div key={item.id} data-resume-block>
                       {item.title && <h3 className="font-semibold text-gray-900 text-[11px]">{item.title}</h3>}
                       {item.description && (
                         <ul className="mt-1 text-[10px] text-gray-600 space-y-0.5">
@@ -533,12 +594,12 @@ const Builder = () => {
             </ResizableSection>
           )}
 
-          <ResizableSection id="education">
+          <ResizableSection id="education" interactive={interactive}>
             <div>
               <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Education</h2>
               <div className="space-y-2">
                 {education.filter((e) => e.institution || e.degree).map((edu) => (
-                  <div key={edu.id} className="flex justify-between items-start">
+                  <div key={edu.id} data-resume-block className="flex justify-between items-start">
                     <div>
                       <h3 className="font-semibold text-gray-900 text-[11px]">{edu.degree || "Degree"}</h3>
                       <p className="text-gray-600 text-[10px]">{edu.institution}</p>
@@ -555,12 +616,12 @@ const Builder = () => {
 
         {/* Right Column - 40% */}
         <div className="w-[40%] p-5 pl-4" style={{ backgroundColor: theme.light }}>
-          <ResizableSection id="skills">
+          <ResizableSection id="skills" interactive={interactive}>
             <div className="mb-5">
               <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Skills</h2>
               <div className="space-y-2">
                 {skillGroups.map((group) => (
-                  <div key={group.id}>
+                  <div key={group.id} data-resume-block>
                     {group.category && <p className="font-medium text-gray-700 text-[10px] mb-1">{group.category}</p>}
                     <div className="flex flex-wrap gap-1">
                       {group.items.map((skill, j) => <span key={j} className="px-1.5 py-0.5 rounded text-[9px] text-gray-700 bg-white/70">{skill}</span>)}
@@ -573,12 +634,12 @@ const Builder = () => {
           </ResizableSection>
 
           {projects.some((p) => p.name) && (
-            <ResizableSection id="projects">
+            <ResizableSection id="projects" interactive={interactive}>
               <div className="mb-5">
                 <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Projects</h2>
                 <div className="space-y-2">
                   {projects.filter((p) => p.name).map((project) => (
-                    <div key={project.id}>
+                    <div key={project.id} data-resume-block>
                       <h3 className="font-semibold text-gray-900 text-[10px]">{project.name}</h3>
                       <p className="text-gray-600 text-[9px]">{project.description}</p>
                       {project.link && <p className="text-[8px]" style={{ color: theme.primary }}>{project.link}</p>}
@@ -590,12 +651,12 @@ const Builder = () => {
           )}
 
           {certifications.length > 0 && (
-            <ResizableSection id="certifications">
+            <ResizableSection id="certifications" interactive={interactive}>
               <div>
                 <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Training & Certificates</h2>
                 <ul className="space-y-1">
                   {certifications.map((cert, i) => (
-                    <li key={i} className="flex items-start gap-1 text-[10px] text-gray-700"><span style={{ color: theme.primary }}>•</span><span>{cert}</span></li>
+                    <li key={i} data-resume-block className="flex items-start gap-1 text-[10px] text-gray-700"><span style={{ color: theme.primary }}>•</span><span>{cert}</span></li>
                   ))}
                 </ul>
               </div>
@@ -605,12 +666,12 @@ const Builder = () => {
       </div>
 
       {references.some((r) => r.name || r.organization) && (
-        <ResizableSection id="references">
+        <ResizableSection id="references" interactive={interactive}>
           <div className="px-5 py-4 border-t" style={{ borderColor: theme.primary }}>
             <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>References</h2>
             <div className="grid grid-cols-2 gap-4">
               {references.filter((r) => r.name || r.organization).map((r) => (
-                <div key={r.id} className="text-[10px] text-gray-700">
+                <div key={r.id} data-resume-block className="text-[10px] text-gray-700">
                   <p className="font-semibold text-gray-900 text-[11px]">{r.name}</p>
                   {r.designation && <p className="text-gray-600">{r.designation}</p>}
                   {r.organization && <p className="text-gray-600">{r.organization}</p>}
@@ -947,8 +1008,8 @@ const Builder = () => {
                 style={{ width: `${activePaper.widthPx}px`, height: `${activePaper.heightPx}px` }}
               >
                 <div style={{ paddingTop: `${pageTopPad(i)}px`, height: `${activePaper.heightPx}px`, overflow: "hidden" }}>
-                  <div style={{ height: `${pageContentH(i)}px`, overflow: "hidden" }}>
-                    {renderResumeContent(null, pageOffsetY(i))}
+                  <div style={{ height: `${pageVisibleContentH(i)}px`, overflow: "hidden" }}>
+                    {renderResumeContent(null, pageOffsetY(i), false)}
                   </div>
                 </div>
               </div>
@@ -971,8 +1032,8 @@ const Builder = () => {
                   }}
                 >
                   <div style={{ paddingTop: `${pageTopPad(i)}px`, height: `${activePaper.heightPx}px`, overflow: "hidden" }}>
-                    <div style={{ height: `${pageContentH(i)}px`, overflow: "hidden" }}>
-                      {renderResumeContent(null, pageOffsetY(i))}
+                    <div style={{ height: `${pageVisibleContentH(i)}px`, overflow: "hidden" }}>
+                      {renderResumeContent(null, pageOffsetY(i), true)}
                     </div>
                   </div>
                   {/* Visual gutter indicators */}
