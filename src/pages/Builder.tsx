@@ -28,6 +28,26 @@ const resumeColorSchemes: Record<ResumeColorScheme, { name: string; primary: str
 
 type PaperSize = "a4" | "letter";
 
+type ExperienceItem = { id: number; company: string; title: string; type: string; startDate: string; endDate: string; description: string };
+type LearnedExperienceItem = { id: number; title: string; description: string };
+type EducationItem = { id: number; institution: string; degree: string; year: string; grade: string };
+type SkillGroup = { id: number; category: string; items: string[] };
+type ProjectItem = { id: number; name: string; description: string; link: string };
+type ReferenceItem = { id: number; name: string; designation: string; organization: string; email: string; phone: string };
+type ResumePersonalInfo = {
+  fullName?: string;
+  email?: string;
+  phone?: string;
+  location?: string;
+  linkedin?: string;
+  portfolio?: string;
+  tagline?: string;
+  learnedExperiences?: LearnedExperienceItem[];
+  references?: ReferenceItem[];
+  paperSize?: PaperSize;
+  sectionScales?: Record<string, number>;
+};
+
 const PAPER_SIZES: Record<PaperSize, { label: string; widthPx: number; heightPx: number; widthMm: number; heightMm: number }> = {
   a4: { label: "A4", widthPx: 794, heightPx: 1123, widthMm: 210, heightMm: 297 },
   letter: { label: "US Letter", widthPx: 816, heightPx: 1056, widthMm: 215.9, heightMm: 279.4 },
@@ -120,7 +140,7 @@ const Builder = () => {
 
   // Returns the y-offset (in source content) where page i begins
   const pageOffsetY = (i: number) => pageOffsets[i] ?? 0;
-  const pageContentH = (i: number) => (i === 0 ? firstPageContentH : otherPageContentH);
+  const pageContentH = useCallback((i: number) => (i === 0 ? firstPageContentH : otherPageContentH), [firstPageContentH, otherPageContentH]);
   const pageTopPad = (i: number) => (i === 0 ? 0 : PAGE_GAP_PX);
   const pageVisibleContentH = (i: number) => {
     const nextOffset = pageOffsets[i + 1];
