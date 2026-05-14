@@ -202,6 +202,7 @@ const Builder = () => {
           if (data.colorScheme) setColorScheme(data.colorScheme);
           if (data.photoUrl) setPhotoUrl(data.photoUrl);
           if (data.paperSize && PAPER_SIZES[data.paperSize as PaperSize]) setPaperSize(data.paperSize);
+          if (data.sectionScales) setSectionScales(data.sectionScales);
           setHasUnsavedChanges(true);
           return; // Use localStorage data instead of database
         } catch (e) {
