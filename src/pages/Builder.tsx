@@ -276,14 +276,19 @@ const Builder = () => {
 
     const updatePageCount = () => {
       const h = resumePreviewRef.current?.scrollHeight || activePaper.heightPx;
-      setPageCount(Math.max(1, Math.ceil(h / activePaper.heightPx)));
+      if (h <= firstPageContentH) {
+        setPageCount(1);
+      } else {
+        const remaining = h - firstPageContentH;
+        setPageCount(1 + Math.ceil(remaining / otherPageContentH));
+      }
     };
 
     updatePageCount();
     const observer = new ResizeObserver(updatePageCount);
     observer.observe(resumePreviewRef.current);
     return () => observer.disconnect();
-  }, [activePaper.heightPx, activePaper.widthPx]);
+  }, [activePaper.heightPx, activePaper.widthPx, firstPageContentH, otherPageContentH, sectionScales]);
 
   const fitToPage = useCallback(() => {
     const pane = previewPaneRef.current;
