@@ -108,8 +108,52 @@ const Builder = () => {
   const [pageCount, setPageCount] = useState(1);
   const [zoom, setZoom] = useState(0.55);
   const [paperSize, setPaperSize] = useState<PaperSize>("a4");
+  const [sectionScales, setSectionScales] = useState<Record<string, number>>({});
   const theme = resumeColorSchemes[colorScheme];
   const activePaper = PAPER_SIZES[paperSize];
+
+  // 1cm safe-zone (≈37.8px at 96dpi) reserved at bottom of every page and top of pages >= 2
+  const PAGE_GAP_PX = 38;
+  const firstPageContentH = activePaper.heightPx - PAGE_GAP_PX;
+  const otherPageContentH = activePaper.heightPx - PAGE_GAP_PX * 2;
+
+  // Returns the y-offset (in source content) where page i begins
+  const pageOffsetY = (i: number) => (i === 0 ? 0 : firstPageContentH + (i - 1) * otherPageContentH);
+  const pageContentH = (i: number) => (i === 0 ? firstPageContentH : otherPageContentH);
+  const pageTopPad = (i: number) => (i === 0 ? 0 : PAGE_GAP_PX);
+
+  // Inline component: wraps a resume section so user can drag a handle to resize it.
+  const ResizableSection = ({ id, children }: { id: string; children: React.ReactNode }) => {
+    const scale = sectionScales[id] ?? 1;
+    const onMouseDown = (e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const startY = e.clientY;
+      const startScale = scale;
+      const onMove = (ev: MouseEvent) => {
+        const dy = ev.clientY - startY;
+        const next = Math.max(0.6, Math.min(1.6, +(startScale + dy * 0.004).toFixed(3)));
+        setSectionScales((prev) => ({ ...prev, [id]: next }));
+      };
+      const onUp = () => {
+        window.removeEventListener("mousemove", onMove);
+        window.removeEventListener("mouseup", onUp);
+      };
+      window.addEventListener("mousemove", onMove);
+      window.addEventListener("mouseup", onUp);
+    };
+    return (
+      <div className="relative group" style={{ zoom: scale }}>
+        {children}
+        <div
+          onMouseDown={onMouseDown}
+          title="Drag up/down to resize this section"
+          className="absolute -bottom-1 right-0 h-3 w-12 cursor-ns-resize opacity-0 group-hover:opacity-100 transition-opacity rounded"
+          style={{ background: "rgba(99,102,241,0.55)", border: "1px solid rgba(255,255,255,0.6)" }}
+        />
+      </div>
+    );
+  };
 
   // Auto-save to localStorage whenever data changes
   const saveToLocalStorage = useCallback(() => {
