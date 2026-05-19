@@ -133,15 +133,18 @@ const Builder = () => {
   const theme = resumeColorSchemes[colorScheme];
   const activePaper = PAPER_SIZES[paperSize];
 
-  // 1cm safe-zone (≈37.8px at 96dpi) reserved at bottom of every page and top of pages >= 2
-  const PAGE_GAP_PX = 38;
-  const firstPageContentH = activePaper.heightPx - PAGE_GAP_PX;
-  const otherPageContentH = activePaper.heightPx - PAGE_GAP_PX * 2;
+  // 1cm safe zones in the actual paper. Content may not enter these areas.
+  const ONE_CM_PX = 38;
 
-  // Returns the y-offset (in source content) where page i begins
+  const pageTopPad = (i: number) => (i === 0 ? 0 : ONE_CM_PX);
+  const pageBottomPad = () => ONE_CM_PX;
+  const pageContentH = useCallback(
+    (i: number) => activePaper.heightPx - pageTopPad(i) - pageBottomPad(),
+    [activePaper.heightPx]
+  );
+
+  // Returns the y-offset (in source content) where page i begins.
   const pageOffsetY = (i: number) => pageOffsets[i] ?? 0;
-  const pageContentH = useCallback((i: number) => (i === 0 ? firstPageContentH : otherPageContentH), [firstPageContentH, otherPageContentH]);
-  const pageTopPad = (i: number) => (i === 0 ? 0 : PAGE_GAP_PX);
   const pageVisibleContentH = (i: number) => {
     const nextOffset = pageOffsets[i + 1];
     if (typeof nextOffset !== "number") return pageContentH(i);
