@@ -370,7 +370,7 @@ const Builder = () => {
       cancelAnimationFrame(frame);
       observer.disconnect();
     };
-  }, [activePaper.heightPx, activePaper.widthPx, firstPageContentH, otherPageContentH, pageContentH, sectionScales, formData, experiences, learnedExperiences, education, skillGroups, projects, certifications, references]);
+  }, [activePaper.heightPx, activePaper.widthPx, pageContentH, sectionScales, formData, experiences, learnedExperiences, education, skillGroups, projects, certifications, references]);
 
   const fitToPage = useCallback(() => {
     const pane = previewPaneRef.current;
@@ -1062,10 +1062,10 @@ const Builder = () => {
                   </div>
                   {/* Visual gutter indicators */}
                   {i > 0 && (
-                    <div className="absolute top-0 left-0 right-0 pointer-events-none border-b border-dashed border-muted-foreground/30" style={{ height: `${PAGE_GAP_PX}px`, background: "rgba(0,0,0,0.02)" }} />
+                    <div className="absolute top-0 left-0 right-0 pointer-events-none border-b border-dashed border-muted-foreground/30" style={{ height: `${ONE_CM_PX}px`, background: "rgba(0,0,0,0.02)" }} />
                   )}
                   {i < pageCount - 1 && (
-                    <div className="absolute bottom-0 left-0 right-0 pointer-events-none border-t border-dashed border-muted-foreground/30" style={{ height: `${PAGE_GAP_PX}px`, background: "rgba(0,0,0,0.02)" }} />
+                    <div className="absolute bottom-0 left-0 right-0 pointer-events-none border-t border-dashed border-muted-foreground/30" style={{ height: `${ONE_CM_PX}px`, background: "rgba(0,0,0,0.02)" }} />
                   )}
                 </div>
               </div>
