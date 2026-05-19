@@ -312,7 +312,8 @@ const Builder = () => {
       const source = resumePreviewRef.current;
       if (!source) return;
 
-      const contentHeight = Math.max(source.scrollHeight, activePaper.heightPx);
+      // Use the real resume content height so extra pages are created only after content crosses a page's printable area.
+      const contentHeight = Math.max(source.scrollHeight, source.getBoundingClientRect().height, 1);
       const sourceRect = source.getBoundingClientRect();
       const blocks = Array.from(source.querySelectorAll<HTMLElement>("[data-resume-block]"))
         .map((block) => {
