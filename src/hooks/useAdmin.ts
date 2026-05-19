@@ -20,27 +20,28 @@ export const useIsAdmin = () => {
   });
 };
 
-interface AdminProfile {
+export interface AdminProfile {
   id: string;
   user_id: string;
   email: string | null;
   full_name: string | null;
   is_premium: boolean;
-  
   created_at: string;
+  registered_at?: string;
+  last_sign_in_at?: string | null;
+  is_active?: boolean;
 }
 
 export const useAdminUsers = () => {
   return useQuery({
     queryKey: ['adminUsers'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('id, user_id, email, full_name, is_premium, created_at')
-        .order('created_at', { ascending: false });
+      const { data, error } = await supabase.functions.invoke('admin-list-users');
       if (error) throw error;
-      return data as AdminProfile[];
+      if (data?.error) throw new Error(data.error);
+      return (data?.users ?? []) as AdminProfile[];
     },
+    refetchInterval: 30000,
   });
 };
 
