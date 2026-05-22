@@ -15,6 +15,7 @@ import {
   ChevronLeft, Download, Plus, Trash2, User, Briefcase,
   GraduationCap, Code, FileCheck, ChevronDown, ChevronUp, Loader2, Save,
   FolderOpen, Award, Mail, Phone, MapPin, Linkedin, Globe, Camera, LayoutTemplate, Users,
+  Eye, EyeOff, Languages as LanguagesIcon,
 } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
@@ -34,6 +35,7 @@ type EducationItem = { id: number; institution: string; degree: string; year: st
 type SkillGroup = { id: number; category: string; items: string[] };
 type ProjectItem = { id: number; name: string; description: string; link: string };
 type ReferenceItem = { id: number; name: string; designation: string; organization: string; email: string; phone: string };
+type LanguageItem = { id: number; name: string; level: string };
 type ResumePersonalInfo = {
   fullName?: string;
   email?: string;
@@ -44,8 +46,10 @@ type ResumePersonalInfo = {
   tagline?: string;
   learnedExperiences?: LearnedExperienceItem[];
   references?: ReferenceItem[];
+  languages?: LanguageItem[];
   paperSize?: PaperSize;
   sectionScales?: Record<string, number>;
+  mutedSections?: Record<string, boolean>;
 };
 
 const PAPER_SIZES: Record<PaperSize, { label: string; widthPx: number; heightPx: number; widthMm: number; heightMm: number }> = {
@@ -72,16 +76,17 @@ const Builder = () => {
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   const [sections, setSections] = useState([
-    { id: "personal", title: "Personal Information", icon: User, isOpen: true },
-    { id: "photo", title: "Profile Photo", icon: Camera, isOpen: false },
-    { id: "summary", title: "Professional Summary", icon: FileCheck, isOpen: false },
-    { id: "experience", title: "Work Experience", icon: Briefcase, isOpen: false },
-    { id: "learned", title: "Learned Experience", icon: Award, isOpen: false },
-    { id: "education", title: "Education", icon: GraduationCap, isOpen: false },
-    { id: "skills", title: "Skills", icon: Code, isOpen: false },
-    { id: "projects", title: "Projects", icon: FolderOpen, isOpen: false },
-    { id: "certifications", title: "Certifications", icon: Award, isOpen: false },
-    { id: "references", title: "References", icon: Users, isOpen: false },
+    { id: "personal", title: "Personal Information", icon: User, isOpen: true, muteable: false },
+    { id: "photo", title: "Profile Photo", icon: Camera, isOpen: false, muteable: false },
+    { id: "summary", title: "Professional Summary", icon: FileCheck, isOpen: false, muteable: true },
+    { id: "experience", title: "Work Experience", icon: Briefcase, isOpen: false, muteable: true },
+    { id: "learned", title: "Learned Experience", icon: Award, isOpen: false, muteable: true },
+    { id: "education", title: "Education", icon: GraduationCap, isOpen: false, muteable: true },
+    { id: "skills", title: "Skills", icon: Code, isOpen: false, muteable: true },
+    { id: "projects", title: "Projects", icon: FolderOpen, isOpen: false, muteable: true },
+    { id: "certifications", title: "Certifications", icon: Award, isOpen: false, muteable: true },
+    { id: "languages", title: "Languages", icon: LanguagesIcon, isOpen: false, muteable: true },
+    { id: "references", title: "References", icon: Users, isOpen: false, muteable: true },
   ]);
 
   const [formData, setFormData] = useState({
@@ -125,6 +130,12 @@ const Builder = () => {
     { id: 1, name: "", designation: "", organization: "", email: "", phone: "" },
   ]);
 
+  const [languages, setLanguages] = useState<LanguageItem[]>([
+    { id: 1, name: "", level: "" },
+  ]);
+
+  const [mutedSections, setMutedSections] = useState<Record<string, boolean>>({});
+
   const [pageCount, setPageCount] = useState(1);
   const [zoom, setZoom] = useState(0.55);
   const [paperSize, setPaperSize] = useState<PaperSize>("a4");
@@ -142,6 +153,11 @@ const Builder = () => {
     (i: number) => activePaper.heightPx - pageTopPad(i) - pageBottomPad(),
     [activePaper.heightPx]
   );
+
+  const isMuted = (sectionId: string) => !!mutedSections[sectionId];
+  const toggleMute = (sectionId: string) =>
+    setMutedSections((prev) => ({ ...prev, [sectionId]: !prev[sectionId] }));
+
 
   // Returns the y-offset (in source content) where page i begins.
   const pageOffsetY = (i: number) => pageOffsets[i] ?? 0;
@@ -199,14 +215,16 @@ const Builder = () => {
       projects,
       certifications,
       references,
+      languages,
       colorScheme,
       photoUrl,
       paperSize,
       sectionScales,
+      mutedSections,
     };
     localStorage.setItem(AUTOSAVE_KEY + id, JSON.stringify(data));
     setHasUnsavedChanges(true);
-  }, [id, formData, experiences, learnedExperiences, education, skillGroups, projects, certifications, references, colorScheme, photoUrl, paperSize, sectionScales]);
+  }, [id, formData, experiences, learnedExperiences, education, skillGroups, projects, certifications, references, languages, colorScheme, photoUrl, paperSize, sectionScales, mutedSections]);
 
   // Auto-save effect
   useEffect(() => {
@@ -231,10 +249,12 @@ const Builder = () => {
           if (data.projects) setProjects(data.projects);
           if (data.certifications) setCertifications(data.certifications);
           if (data.references) setReferences(data.references);
+          if (data.languages) setLanguages(data.languages);
           if (data.colorScheme) setColorScheme(data.colorScheme);
           if (data.photoUrl) setPhotoUrl(data.photoUrl);
           if (data.paperSize && PAPER_SIZES[data.paperSize as PaperSize]) setPaperSize(data.paperSize);
           if (data.sectionScales) setSectionScales(data.sectionScales);
+          if (data.mutedSections) setMutedSections(data.mutedSections);
           setHasUnsavedChanges(true);
           return; // Use localStorage data instead of database
         } catch (e) {
@@ -276,6 +296,8 @@ const Builder = () => {
         if (resume.experience?.length) setExperiences(resume.experience as ExperienceItem[]);
         if (personalInfo.learnedExperiences?.length) setLearnedExperiences(personalInfo.learnedExperiences);
         if (personalInfo.references?.length) setReferences(personalInfo.references);
+        if (personalInfo.languages?.length) setLanguages(personalInfo.languages);
+        if (personalInfo.mutedSections) setMutedSections(personalInfo.mutedSections);
         if (personalInfo.paperSize && PAPER_SIZES[personalInfo.paperSize]) setPaperSize(personalInfo.paperSize);
         if (personalInfo.sectionScales) setSectionScales(personalInfo.sectionScales);
         if (resume.education?.length) setEducation(resume.education as EducationItem[]);
@@ -432,8 +454,10 @@ const Builder = () => {
         tagline: formData.tagline,
         learnedExperiences,
         references,
+        languages,
         paperSize,
         sectionScales,
+        mutedSections,
       },
       summary: formData.summary,
       experience: experiences,
@@ -562,7 +586,7 @@ const Builder = () => {
       <div className="flex text-xs">
         {/* Left Column - 60% */}
         <div className="w-[60%] p-5 pr-4">
-          {formData.summary && (
+          {!isMuted("summary") && formData.summary && (
             <ResizableSection id="summary" interactive={interactive}>
               <div data-resume-block className="mb-5">
                 <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Professional Summary</h2>
@@ -570,6 +594,7 @@ const Builder = () => {
               </div>
             </ResizableSection>
           )}
+          {!isMuted("experience") && (
           <ResizableSection id="experience" interactive={interactive}>
             <div className="mb-5">
               <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Work Experience</h2>
@@ -596,8 +621,9 @@ const Builder = () => {
               </div>
             </div>
           </ResizableSection>
+          )}
 
-          {learnedExperiences.some((l) => l.title || l.description) && (
+          {!isMuted("learned") && learnedExperiences.some((l) => l.title || l.description) && (
             <ResizableSection id="learned" interactive={interactive}>
               <div className="mb-5">
                 <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Learned Experience</h2>
@@ -619,6 +645,7 @@ const Builder = () => {
             </ResizableSection>
           )}
 
+          {!isMuted("education") && (
           <ResizableSection id="education" interactive={interactive}>
             <div>
               <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Education</h2>
@@ -637,10 +664,12 @@ const Builder = () => {
               </div>
             </div>
           </ResizableSection>
+          )}
         </div>
 
         {/* Right Column - 40% */}
         <div className="w-[40%] p-5 pl-4" style={{ backgroundColor: theme.light }}>
+          {!isMuted("skills") && (
           <ResizableSection id="skills" interactive={interactive}>
             <div className="mb-5">
               <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Skills</h2>
@@ -657,8 +686,9 @@ const Builder = () => {
               </div>
             </div>
           </ResizableSection>
+          )}
 
-          {projects.some((p) => p.name) && (
+          {!isMuted("projects") && projects.some((p) => p.name) && (
             <ResizableSection id="projects" interactive={interactive}>
               <div className="mb-5">
                 <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Projects</h2>
@@ -675,9 +705,9 @@ const Builder = () => {
             </ResizableSection>
           )}
 
-          {certifications.length > 0 && (
+          {!isMuted("certifications") && certifications.length > 0 && (
             <ResizableSection id="certifications" interactive={interactive}>
-              <div>
+              <div className="mb-5">
                 <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Training & Certificates</h2>
                 <ul className="space-y-1">
                   {certifications.map((cert, i) => (
@@ -687,10 +717,26 @@ const Builder = () => {
               </div>
             </ResizableSection>
           )}
+
+          {!isMuted("languages") && languages.some((l) => l.name) && (
+            <ResizableSection id="languages" interactive={interactive}>
+              <div>
+                <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Languages</h2>
+                <ul className="space-y-1">
+                  {languages.filter((l) => l.name).map((lang) => (
+                    <li key={lang.id} data-resume-block className="flex items-center justify-between text-[10px] text-gray-700">
+                      <span className="font-medium text-gray-900">{lang.name}</span>
+                      {lang.level && <span className="text-gray-500">{lang.level}</span>}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </ResizableSection>
+          )}
         </div>
       </div>
 
-      {references.some((r) => r.name || r.organization) && (
+      {!isMuted("references") && references.some((r) => r.name || r.organization) && (
         <ResizableSection id="references" interactive={interactive}>
           <div className="px-5 py-4 border-t" style={{ borderColor: theme.primary }}>
             <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>References</h2>
@@ -765,15 +811,27 @@ const Builder = () => {
         <div className="w-full md:w-1/2 border-r border-border bg-card overflow-auto p-6 space-y-4">
           {sections.map((section) => (
             <Collapsible key={section.id} open={section.isOpen} onOpenChange={() => toggleSection(section.id)}>
-              <CollapsibleTrigger className="w-full flex items-center justify-between p-4 rounded-xl bg-muted/50">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-icy-blue-600/30 flex items-center justify-center">
-                    <section.icon className="w-5 h-5 text-primary" />
+              <div className={`w-full flex items-center justify-between p-4 rounded-xl bg-muted/50 ${isMuted(section.id) ? "opacity-60" : ""}`}>
+                <CollapsibleTrigger className="flex flex-1 items-center justify-between text-left">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-icy-blue-600/30 flex items-center justify-center">
+                      <section.icon className="w-5 h-5 text-primary" />
+                    </div>
+                    <span className="font-semibold">{section.title}{isMuted(section.id) && <span className="ml-2 text-xs text-muted-foreground">(hidden)</span>}</span>
                   </div>
-                  <span className="font-semibold">{section.title}</span>
-                </div>
-                {section.isOpen ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
-              </CollapsibleTrigger>
+                  {section.isOpen ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+                </CollapsibleTrigger>
+                {section.muteable && (
+                  <button
+                    type="button"
+                    onClick={(e) => { e.stopPropagation(); toggleMute(section.id); }}
+                    title={isMuted(section.id) ? "Show in resume" : "Hide from resume"}
+                    className="ml-3 p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground"
+                  >
+                    {isMuted(section.id) ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                )}
+              </div>
               <CollapsibleContent className="p-4 space-y-4">
                 {section.id === "personal" && (
                   <div className="grid grid-cols-2 gap-4">
@@ -782,7 +840,7 @@ const Builder = () => {
                       <Input placeholder="John Doe" value={formData.fullName} onChange={(e) => setFormData({ ...formData, fullName: e.target.value })} />
                     </div>
                     <div className="col-span-2">
-                      <Label>Designation / Job Title</Label>
+                      <Label>Tagline / Designation (shown below your name)</Label>
                       <Input placeholder="e.g. Software Engineer (Machine Learning)" value={formData.tagline} onChange={(e) => setFormData({ ...formData, tagline: e.target.value })} />
                     </div>
                     <div>
@@ -963,6 +1021,31 @@ const Builder = () => {
                     </div>
                   </>
                 )}
+
+                {section.id === "languages" && (
+                  <>
+                    {languages.map((lang, i) => (
+                      <div key={lang.id} className="p-4 border rounded-xl space-y-3">
+                        <div className="flex justify-between">
+                          <span className="text-sm font-medium text-muted-foreground">Language {i + 1}</span>
+                          {languages.length > 1 && (
+                            <Button variant="ghost" size="sm" onClick={() => setLanguages(languages.filter((x) => x.id !== lang.id))} className="text-destructive">
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          )}
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                          <Input placeholder="Language (e.g. Bangla)" value={lang.name} onChange={(e) => setLanguages(languages.map((x) => x.id === lang.id ? { ...x, name: e.target.value } : x))} />
+                          <Input placeholder="Proficiency (e.g. Native)" value={lang.level} onChange={(e) => setLanguages(languages.map((x) => x.id === lang.id ? { ...x, level: e.target.value } : x))} />
+                        </div>
+                      </div>
+                    ))}
+                    <Button variant="outline" onClick={() => setLanguages([...languages, { id: Date.now(), name: "", level: "" }])}>
+                      <Plus className="w-4 h-4 mr-2" />Add Language
+                    </Button>
+                  </>
+                )}
+
 
                 {section.id === "references" && (
                   <>
