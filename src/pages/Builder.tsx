@@ -130,6 +130,12 @@ const Builder = () => {
     { id: 1, name: "", designation: "", organization: "", email: "", phone: "" },
   ]);
 
+  const [languages, setLanguages] = useState<LanguageItem[]>([
+    { id: 1, name: "", level: "" },
+  ]);
+
+  const [mutedSections, setMutedSections] = useState<Record<string, boolean>>({});
+
   const [pageCount, setPageCount] = useState(1);
   const [zoom, setZoom] = useState(0.55);
   const [paperSize, setPaperSize] = useState<PaperSize>("a4");
