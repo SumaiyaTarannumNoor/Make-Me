@@ -811,15 +811,27 @@ const Builder = () => {
         <div className="w-full md:w-1/2 border-r border-border bg-card overflow-auto p-6 space-y-4">
           {sections.map((section) => (
             <Collapsible key={section.id} open={section.isOpen} onOpenChange={() => toggleSection(section.id)}>
-              <CollapsibleTrigger className="w-full flex items-center justify-between p-4 rounded-xl bg-muted/50">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-icy-blue-600/30 flex items-center justify-center">
-                    <section.icon className="w-5 h-5 text-primary" />
+              <div className={`w-full flex items-center justify-between p-4 rounded-xl bg-muted/50 ${isMuted(section.id) ? "opacity-60" : ""}`}>
+                <CollapsibleTrigger className="flex flex-1 items-center justify-between text-left">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-icy-blue-600/30 flex items-center justify-center">
+                      <section.icon className="w-5 h-5 text-primary" />
+                    </div>
+                    <span className="font-semibold">{section.title}{isMuted(section.id) && <span className="ml-2 text-xs text-muted-foreground">(hidden)</span>}</span>
                   </div>
-                  <span className="font-semibold">{section.title}</span>
-                </div>
-                {section.isOpen ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
-              </CollapsibleTrigger>
+                  {section.isOpen ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+                </CollapsibleTrigger>
+                {section.muteable && (
+                  <button
+                    type="button"
+                    onClick={(e) => { e.stopPropagation(); toggleMute(section.id); }}
+                    title={isMuted(section.id) ? "Show in resume" : "Hide from resume"}
+                    className="ml-3 p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground"
+                  >
+                    {isMuted(section.id) ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                )}
+              </div>
               <CollapsibleContent className="p-4 space-y-4">
                 {section.id === "personal" && (
                   <div className="grid grid-cols-2 gap-4">
