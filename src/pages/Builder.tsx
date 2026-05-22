@@ -244,10 +244,12 @@ const Builder = () => {
           if (data.projects) setProjects(data.projects);
           if (data.certifications) setCertifications(data.certifications);
           if (data.references) setReferences(data.references);
+          if (data.languages) setLanguages(data.languages);
           if (data.colorScheme) setColorScheme(data.colorScheme);
           if (data.photoUrl) setPhotoUrl(data.photoUrl);
           if (data.paperSize && PAPER_SIZES[data.paperSize as PaperSize]) setPaperSize(data.paperSize);
           if (data.sectionScales) setSectionScales(data.sectionScales);
+          if (data.mutedSections) setMutedSections(data.mutedSections);
           setHasUnsavedChanges(true);
           return; // Use localStorage data instead of database
         } catch (e) {
