@@ -154,6 +154,11 @@ const Builder = () => {
     [activePaper.heightPx]
   );
 
+  const isMuted = (sectionId: string) => !!mutedSections[sectionId];
+  const toggleMute = (sectionId: string) =>
+    setMutedSections((prev) => ({ ...prev, [sectionId]: !prev[sectionId] }));
+
+
   // Returns the y-offset (in source content) where page i begins.
   const pageOffsetY = (i: number) => pageOffsets[i] ?? 0;
   const pageVisibleContentH = (i: number) => {
