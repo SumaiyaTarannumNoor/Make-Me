@@ -645,6 +645,7 @@ const Builder = () => {
             </ResizableSection>
           )}
 
+          {!isMuted("education") && (
           <ResizableSection id="education" interactive={interactive}>
             <div>
               <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Education</h2>
@@ -663,6 +664,7 @@ const Builder = () => {
               </div>
             </div>
           </ResizableSection>
+          )}
         </div>
 
         {/* Right Column - 40% */}
