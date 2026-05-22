@@ -669,6 +669,7 @@ const Builder = () => {
 
         {/* Right Column - 40% */}
         <div className="w-[40%] p-5 pl-4" style={{ backgroundColor: theme.light }}>
+          {!isMuted("skills") && (
           <ResizableSection id="skills" interactive={interactive}>
             <div className="mb-5">
               <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Skills</h2>
@@ -685,8 +686,9 @@ const Builder = () => {
               </div>
             </div>
           </ResizableSection>
+          )}
 
-          {projects.some((p) => p.name) && (
+          {!isMuted("projects") && projects.some((p) => p.name) && (
             <ResizableSection id="projects" interactive={interactive}>
               <div className="mb-5">
                 <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Projects</h2>
@@ -703,13 +705,29 @@ const Builder = () => {
             </ResizableSection>
           )}
 
-          {certifications.length > 0 && (
+          {!isMuted("certifications") && certifications.length > 0 && (
             <ResizableSection id="certifications" interactive={interactive}>
-              <div>
+              <div className="mb-5">
                 <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Training & Certificates</h2>
                 <ul className="space-y-1">
                   {certifications.map((cert, i) => (
                     <li key={i} data-resume-block className="flex items-start gap-1 text-[10px] text-gray-700"><span style={{ color: theme.primary }}>•</span><span>{cert}</span></li>
+                  ))}
+                </ul>
+              </div>
+            </ResizableSection>
+          )}
+
+          {!isMuted("languages") && languages.some((l) => l.name) && (
+            <ResizableSection id="languages" interactive={interactive}>
+              <div>
+                <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Languages</h2>
+                <ul className="space-y-1">
+                  {languages.filter((l) => l.name).map((lang) => (
+                    <li key={lang.id} data-resume-block className="flex items-center justify-between text-[10px] text-gray-700">
+                      <span className="font-medium text-gray-900">{lang.name}</span>
+                      {lang.level && <span className="text-gray-500">{lang.level}</span>}
+                    </li>
                   ))}
                 </ul>
               </div>
