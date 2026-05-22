@@ -736,7 +736,7 @@ const Builder = () => {
         </div>
       </div>
 
-      {references.some((r) => r.name || r.organization) && (
+      {!isMuted("references") && references.some((r) => r.name || r.organization) && (
         <ResizableSection id="references" interactive={interactive}>
           <div className="px-5 py-4 border-t" style={{ borderColor: theme.primary }}>
             <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>References</h2>
