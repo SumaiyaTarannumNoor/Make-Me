@@ -15,6 +15,7 @@ import {
   ChevronLeft, Download, Plus, Trash2, User, Briefcase,
   GraduationCap, Code, FileCheck, ChevronDown, ChevronUp, Loader2, Save,
   FolderOpen, Award, Mail, Phone, MapPin, Linkedin, Globe, Camera, LayoutTemplate, Users,
+  Eye, EyeOff, Languages as LanguagesIcon,
 } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
