@@ -586,7 +586,7 @@ const Builder = () => {
       <div className="flex text-xs">
         {/* Left Column - 60% */}
         <div className="w-[60%] p-5 pr-4">
-          {formData.summary && (
+          {!isMuted("summary") && formData.summary && (
             <ResizableSection id="summary" interactive={interactive}>
               <div data-resume-block className="mb-5">
                 <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Professional Summary</h2>
@@ -594,6 +594,7 @@ const Builder = () => {
               </div>
             </ResizableSection>
           )}
+          {!isMuted("experience") && (
           <ResizableSection id="experience" interactive={interactive}>
             <div className="mb-5">
               <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Work Experience</h2>
@@ -620,8 +621,9 @@ const Builder = () => {
               </div>
             </div>
           </ResizableSection>
+          )}
 
-          {learnedExperiences.some((l) => l.title || l.description) && (
+          {!isMuted("learned") && learnedExperiences.some((l) => l.title || l.description) && (
             <ResizableSection id="learned" interactive={interactive}>
               <div className="mb-5">
                 <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Learned Experience</h2>
