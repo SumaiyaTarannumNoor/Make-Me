@@ -35,6 +35,7 @@ type EducationItem = { id: number; institution: string; degree: string; year: st
 type SkillGroup = { id: number; category: string; items: string[] };
 type ProjectItem = { id: number; name: string; description: string; link: string };
 type ReferenceItem = { id: number; name: string; designation: string; organization: string; email: string; phone: string };
+type LanguageItem = { id: number; name: string; level: string };
 type ResumePersonalInfo = {
   fullName?: string;
   email?: string;
@@ -45,8 +46,10 @@ type ResumePersonalInfo = {
   tagline?: string;
   learnedExperiences?: LearnedExperienceItem[];
   references?: ReferenceItem[];
+  languages?: LanguageItem[];
   paperSize?: PaperSize;
   sectionScales?: Record<string, number>;
+  mutedSections?: Record<string, boolean>;
 };
 
 const PAPER_SIZES: Record<PaperSize, { label: string; widthPx: number; heightPx: number; widthMm: number; heightMm: number }> = {
