@@ -1022,6 +1022,31 @@ const Builder = () => {
                   </>
                 )}
 
+                {section.id === "languages" && (
+                  <>
+                    {languages.map((lang, i) => (
+                      <div key={lang.id} className="p-4 border rounded-xl space-y-3">
+                        <div className="flex justify-between">
+                          <span className="text-sm font-medium text-muted-foreground">Language {i + 1}</span>
+                          {languages.length > 1 && (
+                            <Button variant="ghost" size="sm" onClick={() => setLanguages(languages.filter((x) => x.id !== lang.id))} className="text-destructive">
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          )}
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                          <Input placeholder="Language (e.g. Bangla)" value={lang.name} onChange={(e) => setLanguages(languages.map((x) => x.id === lang.id ? { ...x, name: e.target.value } : x))} />
+                          <Input placeholder="Proficiency (e.g. Native)" value={lang.level} onChange={(e) => setLanguages(languages.map((x) => x.id === lang.id ? { ...x, level: e.target.value } : x))} />
+                        </div>
+                      </div>
+                    ))}
+                    <Button variant="outline" onClick={() => setLanguages([...languages, { id: Date.now(), name: "", level: "" }])}>
+                      <Plus className="w-4 h-4 mr-2" />Add Language
+                    </Button>
+                  </>
+                )}
+
+
                 {section.id === "references" && (
                   <>
                     {references.map((ref, i) => (
