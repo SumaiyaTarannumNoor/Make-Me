@@ -76,16 +76,17 @@ const Builder = () => {
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   const [sections, setSections] = useState([
-    { id: "personal", title: "Personal Information", icon: User, isOpen: true },
-    { id: "photo", title: "Profile Photo", icon: Camera, isOpen: false },
-    { id: "summary", title: "Professional Summary", icon: FileCheck, isOpen: false },
-    { id: "experience", title: "Work Experience", icon: Briefcase, isOpen: false },
-    { id: "learned", title: "Learned Experience", icon: Award, isOpen: false },
-    { id: "education", title: "Education", icon: GraduationCap, isOpen: false },
-    { id: "skills", title: "Skills", icon: Code, isOpen: false },
-    { id: "projects", title: "Projects", icon: FolderOpen, isOpen: false },
-    { id: "certifications", title: "Certifications", icon: Award, isOpen: false },
-    { id: "references", title: "References", icon: Users, isOpen: false },
+    { id: "personal", title: "Personal Information", icon: User, isOpen: true, muteable: false },
+    { id: "photo", title: "Profile Photo", icon: Camera, isOpen: false, muteable: false },
+    { id: "summary", title: "Professional Summary", icon: FileCheck, isOpen: false, muteable: true },
+    { id: "experience", title: "Work Experience", icon: Briefcase, isOpen: false, muteable: true },
+    { id: "learned", title: "Learned Experience", icon: Award, isOpen: false, muteable: true },
+    { id: "education", title: "Education", icon: GraduationCap, isOpen: false, muteable: true },
+    { id: "skills", title: "Skills", icon: Code, isOpen: false, muteable: true },
+    { id: "projects", title: "Projects", icon: FolderOpen, isOpen: false, muteable: true },
+    { id: "certifications", title: "Certifications", icon: Award, isOpen: false, muteable: true },
+    { id: "languages", title: "Languages", icon: LanguagesIcon, isOpen: false, muteable: true },
+    { id: "references", title: "References", icon: Users, isOpen: false, muteable: true },
   ]);
 
   const [formData, setFormData] = useState({
