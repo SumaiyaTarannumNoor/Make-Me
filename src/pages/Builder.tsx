@@ -291,6 +291,8 @@ const Builder = () => {
         if (resume.experience?.length) setExperiences(resume.experience as ExperienceItem[]);
         if (personalInfo.learnedExperiences?.length) setLearnedExperiences(personalInfo.learnedExperiences);
         if (personalInfo.references?.length) setReferences(personalInfo.references);
+        if (personalInfo.languages?.length) setLanguages(personalInfo.languages);
+        if (personalInfo.mutedSections) setMutedSections(personalInfo.mutedSections);
         if (personalInfo.paperSize && PAPER_SIZES[personalInfo.paperSize]) setPaperSize(personalInfo.paperSize);
         if (personalInfo.sectionScales) setSectionScales(personalInfo.sectionScales);
         if (resume.education?.length) setEducation(resume.education as EducationItem[]);
