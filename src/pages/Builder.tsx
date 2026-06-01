@@ -478,6 +478,8 @@ const Builder = () => {
         linkedin: formData.linkedin,
         portfolio: formData.portfolio,
         tagline: formData.tagline,
+        designation: formData.designation,
+        headerStyle,
         learnedExperiences,
         references,
         languages,
