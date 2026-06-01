@@ -559,11 +559,16 @@ const Builder = () => {
     >
       {/* Header Section */}
       <ResizableSection id="header" interactive={interactive}>
-      <div data-resume-block className="px-6 py-5" style={{ backgroundColor: theme.headerBg }}>
+      <div data-resume-block className="px-6 py-5" style={{ backgroundColor: headerStyle.bgColor || theme.headerBg }}>
         <div className="flex items-center justify-between gap-4 mb-3">
           <div className="flex-1 min-w-0">
-            <h1 className="text-2xl font-bold text-white tracking-wide">{formData.fullName || "YOUR NAME"}</h1>
-            <p className="text-sm mt-1" style={{ color: theme.primary }}>{formData.tagline || "Your designation / job title..."}</p>
+            <h1 className="font-bold tracking-wide leading-tight" style={{ fontSize: `${headerStyle.nameSize}px`, color: headerStyle.nameColor }}>{formData.fullName || "YOUR NAME"}</h1>
+            {formData.designation && (
+              <p className="mt-1 font-medium" style={{ fontSize: `${headerStyle.designationSize}px`, color: headerStyle.designationColor || theme.primary }}>{formData.designation}</p>
+            )}
+            {formData.tagline && (
+              <p className="mt-1 leading-snug" style={{ fontSize: `${headerStyle.taglineSize}px`, color: headerStyle.taglineColor }}>{formData.tagline}</p>
+            )}
           </div>
           {photoUrl ? (
             <div
