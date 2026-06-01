@@ -900,6 +900,44 @@ const Builder = () => {
                       <Label>Portfolio / Website</Label>
                       <Input placeholder="johndoe.com" value={formData.portfolio} onChange={(e) => setFormData({ ...formData, portfolio: e.target.value })} />
                     </div>
+                    <div className="col-span-2 mt-2 rounded-lg border border-border p-3 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <p className="text-sm font-semibold">Header Style</p>
+                        <Button type="button" size="sm" variant="outline" onClick={() => setHeaderStyle(DEFAULT_HEADER_STYLE)}>Reset</Button>
+                      </div>
+                      <div className="grid grid-cols-3 gap-3">
+                        <div>
+                          <Label className="text-xs">Name size ({headerStyle.nameSize}px)</Label>
+                          <Input type="range" min={14} max={48} value={headerStyle.nameSize} onChange={(e) => setHeaderStyle({ ...headerStyle, nameSize: +e.target.value })} />
+                        </div>
+                        <div>
+                          <Label className="text-xs">Designation size ({headerStyle.designationSize}px)</Label>
+                          <Input type="range" min={9} max={28} value={headerStyle.designationSize} onChange={(e) => setHeaderStyle({ ...headerStyle, designationSize: +e.target.value })} />
+                        </div>
+                        <div>
+                          <Label className="text-xs">Tagline size ({headerStyle.taglineSize}px)</Label>
+                          <Input type="range" min={8} max={22} value={headerStyle.taglineSize} onChange={(e) => setHeaderStyle({ ...headerStyle, taglineSize: +e.target.value })} />
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <Label className="text-xs">Name color</Label>
+                          <Input type="color" value={headerStyle.nameColor} onChange={(e) => setHeaderStyle({ ...headerStyle, nameColor: e.target.value })} className="h-9 p-1" />
+                        </div>
+                        <div>
+                          <Label className="text-xs">Designation color</Label>
+                          <Input type="color" value={headerStyle.designationColor || theme.primary} onChange={(e) => setHeaderStyle({ ...headerStyle, designationColor: e.target.value })} className="h-9 p-1" />
+                        </div>
+                        <div>
+                          <Label className="text-xs">Tagline color</Label>
+                          <Input type="color" value={headerStyle.taglineColor} onChange={(e) => setHeaderStyle({ ...headerStyle, taglineColor: e.target.value })} className="h-9 p-1" />
+                        </div>
+                        <div>
+                          <Label className="text-xs">Header background</Label>
+                          <Input type="color" value={headerStyle.bgColor || theme.headerBg} onChange={(e) => setHeaderStyle({ ...headerStyle, bgColor: e.target.value })} className="h-9 p-1" />
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 )}
 
