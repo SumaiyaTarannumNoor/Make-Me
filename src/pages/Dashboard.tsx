@@ -165,15 +165,22 @@ const Dashboard = () => {
                             <Clock className="w-3 h-3" />{new Date(resume.updated_at).toLocaleDateString()}
                           </p>
                         </div>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild><button className="p-1 rounded-md hover:bg-muted"><MoreHorizontal className="w-4 h-4 text-muted-foreground" /></button></DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem><Share2 className="w-4 h-4 mr-2" />Share</DropdownMenuItem>
-                            <DropdownMenuItem><Download className="w-4 h-4 mr-2" />Download</DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem className="text-destructive" onClick={() => deleteResume(resume.id)}><Trash2 className="w-4 h-4 mr-2" />Delete</DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
+                        <div className="flex items-center gap-1">
+                          <Link to={`/builder/${resume.id}`}>
+                            <Button variant="ghost" size="sm" className="h-8 px-2 text-muted-foreground hover:text-primary">
+                              <Edit className="w-4 h-4" />
+                            </Button>
+                          </Link>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild><button className="p-1 rounded-md hover:bg-muted"><MoreHorizontal className="w-4 h-4 text-muted-foreground" /></button></DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem><Share2 className="w-4 h-4 mr-2" />Share</DropdownMenuItem>
+                              <DropdownMenuItem><Download className="w-4 h-4 mr-2" />Download</DropdownMenuItem>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem className="text-destructive" onClick={() => deleteResume(resume.id)}><Trash2 className="w-4 h-4 mr-2" />Delete</DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
                       </div>
                       <div className="mt-3">
                         <div className="flex items-center justify-between text-xs mb-1">
