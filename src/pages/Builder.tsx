@@ -36,6 +36,24 @@ type SkillGroup = { id: number; category: string; items: string[] };
 type ProjectItem = { id: number; name: string; description: string; link: string };
 type ReferenceItem = { id: number; name: string; designation: string; organization: string; email: string; phone: string };
 type LanguageItem = { id: number; name: string; level: string };
+type HeaderStyle = {
+  nameSize: number;
+  designationSize: number;
+  taglineSize: number;
+  nameColor: string;
+  designationColor: string;
+  taglineColor: string;
+  bgColor: string;
+};
+const DEFAULT_HEADER_STYLE: HeaderStyle = {
+  nameSize: 28,
+  designationSize: 14,
+  taglineSize: 11,
+  nameColor: "#ffffff",
+  designationColor: "", // empty => use theme.primary
+  taglineColor: "#d1d5db",
+  bgColor: "", // empty => use theme.headerBg
+};
 type ResumePersonalInfo = {
   fullName?: string;
   email?: string;
@@ -44,6 +62,8 @@ type ResumePersonalInfo = {
   linkedin?: string;
   portfolio?: string;
   tagline?: string;
+  designation?: string;
+  headerStyle?: HeaderStyle;
   learnedExperiences?: LearnedExperienceItem[];
   references?: ReferenceItem[];
   languages?: LanguageItem[];
@@ -98,8 +118,10 @@ const Builder = () => {
     linkedin: "",
     portfolio: "",
     tagline: "",
+    designation: "",
     summary: "",
   });
+  const [headerStyle, setHeaderStyle] = useState<HeaderStyle>(DEFAULT_HEADER_STYLE);
 
   const [experiences, setExperiences] = useState([
     { id: 1, company: "", title: "", type: "Full-time", startDate: "", endDate: "", description: "" },
@@ -221,10 +243,11 @@ const Builder = () => {
       paperSize,
       sectionScales,
       mutedSections,
+      headerStyle,
     };
     localStorage.setItem(AUTOSAVE_KEY + id, JSON.stringify(data));
     setHasUnsavedChanges(true);
-  }, [id, formData, experiences, learnedExperiences, education, skillGroups, projects, certifications, references, languages, colorScheme, photoUrl, paperSize, sectionScales, mutedSections]);
+  }, [id, formData, experiences, learnedExperiences, education, skillGroups, projects, certifications, references, languages, colorScheme, photoUrl, paperSize, sectionScales, mutedSections, headerStyle]);
 
   // Auto-save effect
   useEffect(() => {
@@ -241,7 +264,8 @@ const Builder = () => {
       if (saved) {
         try {
           const data = JSON.parse(saved);
-          if (data.formData) setFormData(data.formData);
+          if (data.formData) setFormData({ ...{ title: "Untitled Resume", fullName: "", email: "", phone: "", location: "", linkedin: "", portfolio: "", tagline: "", designation: "", summary: "" }, ...data.formData });
+          if (data.headerStyle) setHeaderStyle({ ...DEFAULT_HEADER_STYLE, ...data.headerStyle });
           if (data.experiences) setExperiences(data.experiences);
           if (data.learnedExperiences) setLearnedExperiences(data.learnedExperiences);
           if (data.education) setEducation(data.education);
@@ -291,8 +315,10 @@ const Builder = () => {
           linkedin: personalInfo.linkedin || "",
           portfolio: personalInfo.portfolio || "",
           tagline: personalInfo.tagline || "",
+          designation: personalInfo.designation || "",
           summary: resume.summary || "",
         });
+        if (personalInfo.headerStyle) setHeaderStyle({ ...DEFAULT_HEADER_STYLE, ...personalInfo.headerStyle });
         if (resume.experience?.length) setExperiences(resume.experience as ExperienceItem[]);
         if (personalInfo.learnedExperiences?.length) setLearnedExperiences(personalInfo.learnedExperiences);
         if (personalInfo.references?.length) setReferences(personalInfo.references);
@@ -452,6 +478,8 @@ const Builder = () => {
         linkedin: formData.linkedin,
         portfolio: formData.portfolio,
         tagline: formData.tagline,
+        designation: formData.designation,
+        headerStyle,
         learnedExperiences,
         references,
         languages,
@@ -531,11 +559,16 @@ const Builder = () => {
     >
       {/* Header Section */}
       <ResizableSection id="header" interactive={interactive}>
-      <div data-resume-block className="px-6 py-5" style={{ backgroundColor: theme.headerBg }}>
+      <div data-resume-block className="px-6 py-5" style={{ backgroundColor: headerStyle.bgColor || theme.headerBg }}>
         <div className="flex items-center justify-between gap-4 mb-3">
           <div className="flex-1 min-w-0">
-            <h1 className="text-2xl font-bold text-white tracking-wide">{formData.fullName || "YOUR NAME"}</h1>
-            <p className="text-sm mt-1" style={{ color: theme.primary }}>{formData.tagline || "Your designation / job title..."}</p>
+            <h1 className="font-bold tracking-wide leading-tight" style={{ fontSize: `${headerStyle.nameSize}px`, color: headerStyle.nameColor }}>{formData.fullName || "YOUR NAME"}</h1>
+            {formData.designation && (
+              <p className="mt-1 font-medium" style={{ fontSize: `${headerStyle.designationSize}px`, color: headerStyle.designationColor || theme.primary }}>{formData.designation}</p>
+            )}
+            {formData.tagline && (
+              <p className="mt-1 leading-snug" style={{ fontSize: `${headerStyle.taglineSize}px`, color: headerStyle.taglineColor }}>{formData.tagline}</p>
+            )}
           </div>
           {photoUrl ? (
             <div
@@ -840,8 +873,12 @@ const Builder = () => {
                       <Input placeholder="John Doe" value={formData.fullName} onChange={(e) => setFormData({ ...formData, fullName: e.target.value })} />
                     </div>
                     <div className="col-span-2">
-                      <Label>Tagline / Designation (shown below your name)</Label>
-                      <Input placeholder="e.g. Software Engineer (Machine Learning)" value={formData.tagline} onChange={(e) => setFormData({ ...formData, tagline: e.target.value })} />
+                      <Label>Designation (job title — shown right below your name)</Label>
+                      <Input placeholder="e.g. Machine Learning Engineer" value={formData.designation} onChange={(e) => setFormData({ ...formData, designation: e.target.value })} />
+                    </div>
+                    <div className="col-span-2">
+                      <Label>Tagline (short description below the designation)</Label>
+                      <Input placeholder="e.g. A passionate AI enthusiast and developer..." value={formData.tagline} onChange={(e) => setFormData({ ...formData, tagline: e.target.value })} />
                     </div>
                     <div>
                       <Label>Email</Label>
@@ -862,6 +899,44 @@ const Builder = () => {
                     <div className="col-span-2">
                       <Label>Portfolio / Website</Label>
                       <Input placeholder="johndoe.com" value={formData.portfolio} onChange={(e) => setFormData({ ...formData, portfolio: e.target.value })} />
+                    </div>
+                    <div className="col-span-2 mt-2 rounded-lg border border-border p-3 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <p className="text-sm font-semibold">Header Style</p>
+                        <Button type="button" size="sm" variant="outline" onClick={() => setHeaderStyle(DEFAULT_HEADER_STYLE)}>Reset</Button>
+                      </div>
+                      <div className="grid grid-cols-3 gap-3">
+                        <div>
+                          <Label className="text-xs">Name size ({headerStyle.nameSize}px)</Label>
+                          <Input type="range" min={14} max={48} value={headerStyle.nameSize} onChange={(e) => setHeaderStyle({ ...headerStyle, nameSize: +e.target.value })} />
+                        </div>
+                        <div>
+                          <Label className="text-xs">Designation size ({headerStyle.designationSize}px)</Label>
+                          <Input type="range" min={9} max={28} value={headerStyle.designationSize} onChange={(e) => setHeaderStyle({ ...headerStyle, designationSize: +e.target.value })} />
+                        </div>
+                        <div>
+                          <Label className="text-xs">Tagline size ({headerStyle.taglineSize}px)</Label>
+                          <Input type="range" min={8} max={22} value={headerStyle.taglineSize} onChange={(e) => setHeaderStyle({ ...headerStyle, taglineSize: +e.target.value })} />
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <Label className="text-xs">Name color</Label>
+                          <Input type="color" value={headerStyle.nameColor} onChange={(e) => setHeaderStyle({ ...headerStyle, nameColor: e.target.value })} className="h-9 p-1" />
+                        </div>
+                        <div>
+                          <Label className="text-xs">Designation color</Label>
+                          <Input type="color" value={headerStyle.designationColor || theme.primary} onChange={(e) => setHeaderStyle({ ...headerStyle, designationColor: e.target.value })} className="h-9 p-1" />
+                        </div>
+                        <div>
+                          <Label className="text-xs">Tagline color</Label>
+                          <Input type="color" value={headerStyle.taglineColor} onChange={(e) => setHeaderStyle({ ...headerStyle, taglineColor: e.target.value })} className="h-9 p-1" />
+                        </div>
+                        <div>
+                          <Label className="text-xs">Header background</Label>
+                          <Input type="color" value={headerStyle.bgColor || theme.headerBg} onChange={(e) => setHeaderStyle({ ...headerStyle, bgColor: e.target.value })} className="h-9 p-1" />
+                        </div>
+                      </div>
                     </div>
                   </div>
                 )}
