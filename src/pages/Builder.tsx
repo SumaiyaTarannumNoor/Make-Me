@@ -264,7 +264,8 @@ const Builder = () => {
       if (saved) {
         try {
           const data = JSON.parse(saved);
-          if (data.formData) setFormData(data.formData);
+          if (data.formData) setFormData({ ...{ title: "Untitled Resume", fullName: "", email: "", phone: "", location: "", linkedin: "", portfolio: "", tagline: "", designation: "", summary: "" }, ...data.formData });
+          if (data.headerStyle) setHeaderStyle({ ...DEFAULT_HEADER_STYLE, ...data.headerStyle });
           if (data.experiences) setExperiences(data.experiences);
           if (data.learnedExperiences) setLearnedExperiences(data.learnedExperiences);
           if (data.education) setEducation(data.education);
