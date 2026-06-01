@@ -873,8 +873,12 @@ const Builder = () => {
                       <Input placeholder="John Doe" value={formData.fullName} onChange={(e) => setFormData({ ...formData, fullName: e.target.value })} />
                     </div>
                     <div className="col-span-2">
-                      <Label>Tagline / Designation (shown below your name)</Label>
-                      <Input placeholder="e.g. Software Engineer (Machine Learning)" value={formData.tagline} onChange={(e) => setFormData({ ...formData, tagline: e.target.value })} />
+                      <Label>Designation (job title — shown right below your name)</Label>
+                      <Input placeholder="e.g. Machine Learning Engineer" value={formData.designation} onChange={(e) => setFormData({ ...formData, designation: e.target.value })} />
+                    </div>
+                    <div className="col-span-2">
+                      <Label>Tagline (short description below the designation)</Label>
+                      <Input placeholder="e.g. A passionate AI enthusiast and developer..." value={formData.tagline} onChange={(e) => setFormData({ ...formData, tagline: e.target.value })} />
                     </div>
                     <div>
                       <Label>Email</Label>
