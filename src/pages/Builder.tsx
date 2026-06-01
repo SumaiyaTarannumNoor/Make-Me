@@ -313,8 +313,10 @@ const Builder = () => {
           linkedin: personalInfo.linkedin || "",
           portfolio: personalInfo.portfolio || "",
           tagline: personalInfo.tagline || "",
+          designation: personalInfo.designation || "",
           summary: resume.summary || "",
         });
+        if (personalInfo.headerStyle) setHeaderStyle({ ...DEFAULT_HEADER_STYLE, ...personalInfo.headerStyle });
         if (resume.experience?.length) setExperiences(resume.experience as ExperienceItem[]);
         if (personalInfo.learnedExperiences?.length) setLearnedExperiences(personalInfo.learnedExperiences);
         if (personalInfo.references?.length) setReferences(personalInfo.references);
