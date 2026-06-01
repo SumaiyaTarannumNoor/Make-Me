@@ -36,6 +36,24 @@ type SkillGroup = { id: number; category: string; items: string[] };
 type ProjectItem = { id: number; name: string; description: string; link: string };
 type ReferenceItem = { id: number; name: string; designation: string; organization: string; email: string; phone: string };
 type LanguageItem = { id: number; name: string; level: string };
+type HeaderStyle = {
+  nameSize: number;
+  designationSize: number;
+  taglineSize: number;
+  nameColor: string;
+  designationColor: string;
+  taglineColor: string;
+  bgColor: string;
+};
+const DEFAULT_HEADER_STYLE: HeaderStyle = {
+  nameSize: 28,
+  designationSize: 14,
+  taglineSize: 11,
+  nameColor: "#ffffff",
+  designationColor: "", // empty => use theme.primary
+  taglineColor: "#d1d5db",
+  bgColor: "", // empty => use theme.headerBg
+};
 type ResumePersonalInfo = {
   fullName?: string;
   email?: string;
@@ -44,6 +62,8 @@ type ResumePersonalInfo = {
   linkedin?: string;
   portfolio?: string;
   tagline?: string;
+  designation?: string;
+  headerStyle?: HeaderStyle;
   learnedExperiences?: LearnedExperienceItem[];
   references?: ReferenceItem[];
   languages?: LanguageItem[];
