@@ -118,8 +118,10 @@ const Builder = () => {
     linkedin: "",
     portfolio: "",
     tagline: "",
+    designation: "",
     summary: "",
   });
+  const [headerStyle, setHeaderStyle] = useState<HeaderStyle>(DEFAULT_HEADER_STYLE);
 
   const [experiences, setExperiences] = useState([
     { id: 1, company: "", title: "", type: "Full-time", startDate: "", endDate: "", description: "" },
