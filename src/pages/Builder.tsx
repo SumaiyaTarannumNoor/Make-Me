@@ -35,7 +35,7 @@ type LearnedExperienceItem = { id: number; title: string; description: string };
 type EducationItem = { id: number; institution: string; degree: string; year: string; grade: string };
 type SkillGroup = { id: number; category: string; items: string[] };
 type ProjectItem = { id: number; name: string; description: string; link: string };
-type ReferenceItem = { id: number; name: string; designation: string; organization: string; email: string; phone: string };
+type ReferenceItem = { id: number; name: string; designation: string; organization: string; email: string; phone: string; active?: boolean };
 type LanguageItem = { id: number; name: string; level: string };
 type HeaderStyle = {
   nameSize: number;
