@@ -18,6 +18,7 @@ import {
   Eye, EyeOff, Languages as LanguagesIcon,
 } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Switch } from "@/components/ui/switch";
 
 const AUTOSAVE_KEY = "resume_autosave_";
 type ResumeColorScheme = ColorScheme | PremiumColorScheme;
