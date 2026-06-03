@@ -563,12 +563,12 @@ const Builder = () => {
         <div className="flex items-center justify-between gap-4 mb-3">
           <div className="flex-1 min-w-0">
             <h1 className="font-bold tracking-wide leading-tight" style={{ fontSize: `${headerStyle.nameSize}px`, color: headerStyle.nameColor }}>{formData.fullName || "YOUR NAME"}</h1>
-            {formData.designation && (
-              <p className="mt-1 font-medium" style={{ fontSize: `${headerStyle.designationSize}px`, color: headerStyle.designationColor || theme.primary }}>{formData.designation}</p>
-            )}
-            {formData.tagline && (
-              <p className="mt-1 leading-snug" style={{ fontSize: `${headerStyle.taglineSize}px`, color: headerStyle.taglineColor }}>{formData.tagline}</p>
-            )}
+            <p className="mt-1 font-medium" style={{ fontSize: `${headerStyle.designationSize}px`, color: headerStyle.designationColor || theme.primary, opacity: formData.designation ? 1 : 0.5 }}>
+              {formData.designation || "Your Designation / Job Title"}
+            </p>
+            <p className="mt-1 leading-snug" style={{ fontSize: `${headerStyle.taglineSize}px`, color: headerStyle.taglineColor, opacity: formData.tagline ? 1 : 0.5 }}>
+              {formData.tagline || "Your tagline — a short summary of your career and passion."}
+            </p>
           </div>
           {photoUrl ? (
             <div
