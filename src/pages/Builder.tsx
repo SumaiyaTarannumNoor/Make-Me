@@ -149,8 +149,8 @@ const Builder = () => {
   const [certifications, setCertifications] = useState<string[]>([]);
   const [newCert, setNewCert] = useState("");
 
-  const [references, setReferences] = useState([
-    { id: 1, name: "", designation: "", organization: "", email: "", phone: "" },
+  const [references, setReferences] = useState<ReferenceItem[]>([
+    { id: 1, name: "", designation: "", organization: "", email: "", phone: "", active: true },
   ]);
 
   const [languages, setLanguages] = useState<LanguageItem[]>([
