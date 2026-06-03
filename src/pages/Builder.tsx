@@ -1126,14 +1126,23 @@ const Builder = () => {
                 {section.id === "references" && (
                   <>
                     {references.map((ref, i) => (
-                      <div key={ref.id} className="p-4 border rounded-xl space-y-3">
-                        <div className="flex justify-between">
+                      <div key={ref.id} className={`p-4 border rounded-xl space-y-3 ${ref.active === false ? "opacity-60" : ""}`}>
+                        <div className="flex justify-between items-center">
                           <span className="text-sm font-medium text-muted-foreground">Reference {i + 1}</span>
-                          {references.length > 1 && (
-                            <Button variant="ghost" size="sm" onClick={() => setReferences(references.filter((x) => x.id !== ref.id))} className="text-destructive">
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
-                          )}
+                          <div className="flex items-center gap-3">
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs text-muted-foreground">{ref.active === false ? "Inactive" : "Active"}</span>
+                              <Switch
+                                checked={ref.active !== false}
+                                onCheckedChange={(v) => setReferences(references.map((x) => x.id === ref.id ? { ...x, active: v } : x))}
+                              />
+                            </div>
+                            {references.length > 1 && (
+                              <Button variant="ghost" size="sm" onClick={() => setReferences(references.filter((x) => x.id !== ref.id))} className="text-destructive">
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            )}
+                          </div>
                         </div>
                         <div className="grid grid-cols-2 gap-3">
                           <Input placeholder="Full Name" value={ref.name} onChange={(e) => setReferences(references.map((x) => x.id === ref.id ? { ...x, name: e.target.value } : x))} />
@@ -1144,7 +1153,7 @@ const Builder = () => {
                         </div>
                       </div>
                     ))}
-                    <Button variant="outline" onClick={() => setReferences([...references, { id: Date.now(), name: "", designation: "", organization: "", email: "", phone: "" }])}>
+                    <Button variant="outline" onClick={() => setReferences([...references, { id: Date.now(), name: "", designation: "", organization: "", email: "", phone: "", active: true }])}>
                       <Plus className="w-4 h-4 mr-2" />Add Reference
                     </Button>
                   </>
