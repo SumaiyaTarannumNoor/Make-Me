@@ -770,12 +770,12 @@ const Builder = () => {
         </div>
       </div>
 
-      {!isMuted("references") && references.some((r) => r.name || r.organization) && (
+      {!isMuted("references") && references.some((r) => (r.active !== false) && (r.name || r.organization)) && (
         <ResizableSection id="references" interactive={interactive}>
           <div className="px-5 py-4 border-t" style={{ borderColor: theme.primary }}>
             <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>References</h2>
             <div className="grid grid-cols-2 gap-4">
-              {references.filter((r) => r.name || r.organization).map((r) => (
+              {references.filter((r) => (r.active !== false) && (r.name || r.organization)).map((r) => (
                 <div key={r.id} data-resume-block className="text-[10px] text-gray-700">
                   <p className="font-semibold text-gray-900 text-[11px]">{r.name}</p>
                   {r.designation && <p className="text-gray-600">{r.designation}</p>}
