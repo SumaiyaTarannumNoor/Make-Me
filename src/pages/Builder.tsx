@@ -864,10 +864,22 @@ const Builder = () => {
               {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
               <span className="hidden sm:inline ml-1">Save</span>
             </Button>
-            <Button variant="hero" size="sm" onClick={handleDownloadPDF} disabled={generating}>
-              {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
-              <span className="hidden sm:inline ml-1">PDF</span>
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="hero" size="sm" disabled={generating}>
+                  {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+                  <span className="hidden sm:inline ml-1">PDF</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => handleDownloadPDF(false)}>
+                  Full Quality (Larger file)
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleDownloadPDF(true)}>
+                  Compressed (Smaller file, same look)
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </header>
