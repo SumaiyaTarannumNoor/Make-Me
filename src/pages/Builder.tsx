@@ -380,7 +380,12 @@ const Builder = () => {
       let currentOffset = 0;
       let guard = 0;
 
-      while (currentOffset + pageContentH(nextOffsets.length - 1) < contentHeight - 2 && guard < 30) {
+      // Compute natural page breaks but cap at manualPageCount — pages are added only when the user clicks "+".
+      while (
+        nextOffsets.length < manualPageCount &&
+        currentOffset + pageContentH(nextOffsets.length - 1) < contentHeight - 2 &&
+        guard < 30
+      ) {
         const currentPage = nextOffsets.length - 1;
         const capacity = pageContentH(currentPage);
         const idealBreak = currentOffset + capacity;
@@ -407,6 +412,12 @@ const Builder = () => {
         guard += 1;
       }
 
+      // Pad with empty pages if the user requested more pages than content needs.
+      while (nextOffsets.length < manualPageCount) {
+        const last = nextOffsets[nextOffsets.length - 1];
+        nextOffsets.push(last + pageContentH(nextOffsets.length - 1));
+      }
+
       setPageOffsets((prev) => {
         const isSame = prev.length === nextOffsets.length && prev.every((offset, index) => offset === nextOffsets[index]);
         return isSame ? prev : nextOffsets;
@@ -421,7 +432,7 @@ const Builder = () => {
       cancelAnimationFrame(frame);
       observer.disconnect();
     };
-  }, [activePaper.heightPx, activePaper.widthPx, pageContentH, sectionScales, formData, experiences, learnedExperiences, education, skillGroups, projects, certifications, references]);
+  }, [activePaper.heightPx, activePaper.widthPx, pageContentH, sectionScales, formData, experiences, learnedExperiences, education, skillGroups, projects, certifications, references, manualPageCount]);
 
   const fitToPage = useCallback(() => {
     const pane = previewPaneRef.current;
