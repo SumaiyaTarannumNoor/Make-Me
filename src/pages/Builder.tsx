@@ -160,6 +160,7 @@ const Builder = () => {
   const [mutedSections, setMutedSections] = useState<Record<string, boolean>>({});
 
   const [pageCount, setPageCount] = useState(1);
+  const [manualPageCount, setManualPageCount] = useState(1);
   const [zoom, setZoom] = useState(0.55);
   const [paperSize, setPaperSize] = useState<PaperSize>("a4");
   const [sectionScales, setSectionScales] = useState<Record<string, number>>({});
