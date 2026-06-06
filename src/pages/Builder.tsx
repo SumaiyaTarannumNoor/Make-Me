@@ -160,6 +160,7 @@ const Builder = () => {
   const [mutedSections, setMutedSections] = useState<Record<string, boolean>>({});
 
   const [pageCount, setPageCount] = useState(1);
+  const [manualPageCount, setManualPageCount] = useState(1);
   const [zoom, setZoom] = useState(0.55);
   const [paperSize, setPaperSize] = useState<PaperSize>("a4");
   const [sectionScales, setSectionScales] = useState<Record<string, number>>({});
@@ -379,7 +380,12 @@ const Builder = () => {
       let currentOffset = 0;
       let guard = 0;
 
-      while (currentOffset + pageContentH(nextOffsets.length - 1) < contentHeight - 2 && guard < 30) {
+      // Compute natural page breaks but cap at manualPageCount — pages are added only when the user clicks "+".
+      while (
+        nextOffsets.length < manualPageCount &&
+        currentOffset + pageContentH(nextOffsets.length - 1) < contentHeight - 2 &&
+        guard < 30
+      ) {
         const currentPage = nextOffsets.length - 1;
         const capacity = pageContentH(currentPage);
         const idealBreak = currentOffset + capacity;
@@ -406,6 +412,12 @@ const Builder = () => {
         guard += 1;
       }
 
+      // Pad with empty pages if the user requested more pages than content needs.
+      while (nextOffsets.length < manualPageCount) {
+        const last = nextOffsets[nextOffsets.length - 1];
+        nextOffsets.push(last + pageContentH(nextOffsets.length - 1));
+      }
+
       setPageOffsets((prev) => {
         const isSame = prev.length === nextOffsets.length && prev.every((offset, index) => offset === nextOffsets[index]);
         return isSame ? prev : nextOffsets;
@@ -420,7 +432,7 @@ const Builder = () => {
       cancelAnimationFrame(frame);
       observer.disconnect();
     };
-  }, [activePaper.heightPx, activePaper.widthPx, pageContentH, sectionScales, formData, experiences, learnedExperiences, education, skillGroups, projects, certifications, references]);
+  }, [activePaper.heightPx, activePaper.widthPx, pageContentH, sectionScales, formData, experiences, learnedExperiences, education, skillGroups, projects, certifications, references, manualPageCount]);
 
   const fitToPage = useCallback(() => {
     const pane = previewPaneRef.current;
@@ -1168,6 +1180,28 @@ const Builder = () => {
           <div className="mb-3 flex flex-wrap items-center justify-center gap-2">
             <div className="px-3 py-1 rounded-full bg-card border text-xs font-medium text-muted-foreground">
               {activePaper.label} Preview · {pageCount} {pageCount === 1 ? "page" : "pages"}
+            </div>
+            <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-card border">
+              <Button
+                size="sm"
+                variant="ghost"
+                className="h-6 w-6 p-0"
+                onClick={() => setManualPageCount((c) => Math.max(1, c - 1))}
+                disabled={manualPageCount <= 1}
+                title="Remove last page"
+              >
+                −
+              </Button>
+              <span className="text-xs font-medium w-14 text-center">{manualPageCount} {manualPageCount === 1 ? "page" : "pages"}</span>
+              <Button
+                size="sm"
+                variant="ghost"
+                className="h-6 w-6 p-0"
+                onClick={() => setManualPageCount((c) => Math.min(20, c + 1))}
+                title="Add a new page"
+              >
+                +
+              </Button>
             </div>
             <select
               value={paperSize}
