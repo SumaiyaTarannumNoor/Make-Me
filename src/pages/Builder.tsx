@@ -1181,6 +1181,28 @@ const Builder = () => {
             <div className="px-3 py-1 rounded-full bg-card border text-xs font-medium text-muted-foreground">
               {activePaper.label} Preview · {pageCount} {pageCount === 1 ? "page" : "pages"}
             </div>
+            <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-card border">
+              <Button
+                size="sm"
+                variant="ghost"
+                className="h-6 w-6 p-0"
+                onClick={() => setManualPageCount((c) => Math.max(1, c - 1))}
+                disabled={manualPageCount <= 1}
+                title="Remove last page"
+              >
+                −
+              </Button>
+              <span className="text-xs font-medium w-14 text-center">{manualPageCount} {manualPageCount === 1 ? "page" : "pages"}</span>
+              <Button
+                size="sm"
+                variant="ghost"
+                className="h-6 w-6 p-0"
+                onClick={() => setManualPageCount((c) => Math.min(20, c + 1))}
+                title="Add a new page"
+              >
+                +
+              </Button>
+            </div>
             <select
               value={paperSize}
               onChange={(e) => setPaperSize(e.target.value as PaperSize)}
