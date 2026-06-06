@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Switch } from "@/components/ui/switch";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 const AUTOSAVE_KEY = "resume_autosave_";
 type ResumeColorScheme = ColorScheme | PremiumColorScheme;
@@ -514,18 +515,23 @@ const Builder = () => {
     setSaving(false);
   };
 
-  const handleDownloadPDF = async () => {
+  const handleDownloadPDF = async (compressed = false) => {
     if (!currentResume || !user) return;
     const pages = pageRefs.current.slice(0, pageCount).filter(Boolean) as HTMLDivElement[];
     if (!pages.length) return;
 
     setGenerating(true);
     try {
-      const pdf = new jsPDF("p", "mm", [activePaper.widthMm, activePaper.heightMm]);
+      const pdf = new jsPDF({
+        orientation: "p",
+        unit: "mm",
+        format: [activePaper.widthMm, activePaper.heightMm],
+        compress: compressed,
+      });
 
       for (let i = 0; i < pages.length; i += 1) {
         const canvas = await html2canvas(pages[i], {
-          scale: 4,
+          scale: compressed ? 2.5 : 4,
           useCORS: true,
           allowTaint: true,
           logging: false,
@@ -536,22 +542,36 @@ const Builder = () => {
         });
 
         if (i > 0) pdf.addPage([activePaper.widthMm, activePaper.heightMm], "p");
-        pdf.addImage(
-          canvas.toDataURL("image/png", 1.0),
-          "PNG",
-          0,
-          0,
-          activePaper.widthMm,
-          activePaper.heightMm,
-          undefined,
-          "NONE"
-        );
+        if (compressed) {
+          pdf.addImage(
+            canvas.toDataURL("image/jpeg", 0.92),
+            "JPEG",
+            0,
+            0,
+            activePaper.widthMm,
+            activePaper.heightMm,
+            undefined,
+            "FAST"
+          );
+        } else {
+          pdf.addImage(
+            canvas.toDataURL("image/png", 1.0),
+            "PNG",
+            0,
+            0,
+            activePaper.widthMm,
+            activePaper.heightMm,
+            undefined,
+            "NONE"
+          );
+        }
       }
 
       const pdfBlob = pdf.output("blob");
-      pdf.save(`${formData.title}.pdf`);
-      await supabase.storage.from("resumes").upload(`${user.id}/${currentResume.id}.pdf`, pdfBlob, { upsert: true });
-      toast({ title: "PDF saved!" });
+      const suffix = compressed ? "-compressed" : "";
+      pdf.save(`${formData.title}${suffix}.pdf`);
+      await supabase.storage.from("resumes").upload(`${user.id}/${currentResume.id}${suffix}.pdf`, pdfBlob, { upsert: true });
+      toast({ title: compressed ? "Compressed PDF saved!" : "PDF saved!" });
     } catch (e) {
       console.error("PDF generation error:", e);
       toast({ title: "Error generating PDF", variant: "destructive" });
@@ -844,10 +864,22 @@ const Builder = () => {
               {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
               <span className="hidden sm:inline ml-1">Save</span>
             </Button>
-            <Button variant="hero" size="sm" onClick={handleDownloadPDF} disabled={generating}>
-              {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
-              <span className="hidden sm:inline ml-1">PDF</span>
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="hero" size="sm" disabled={generating}>
+                  {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+                  <span className="hidden sm:inline ml-1">PDF</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => handleDownloadPDF(false)}>
+                  Full Quality (Larger file)
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleDownloadPDF(true)}>
+                  Compressed (Smaller file, same look)
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </header>
