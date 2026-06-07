@@ -661,11 +661,11 @@ const Builder = () => {
           )}
         </div>
         <div className="flex flex-wrap gap-4 text-gray-300 text-[10px]">
-          {formData.email && <div className="flex items-center gap-1.5"><Mail className="w-3.5 h-3.5" style={{ color: theme.primary }} /><span>{formData.email}</span></div>}
-          {formData.phone && <div className="flex items-center gap-1.5"><Phone className="w-3.5 h-3.5" style={{ color: theme.primary }} /><span>{formData.phone}</span></div>}
+          {formData.email && <a href={`mailto:${formData.email}`} className="flex items-center gap-1.5 no-underline text-inherit"><Mail className="w-3.5 h-3.5" style={{ color: theme.primary }} /><span>{formData.email}</span></a>}
+          {formData.phone && <a href={`tel:${formData.phone}`} className="flex items-center gap-1.5 no-underline text-inherit"><Phone className="w-3.5 h-3.5" style={{ color: theme.primary }} /><span>{formData.phone}</span></a>}
           {formData.location && <div className="flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" style={{ color: theme.primary }} /><span>{formData.location}</span></div>}
-          {formData.linkedin && <div className="flex items-center gap-1.5"><Linkedin className="w-3.5 h-3.5" style={{ color: theme.primary }} /><span>{formData.linkedin}</span></div>}
-          {formData.portfolio && <div className="flex items-center gap-1.5"><Globe className="w-3.5 h-3.5" style={{ color: theme.primary }} /><span>{formData.portfolio}</span></div>}
+          {formData.linkedin && <a href={formData.linkedin.startsWith("http") ? formData.linkedin : `https://${formData.linkedin}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 no-underline text-inherit"><Linkedin className="w-3.5 h-3.5" style={{ color: theme.primary }} /><span>{formData.linkedin}</span></a>}
+          {formData.portfolio && <a href={formData.portfolio.startsWith("http") ? formData.portfolio : `https://${formData.portfolio}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 no-underline text-inherit"><Globe className="w-3.5 h-3.5" style={{ color: theme.primary }} /><span>{formData.portfolio}</span></a>}
         </div>
       </div>
       </ResizableSection>
