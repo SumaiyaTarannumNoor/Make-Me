@@ -529,9 +529,12 @@ const Builder = () => {
         compress: compressed,
       });
 
+      const pxToMm = activePaper.widthMm / activePaper.widthPx;
+
       for (let i = 0; i < pages.length; i += 1) {
-        const canvas = await html2canvas(pages[i], {
-          scale: compressed ? 2.5 : 4,
+        const pageEl = pages[i];
+        const canvas = await html2canvas(pageEl, {
+          scale: 4,
           useCORS: true,
           allowTaint: true,
           logging: false,
@@ -544,14 +547,14 @@ const Builder = () => {
         if (i > 0) pdf.addPage([activePaper.widthMm, activePaper.heightMm], "p");
         if (compressed) {
           pdf.addImage(
-            canvas.toDataURL("image/jpeg", 0.92),
+            canvas.toDataURL("image/jpeg", 0.95),
             "JPEG",
             0,
             0,
             activePaper.widthMm,
             activePaper.heightMm,
             undefined,
-            "FAST"
+            "SLOW"
           );
         } else {
           pdf.addImage(
@@ -564,6 +567,25 @@ const Builder = () => {
             undefined,
             "NONE"
           );
+        }
+
+        // Add clickable link annotations on top of the rendered image
+        try {
+          const pageRect = pageEl.getBoundingClientRect();
+          const anchors = pageEl.querySelectorAll("a[href]");
+          anchors.forEach((a) => {
+            const href = (a as HTMLAnchorElement).href;
+            if (!href || href.startsWith("javascript:")) return;
+            const r = (a as HTMLAnchorElement).getBoundingClientRect();
+            if (!r.width || !r.height) return;
+            const x = (r.left - pageRect.left) * pxToMm;
+            const y = (r.top - pageRect.top) * pxToMm;
+            const w = r.width * pxToMm;
+            const h = r.height * pxToMm;
+            pdf.link(x, y, w, h, { url: href });
+          });
+        } catch (err) {
+          console.warn("Link annotation failed", err);
         }
       }
 
