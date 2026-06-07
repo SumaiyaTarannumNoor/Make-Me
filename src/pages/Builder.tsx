@@ -529,9 +529,12 @@ const Builder = () => {
         compress: compressed,
       });
 
+      const pxToMm = activePaper.widthMm / activePaper.widthPx;
+
       for (let i = 0; i < pages.length; i += 1) {
-        const canvas = await html2canvas(pages[i], {
-          scale: compressed ? 2.5 : 4,
+        const pageEl = pages[i];
+        const canvas = await html2canvas(pageEl, {
+          scale: 4,
           useCORS: true,
           allowTaint: true,
           logging: false,
@@ -544,14 +547,14 @@ const Builder = () => {
         if (i > 0) pdf.addPage([activePaper.widthMm, activePaper.heightMm], "p");
         if (compressed) {
           pdf.addImage(
-            canvas.toDataURL("image/jpeg", 0.92),
+            canvas.toDataURL("image/jpeg", 0.95),
             "JPEG",
             0,
             0,
             activePaper.widthMm,
             activePaper.heightMm,
             undefined,
-            "FAST"
+            "SLOW"
           );
         } else {
           pdf.addImage(
@@ -564,6 +567,25 @@ const Builder = () => {
             undefined,
             "NONE"
           );
+        }
+
+        // Add clickable link annotations on top of the rendered image
+        try {
+          const pageRect = pageEl.getBoundingClientRect();
+          const anchors = pageEl.querySelectorAll("a[href]");
+          anchors.forEach((a) => {
+            const href = (a as HTMLAnchorElement).href;
+            if (!href || href.startsWith("javascript:")) return;
+            const r = (a as HTMLAnchorElement).getBoundingClientRect();
+            if (!r.width || !r.height) return;
+            const x = (r.left - pageRect.left) * pxToMm;
+            const y = (r.top - pageRect.top) * pxToMm;
+            const w = r.width * pxToMm;
+            const h = r.height * pxToMm;
+            pdf.link(x, y, w, h, { url: href });
+          });
+        } catch (err) {
+          console.warn("Link annotation failed", err);
         }
       }
 
@@ -639,11 +661,11 @@ const Builder = () => {
           )}
         </div>
         <div className="flex flex-wrap gap-4 text-gray-300 text-[10px]">
-          {formData.email && <div className="flex items-center gap-1.5"><Mail className="w-3.5 h-3.5" style={{ color: theme.primary }} /><span>{formData.email}</span></div>}
-          {formData.phone && <div className="flex items-center gap-1.5"><Phone className="w-3.5 h-3.5" style={{ color: theme.primary }} /><span>{formData.phone}</span></div>}
+          {formData.email && <a href={`mailto:${formData.email}`} className="flex items-center gap-1.5 no-underline text-inherit"><Mail className="w-3.5 h-3.5" style={{ color: theme.primary }} /><span>{formData.email}</span></a>}
+          {formData.phone && <a href={`tel:${formData.phone}`} className="flex items-center gap-1.5 no-underline text-inherit"><Phone className="w-3.5 h-3.5" style={{ color: theme.primary }} /><span>{formData.phone}</span></a>}
           {formData.location && <div className="flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" style={{ color: theme.primary }} /><span>{formData.location}</span></div>}
-          {formData.linkedin && <div className="flex items-center gap-1.5"><Linkedin className="w-3.5 h-3.5" style={{ color: theme.primary }} /><span>{formData.linkedin}</span></div>}
-          {formData.portfolio && <div className="flex items-center gap-1.5"><Globe className="w-3.5 h-3.5" style={{ color: theme.primary }} /><span>{formData.portfolio}</span></div>}
+          {formData.linkedin && <a href={formData.linkedin.startsWith("http") ? formData.linkedin : `https://${formData.linkedin}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 no-underline text-inherit"><Linkedin className="w-3.5 h-3.5" style={{ color: theme.primary }} /><span>{formData.linkedin}</span></a>}
+          {formData.portfolio && <a href={formData.portfolio.startsWith("http") ? formData.portfolio : `https://${formData.portfolio}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 no-underline text-inherit"><Globe className="w-3.5 h-3.5" style={{ color: theme.primary }} /><span>{formData.portfolio}</span></a>}
         </div>
       </div>
       </ResizableSection>
