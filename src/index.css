@@ -148,59 +148,59 @@
     --royal-blue: 225 73% 57%;
     --royal-blue-light: 225 73% 92%;
 
-    /* Semantic tokens */
-    --background: 261 88% 10%;
-    --foreground: 0 0% 96%;
+    /* Semantic tokens — MakeMe deep blue (#1800ad) + shimmery fairy white */
+    --background: 249 100% 14%;
+    --foreground: 0 0% 98%;
 
-    --card: 261 60% 14%;
-    --card-foreground: 0 0% 96%;
+    --card: 249 90% 18%;
+    --card-foreground: 0 0% 98%;
 
-    --popover: 261 60% 14%;
-    --popover-foreground: 0 0% 96%;
+    --popover: 249 90% 18%;
+    --popover-foreground: 0 0% 98%;
 
-    --primary: 157 100% 75%;
-    --primary-foreground: 261 88% 10%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 249 100% 22%;
 
-    --secondary: 166 77% 69%;
-    --secondary-foreground: 261 88% 10%;
+    --secondary: 249 100% 34%;
+    --secondary-foreground: 0 0% 98%;
 
-    --muted: 261 40% 18%;
-    --muted-foreground: 239 20% 70%;
+    --muted: 249 60% 22%;
+    --muted-foreground: 230 30% 80%;
 
-    --accent: 180 63% 63%;
-    --accent-foreground: 261 88% 10%;
+    --accent: 220 100% 75%;
+    --accent-foreground: 249 100% 18%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 261 30% 22%;
-    --input: 261 30% 22%;
-    --ring: 157 100% 75%;
+    --border: 249 60% 28%;
+    --input: 249 60% 26%;
+    --ring: 0 0% 98%;
 
     --radius: 0.75rem;
 
-    /* Gradients */
-    --gradient-hero: linear-gradient(135deg, hsl(261 88% 34%) 0%, hsl(229 84% 60%) 100%);
-    --gradient-card: linear-gradient(180deg, hsl(261 60% 16%) 0%, hsl(261 88% 10%) 100%);
-    --gradient-button: linear-gradient(135deg, hsl(var(--aquamarine-500)) 0%, hsl(var(--turquoise-500)) 50%, hsl(var(--pearl-aqua-500)) 100%);
-    --gradient-pink: linear-gradient(135deg, hsl(var(--turquoise-500)) 0%, hsl(var(--aquamarine-500)) 100%);
-    --gradient-purple: linear-gradient(135deg, hsl(var(--royal-violet-500)) 0%, hsl(var(--indigo-bloom-500)) 100%);
+    /* Gradients — deep indigo blue with shimmering white */
+    --gradient-hero: linear-gradient(135deg, hsl(249 100% 22%) 0%, hsl(249 100% 34%) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(249 90% 20%) 0%, hsl(249 100% 14%) 100%);
+    --gradient-button: linear-gradient(135deg, hsl(0 0% 100%) 0%, hsl(220 100% 92%) 50%, hsl(249 100% 80%) 100%);
+    --gradient-pink: linear-gradient(135deg, hsl(249 100% 34%) 0%, hsl(220 100% 70%) 100%);
+    --gradient-purple: linear-gradient(135deg, hsl(249 100% 22%) 0%, hsl(249 100% 40%) 100%);
 
     /* Shadows */
-    --shadow-sm: 0 1px 2px 0 hsl(261 88% 20% / 0.3);
-    --shadow-md: 0 4px 6px -1px hsl(261 88% 20% / 0.3), 0 2px 4px -2px hsl(261 88% 20% / 0.2);
-    --shadow-lg: 0 10px 15px -3px hsl(261 88% 20% / 0.3), 0 4px 6px -4px hsl(261 88% 20% / 0.2);
-    --shadow-xl: 0 20px 25px -5px hsl(261 88% 20% / 0.3), 0 8px 10px -6px hsl(261 88% 20% / 0.2);
-    --shadow-glow: 0 0 40px hsl(157 100% 75% / 0.3);
+    --shadow-sm: 0 1px 2px 0 hsl(249 100% 8% / 0.4);
+    --shadow-md: 0 4px 6px -1px hsl(249 100% 8% / 0.4), 0 2px 4px -2px hsl(249 100% 8% / 0.3);
+    --shadow-lg: 0 10px 15px -3px hsl(249 100% 8% / 0.4), 0 4px 6px -4px hsl(249 100% 8% / 0.3);
+    --shadow-xl: 0 20px 25px -5px hsl(249 100% 8% / 0.45), 0 8px 10px -6px hsl(249 100% 8% / 0.3);
+    --shadow-glow: 0 0 40px hsl(0 0% 100% / 0.35), 0 0 80px hsl(220 100% 80% / 0.25);
 
-    --sidebar-background: 261 60% 12%;
-    --sidebar-foreground: 0 0% 90%;
-    --sidebar-primary: 157 100% 75%;
-    --sidebar-primary-foreground: 261 88% 10%;
-    --sidebar-accent: 261 40% 20%;
-    --sidebar-accent-foreground: 157 100% 80%;
-    --sidebar-border: 261 30% 22%;
-    --sidebar-ring: 157 100% 75%;
+    --sidebar-background: 249 100% 12%;
+    --sidebar-foreground: 0 0% 95%;
+    --sidebar-primary: 0 0% 98%;
+    --sidebar-primary-foreground: 249 100% 22%;
+    --sidebar-accent: 249 70% 22%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 249 60% 28%;
+    --sidebar-ring: 0 0% 98%;
   }
 
   .dark {
