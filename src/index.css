@@ -259,7 +259,7 @@
   }
 
   .text-gradient-creator {
-    background: linear-gradient(135deg, #3a0ca3 0%, #5a3fd0 50%, #4361ee 100%);
+    background: linear-gradient(to right, #3a0ca3 0%, #5a3fd0 50%, #4361ee 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
