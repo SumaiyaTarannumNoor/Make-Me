@@ -216,7 +216,7 @@
   body {
     @apply text-foreground font-sans antialiased;
     font-family: 'Inter', 'Plus Jakarta Sans', system-ui, sans-serif;
-    background: linear-gradient(135deg, #3a0ca3 0%, #4361ee 100%);
+    background: linear-gradient(135deg, #0a0066 0%, #1800ad 50%, #2d1ad6 100%);
     background-attachment: fixed;
     min-height: 100vh;
   }
