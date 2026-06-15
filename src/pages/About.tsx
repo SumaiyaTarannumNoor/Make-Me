@@ -14,7 +14,7 @@ const About = () => {
           <div className="glass rounded-2xl p-10 border border-border/50">
             <p className="text-lg text-muted-foreground leading-relaxed">
               This was created by{" "}
-              <span className="font-semibold bg-gradient-to-r from-[#3a0ca3] via-[#5a3fd0] to-[#4361ee] bg-clip-text text-transparent">
+              <span className="font-semibold text-xl md:text-2xl text-gradient-creator">
                 Sumaiya Tarannum Noor
               </span>
             </p>
@@ -22,12 +22,12 @@ const About = () => {
               Connect on LinkedIn{" "}
               <a
                 href="https://www.linkedin.com/in/sumaiyatarannumnoor"
-                className="inline-flex items-center gap-2 font-semibold text-aquamarine-400 hover:text-aquamarine-600 transition-colors duration-200"
+                className="inline-flex items-center gap-2 font-semibold transition-colors duration-200 group"
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <Linkedin className="w-5 h-5" />
-                LinkedIn
+                <Linkedin className="w-5 h-5 text-[#5a3fd0] group-hover:text-[#4361ee] transition-colors" />
+                <span className="text-gradient-creator">LinkedIn</span>
               </a>
             </p>
           </div>
