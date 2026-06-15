@@ -227,7 +227,7 @@ const Contact = () => {
                   href="https://www.linkedin.com/in/sumaiyatarannumnoor"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-sm font-medium text-aquamarine-500 hover:text-aquamarine-400 transition-colors"
+                  className="inline-flex items-center gap-2 text-sm font-medium text-gradient-creator hover:opacity-80 transition-opacity"
                 >
                   Connect on LinkedIn →
                 </a>
