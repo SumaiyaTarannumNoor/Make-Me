@@ -195,6 +195,18 @@ const Builder = () => {
   // Inline component: wraps a resume section so user can drag a handle to resize it.
   const ResizableSection = ({ id, children, interactive = false }: { id: string; children: React.ReactNode; interactive?: boolean }) => {
     const scale = sectionScales[id] ?? 1;
+    const innerRef = useRef<HTMLDivElement>(null);
+    const [innerH, setInnerH] = useState<number>(0);
+    useLayoutEffect(() => {
+      if (!innerRef.current) return;
+      const measure = () => {
+        if (innerRef.current) setInnerH(innerRef.current.offsetHeight);
+      };
+      measure();
+      const ro = new ResizeObserver(measure);
+      ro.observe(innerRef.current);
+      return () => ro.disconnect();
+    }, [children, scale]);
     const onMouseDown = (e: React.MouseEvent) => {
       e.preventDefault();
       e.stopPropagation();
@@ -213,8 +225,17 @@ const Builder = () => {
       window.addEventListener("mouseup", onUp);
     };
     return (
-      <div className="relative group" style={{ zoom: scale } as React.CSSProperties & { zoom: number }}>
-        {children}
+      <div className="relative group" style={{ height: innerH ? innerH * scale : undefined }}>
+        <div
+          ref={innerRef}
+          style={{
+            transform: `scale(${scale})`,
+            transformOrigin: "top left",
+            width: `${100 / scale}%`,
+          }}
+        >
+          {children}
+        </div>
         {interactive && (
           <div
             onMouseDown={onMouseDown}
