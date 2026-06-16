@@ -148,58 +148,58 @@
     --royal-blue: 225 73% 57%;
     --royal-blue-light: 225 73% 92%;
 
-    /* Semantic tokens — MakeMe deep blue (#1800ad) + shimmery fairy white */
-    --background: 249 100% 14%;
+    /* Semantic tokens — MakeMe exact indigo #1800ad (hsl 249 100% 34%) + shimmery fairy white */
+    --background: 249 100% 34%;
     --foreground: 0 0% 98%;
 
-    --card: 249 90% 18%;
+    --card: 249 100% 28%;
     --card-foreground: 0 0% 98%;
 
-    --popover: 249 90% 18%;
+    --popover: 249 100% 28%;
     --popover-foreground: 0 0% 98%;
 
     --primary: 0 0% 98%;
-    --primary-foreground: 249 100% 22%;
+    --primary-foreground: 249 100% 34%;
 
     --secondary: 249 100% 34%;
     --secondary-foreground: 0 0% 98%;
 
-    --muted: 249 60% 22%;
-    --muted-foreground: 230 30% 80%;
+    --muted: 249 80% 26%;
+    --muted-foreground: 230 50% 88%;
 
-    --accent: 220 100% 75%;
-    --accent-foreground: 249 100% 18%;
+    --accent: 220 100% 78%;
+    --accent-foreground: 249 100% 34%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 249 60% 28%;
-    --input: 249 60% 26%;
+    --border: 249 90% 44%;
+    --input: 249 80% 30%;
     --ring: 0 0% 98%;
 
     --radius: 0.75rem;
 
-    /* Gradients — deep indigo blue with shimmering white */
-    --gradient-hero: linear-gradient(135deg, hsl(249 100% 22%) 0%, hsl(249 100% 34%) 100%);
-    --gradient-card: linear-gradient(180deg, hsl(249 90% 20%) 0%, hsl(249 100% 14%) 100%);
+    /* Gradients — exact indigo #1800ad with shimmering fairy white */
+    --gradient-hero: linear-gradient(135deg, hsl(249 100% 34%) 0%, hsl(249 100% 44%) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(249 100% 32%) 0%, hsl(249 100% 24%) 100%);
     --gradient-button: linear-gradient(135deg, hsl(0 0% 100%) 0%, hsl(220 100% 92%) 50%, hsl(249 100% 80%) 100%);
     --gradient-pink: linear-gradient(135deg, hsl(249 100% 34%) 0%, hsl(220 100% 70%) 100%);
-    --gradient-purple: linear-gradient(135deg, hsl(249 100% 22%) 0%, hsl(249 100% 40%) 100%);
+    --gradient-purple: linear-gradient(135deg, hsl(249 100% 28%) 0%, hsl(249 100% 44%) 100%);
 
     /* Shadows */
-    --shadow-sm: 0 1px 2px 0 hsl(249 100% 8% / 0.4);
-    --shadow-md: 0 4px 6px -1px hsl(249 100% 8% / 0.4), 0 2px 4px -2px hsl(249 100% 8% / 0.3);
-    --shadow-lg: 0 10px 15px -3px hsl(249 100% 8% / 0.4), 0 4px 6px -4px hsl(249 100% 8% / 0.3);
-    --shadow-xl: 0 20px 25px -5px hsl(249 100% 8% / 0.45), 0 8px 10px -6px hsl(249 100% 8% / 0.3);
-    --shadow-glow: 0 0 40px hsl(0 0% 100% / 0.35), 0 0 80px hsl(220 100% 80% / 0.25);
+    --shadow-sm: 0 1px 2px 0 hsl(249 100% 10% / 0.4);
+    --shadow-md: 0 4px 6px -1px hsl(249 100% 10% / 0.4), 0 2px 4px -2px hsl(249 100% 10% / 0.3);
+    --shadow-lg: 0 10px 15px -3px hsl(249 100% 10% / 0.4), 0 4px 6px -4px hsl(249 100% 10% / 0.3);
+    --shadow-xl: 0 20px 25px -5px hsl(249 100% 10% / 0.45), 0 8px 10px -6px hsl(249 100% 10% / 0.3);
+    --shadow-glow: 0 0 40px hsl(0 0% 100% / 0.45), 0 0 80px hsl(220 100% 80% / 0.35);
 
-    --sidebar-background: 249 100% 12%;
+    --sidebar-background: 249 100% 30%;
     --sidebar-foreground: 0 0% 95%;
     --sidebar-primary: 0 0% 98%;
-    --sidebar-primary-foreground: 249 100% 22%;
-    --sidebar-accent: 249 70% 22%;
+    --sidebar-primary-foreground: 249 100% 34%;
+    --sidebar-accent: 249 90% 38%;
     --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 249 60% 28%;
+    --sidebar-border: 249 90% 44%;
     --sidebar-ring: 0 0% 98%;
   }
 
@@ -216,7 +216,7 @@
   body {
     @apply text-foreground font-sans antialiased;
     font-family: 'Inter', 'Plus Jakarta Sans', system-ui, sans-serif;
-    background: linear-gradient(135deg, #0a0066 0%, #1800ad 50%, #2d1ad6 100%);
+    background: linear-gradient(135deg, #1800ad 0%, #2510cf 50%, #1800ad 100%);
     background-attachment: fixed;
     min-height: 100vh;
   }
