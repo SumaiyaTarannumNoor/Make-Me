@@ -55,12 +55,7 @@ const Dashboard = () => {
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             <Link to="/" className="flex items-center gap-2">
-              <div className="relative">
-                <div className="w-9 h-9 rounded-lg gradient-button flex items-center justify-center">
-                  <FileText className="w-4 h-4 text-primary-foreground" />
-                </div>
-                <Sparkles className="absolute -top-0.5 -right-0.5 w-3 h-3 text-turquoise-500" />
-              </div>
+              <img src={logo} alt="MakeMe Logo" className="w-10 h-10 object-cover rounded-full" />
               <span className="font-display font-bold text-lg">Make<span className="text-gradient">Me</span></span>
             </Link>
 
