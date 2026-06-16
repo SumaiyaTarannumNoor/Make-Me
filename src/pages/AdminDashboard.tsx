@@ -95,7 +95,7 @@ const AdminDashboard = () => {
         </Sidebar>
 
         <div className="flex-1 flex flex-col">
-          <header className="h-14 border-b border-border bg-card/50 backdrop-blur-sm flex items-center px-4 gap-3 sticky top-0 z-40">
+          <header className="h-14 border-b border-border/50 bg-muted/30 flex items-center px-4 gap-3 sticky top-0 z-40">
             <SidebarTrigger />
             <h1 className="font-display text-lg font-semibold">Admin Dashboard</h1>
           </header>

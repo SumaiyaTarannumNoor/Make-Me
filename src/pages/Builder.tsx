@@ -877,7 +877,7 @@ const Builder = () => {
 
   return (
     <div className="min-h-screen bg-muted/20 flex flex-col">
-      <header className="bg-card border-b border-border sticky top-0 z-50">
+      <header className="bg-muted/30 border-b border-border/50 sticky top-0 z-50">
         <div className="container mx-auto px-4 flex items-center justify-between h-14">
           <div className="flex items-center gap-4">
             <Link to="/dashboard" className="flex items-center gap-2 text-muted-foreground hover:text-foreground">
