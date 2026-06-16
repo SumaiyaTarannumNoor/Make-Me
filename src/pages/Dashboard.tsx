@@ -52,7 +52,7 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen">
-      <header className="bg-card border-b border-border sticky top-0 z-50">
+      <header className="bg-muted/30 border-b border-border/50 sticky top-0 z-50">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             <Link to="/" className="flex items-center gap-2">
