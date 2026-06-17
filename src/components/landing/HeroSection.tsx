@@ -19,15 +19,28 @@ const HeroSection = () => {
         <div className="absolute top-40 right-1/4 w-64 h-64 bg-sky-surge-500/15 rounded-full blur-3xl" />
         <div className="absolute bottom-40 left-1/4 w-48 h-48 bg-pearl-aqua-500/15 rounded-full blur-3xl" />
 
-        {/* Bright neon fairy bubble animations */}
-        <div className="absolute top-[10%] left-[15%] w-20 h-20 rounded-full border-2 border-[#c77dff] bg-[#c77dff]/40 shadow-[0_0_40px_15px_#c77dff80,inset_0_0_20px_#ffffff80] animate-bubble-1" />
-        <div className="absolute top-[30%] right-[20%] w-14 h-14 rounded-full border-2 border-[#ff70d4] bg-[#ff70d4]/40 shadow-[0_0_35px_12px_#ff70d480,inset_0_0_18px_#ffffff80] animate-bubble-2" />
-        <div className="absolute bottom-[25%] left-[40%] w-24 h-24 rounded-full border-2 border-[#fff066] bg-[#fff066]/35 shadow-[0_0_45px_18px_#fff06680,inset_0_0_22px_#ffffff90] animate-bubble-3" />
-        <div className="absolute top-[60%] left-[10%] w-16 h-16 rounded-full border-2 border-[#5cf2ff] bg-[#5cf2ff]/40 shadow-[0_0_40px_14px_#5cf2ff90,inset_0_0_20px_#ffffff90] animate-bubble-4" />
-        <div className="absolute top-[20%] right-[35%] w-10 h-10 rounded-full border-2 border-[#7dffd4] bg-[#7dffd4]/45 shadow-[0_0_30px_10px_#7dffd490,inset_0_0_15px_#ffffff90] animate-bubble-5" />
-        <div className="absolute bottom-[15%] right-[15%] w-28 h-28 rounded-full border-2 border-[#b388ff] bg-[#b388ff]/35 shadow-[0_0_50px_20px_#b388ff80,inset_0_0_25px_#ffffff80] animate-bubble-6" />
-        <div className="absolute top-[45%] right-[5%] w-12 h-12 rounded-full border-2 border-[#ff9ee8] bg-[#ff9ee8]/40 shadow-[0_0_35px_12px_#ff9ee890,inset_0_0_18px_#ffffff90] animate-bubble-7" />
-        <div className="absolute bottom-[40%] left-[25%] w-[4.5rem] h-[4.5rem] rounded-full border-2 border-[#5cf2ff] bg-[#5cf2ff]/40 shadow-[0_0_38px_14px_#5cf2ff90,inset_0_0_20px_#ffffff90] animate-bubble-8" />
+        {/* Bright neon fairy bubble animations with high contrast */}
+        <div className="absolute top-[10%] left-[15%] w-20 h-20 rounded-full border-2 border-white/80 bg-gradient-to-br from-[#ff70d4] via-[#c77dff] to-[#5cf2ff] shadow-[0_0_60px_25px_#c77dff,inset_0_0_30px_#ffffff] animate-bubble-1" />
+        <div className="absolute top-[30%] right-[20%] w-14 h-14 rounded-full border-2 border-white/80 bg-gradient-to-br from-[#ff70d4] to-[#fff066] shadow-[0_0_55px_20px_#ff70d4,inset_0_0_25px_#ffffff] animate-bubble-2" />
+        <div className="absolute bottom-[25%] left-[40%] w-24 h-24 rounded-full border-2 border-white/80 bg-gradient-to-br from-[#fff066] via-[#7dffd4] to-[#5cf2ff] shadow-[0_0_70px_28px_#fff066,inset_0_0_32px_#ffffff] animate-bubble-3" />
+        <div className="absolute top-[60%] left-[10%] w-16 h-16 rounded-full border-2 border-white/80 bg-gradient-to-br from-[#5cf2ff] to-[#b388ff] shadow-[0_0_60px_22px_#5cf2ff,inset_0_0_28px_#ffffff] animate-bubble-4" />
+        <div className="absolute top-[20%] right-[35%] w-10 h-10 rounded-full border-2 border-white/80 bg-gradient-to-br from-[#7dffd4] to-[#fff066] shadow-[0_0_50px_18px_#7dffd4,inset_0_0_22px_#ffffff] animate-bubble-5" />
+        <div className="absolute bottom-[15%] right-[15%] w-28 h-28 rounded-full border-2 border-white/80 bg-gradient-to-br from-[#b388ff] via-[#ff9ee8] to-[#c77dff] shadow-[0_0_80px_32px_#b388ff,inset_0_0_36px_#ffffff] animate-bubble-6" />
+        <div className="absolute top-[45%] right-[5%] w-12 h-12 rounded-full border-2 border-white/80 bg-gradient-to-br from-[#ff9ee8] to-[#5cf2ff] shadow-[0_0_55px_20px_#ff9ee8,inset_0_0_25px_#ffffff] animate-bubble-7" />
+        <div className="absolute bottom-[40%] left-[25%] w-[4.5rem] h-[4.5rem] rounded-full border-2 border-white/80 bg-gradient-to-br from-[#5cf2ff] via-[#fff066] to-[#ff70d4] shadow-[0_0_60px_22px_#5cf2ff,inset_0_0_28px_#ffffff] animate-bubble-8" />
+
+        {/* Glittery fairy sparkles */}
+        <div className="absolute top-[18%] left-[35%] w-2 h-2 rounded-full bg-white shadow-[0_0_15px_4px_#fff066] animate-twinkle-1" />
+        <div className="absolute top-[55%] right-[28%] w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_12px_3px_#ff70d4] animate-twinkle-2" />
+        <div className="absolute bottom-[35%] left-[55%] w-2.5 h-2.5 rounded-full bg-white shadow-[0_0_18px_5px_#5cf2ff] animate-twinkle-3" />
+        <div className="absolute top-[70%] right-[45%] w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_12px_3px_#c77dff] animate-twinkle-4" />
+        <div className="absolute top-[8%] right-[10%] w-2 h-2 rounded-full bg-white shadow-[0_0_15px_4px_#7dffd4] animate-twinkle-5" />
+        <div className="absolute bottom-[10%] left-[8%] w-2 h-2 rounded-full bg-white shadow-[0_0_15px_4px_#ff9ee8] animate-twinkle-6" />
+        <div className="absolute top-[40%] left-[60%] w-1 h-1 rounded-full bg-white shadow-[0_0_10px_3px_#fff066] animate-twinkle-2" />
+        <div className="absolute bottom-[55%] right-[8%] w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_12px_3px_#b388ff] animate-twinkle-5" />
+        <div className="absolute top-[28%] left-[5%] w-1 h-1 rounded-full bg-white shadow-[0_0_10px_3px_#5cf2ff] animate-twinkle-3" />
+        <div className="absolute bottom-[20%] left-[70%] w-2 h-2 rounded-full bg-white shadow-[0_0_15px_4px_#ff70d4] animate-twinkle-1" />
+
       </div>
 
       <div className="container mx-auto px-4 py-20 relative z-10">
