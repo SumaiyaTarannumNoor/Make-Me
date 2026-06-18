@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import logo from "@/assets/logo.png";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -7,20 +7,18 @@ import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
 import {
-  User, Mail, Phone, MapPin, Linkedin, Globe, Save, ArrowLeft, Loader2, Camera, Trash2,
+  FileText, Sparkles, User, Mail, Phone, MapPin, Linkedin, Globe, Save, ArrowLeft, Loader2,
 } from "lucide-react";
-
 
 const Profile = () => {
   const { user, signOut } = useAuth();
-  const { profile, avatarUrl, loading, uploadingAvatar, updateProfile, uploadAvatar, deleteAvatar } = useProfile();
+  const { profile, loading, updateProfile } = useProfile();
   const [saving, setSaving] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState({
     full_name: "", phone: "", location: "", linkedin: "", portfolio: "",
   });
 
-  useEffect(() => {
+  useState(() => {
     if (profile) {
       setFormData({
         full_name: profile.full_name || "", phone: profile.phone || "",
@@ -28,16 +26,10 @@ const Profile = () => {
         portfolio: profile.portfolio || "",
       });
     }
-  }, [profile]);
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault(); setSaving(true); await updateProfile(formData); setSaving(false);
-  };
-
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) await uploadAvatar(file);
-    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   if (loading) {
@@ -67,46 +59,14 @@ const Profile = () => {
       <main className="container mx-auto px-4 py-8 max-w-2xl">
         <div className="bg-card rounded-2xl border border-border p-8">
           <div className="flex items-center gap-4 mb-8">
-            <div className="relative group">
-              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-cloudy-sky-400 to-aquamarine-500 flex items-center justify-center overflow-hidden ring-2 ring-border">
-                {avatarUrl ? (
-                  <img src={avatarUrl} alt="Profile" className="w-full h-full object-cover" />
-                ) : (
-                  <User className="w-10 h-10 text-primary-foreground" />
-                )}
-                {uploadingAvatar && (
-                  <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                    <Loader2 className="w-6 h-6 animate-spin text-white" />
-                  </div>
-                )}
-              </div>
-              <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={uploadingAvatar}
-                className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-lg hover:scale-110 transition-transform"
-                title="Upload photo"
-              >
-                <Camera className="w-4 h-4" />
-              </button>
+            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-cloudy-sky-400 to-aquamarine-500 flex items-center justify-center">
+              <User className="w-10 h-10 text-primary-foreground" />
             </div>
-            <div className="flex-1">
+            <div>
               <h1 className="font-display text-2xl font-bold text-foreground">{profile?.full_name || "Your Profile"}</h1>
               <p className="text-muted-foreground">{user?.email}</p>
-              <div className="flex gap-2 mt-2">
-                <Button type="button" size="sm" variant="outline" onClick={() => fileInputRef.current?.click()} disabled={uploadingAvatar}>
-                  <Camera className="w-4 h-4 mr-1" />{avatarUrl ? "Change" : "Upload"} photo
-                </Button>
-                {avatarUrl && (
-                  <Button type="button" size="sm" variant="ghost" onClick={deleteAvatar} disabled={uploadingAvatar}>
-                    <Trash2 className="w-4 h-4 mr-1" />Remove
-                  </Button>
-                )}
-              </div>
             </div>
           </div>
-
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
