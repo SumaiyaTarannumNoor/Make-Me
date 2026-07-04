@@ -720,10 +720,10 @@ const Builder = () => {
               className="flex items-center justify-center"
               style={{
                 backgroundColor: theme.primary,
-                width: "128px",
-                height: "128px",
-                minWidth: "128px",
-                minHeight: "128px",
+                width: `${photoSize}px`,
+                height: `${photoSize}px`,
+                minWidth: `${photoSize}px`,
+                minHeight: `${photoSize}px`,
                 borderRadius: "50%",
                 flexShrink: 0,
               }}
