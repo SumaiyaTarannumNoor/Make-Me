@@ -570,6 +570,8 @@ const Builder = () => {
         paperSize,
         sectionScales,
         mutedSections,
+        photoPath: photoPath ?? undefined,
+        photoSize,
       },
       summary: formData.summary,
       experience: experiences,
