@@ -1090,19 +1090,35 @@ const Builder = () => {
                           <User className="w-10 h-10 text-muted-foreground" />
                         )}
                       </div>
-                      <div>
+                      <div className="flex flex-wrap gap-2">
                         <input ref={photoInputRef} type="file" accept="image/*" className="hidden" onChange={handlePhotoUpload} />
-                        <Button variant="outline" onClick={() => photoInputRef.current?.click()}>
-                          <Camera className="w-4 h-4 mr-2" />Upload Photo
+                        <Button variant="outline" onClick={() => photoInputRef.current?.click()} disabled={photoProcessing !== null}>
+                          {photoProcessing === "upload" ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Camera className="w-4 h-4 mr-2" />}
+                          {photoUrl ? "Change Photo" : "Upload Photo"}
                         </Button>
                         {photoUrl && (
-                          <Button variant="ghost" size="sm" className="ml-2 text-destructive" onClick={() => setPhotoUrl(null)}>
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
+                          <>
+                            <Button variant="outline" size="sm" onClick={handleRemoveBackground} disabled={photoProcessing !== null}>
+                              {photoProcessing === "bgremove" ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+                              Remove Background
+                            </Button>
+                            <Button variant="ghost" size="sm" className="text-destructive" onClick={handleRemovePhoto} disabled={photoProcessing !== null}>
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </>
                         )}
                       </div>
                     </div>
-                    <p className="text-xs text-muted-foreground">Photo is embedded in PDF only, not saved to database.</p>
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <Label className="text-xs">Photo size on resume</Label>
+                        <span className="text-xs text-muted-foreground">{photoSize}px</span>
+                      </div>
+                      <Slider value={[photoSize]} min={80} max={220} step={4} onValueChange={([v]) => setPhotoSize(v)} />
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Photos are stored securely in your account and appear on every device you sign in from. First background removal may take a few seconds while the model loads.
+                    </p>
                   </div>
                 )}
 
