@@ -305,7 +305,11 @@ const Builder = () => {
           if (data.references) setReferences(data.references);
           if (data.languages) setLanguages(data.languages);
           if (data.colorScheme) setColorScheme(data.colorScheme);
-          if (data.photoUrl) setPhotoUrl(data.photoUrl);
+          if (typeof data.photoSize === "number") setPhotoSize(data.photoSize);
+          if (data.photoPath) {
+            setPhotoPath(data.photoPath);
+            getPhotoUrl("resumes", data.photoPath).then((u) => u && setPhotoUrl(u));
+          }
           if (data.paperSize && PAPER_SIZES[data.paperSize as PaperSize]) setPaperSize(data.paperSize);
           if (data.sectionScales) setSectionScales(data.sectionScales);
           if (data.mutedSections) setMutedSections(data.mutedSections);
