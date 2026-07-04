@@ -20,6 +20,8 @@ import {
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Switch } from "@/components/ui/switch";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Slider } from "@/components/ui/slider";
+import { resizeImage, uploadPhoto, getPhotoUrl, removeImageBackground } from "@/lib/photoUpload";
 
 const AUTOSAVE_KEY = "resume_autosave_";
 type ResumeColorScheme = ColorScheme | PremiumColorScheme;
@@ -72,6 +74,8 @@ type ResumePersonalInfo = {
   paperSize?: PaperSize;
   sectionScales?: Record<string, number>;
   mutedSections?: Record<string, boolean>;
+  photoPath?: string;
+  photoSize?: number;
 };
 
 const PAPER_SIZES: Record<PaperSize, { label: string; widthPx: number; heightPx: number; widthMm: number; heightMm: number }> = {
@@ -95,6 +99,9 @@ const Builder = () => {
   const [currentResume, setCurrentResume] = useState<Resume | null>(null);
   const [colorScheme, setColorScheme] = useState<ResumeColorScheme>("coral");
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
+  const [photoPath, setPhotoPath] = useState<string | null>(null);
+  const [photoSize, setPhotoSize] = useState<number>(128);
+  const [photoProcessing, setPhotoProcessing] = useState<null | "upload" | "bgremove">(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   const [sections, setSections] = useState([
@@ -263,7 +270,8 @@ const Builder = () => {
       references,
       languages,
       colorScheme,
-      photoUrl,
+      photoPath,
+      photoSize,
       paperSize,
       sectionScales,
       mutedSections,
@@ -271,7 +279,7 @@ const Builder = () => {
     };
     localStorage.setItem(AUTOSAVE_KEY + id, JSON.stringify(data));
     setHasUnsavedChanges(true);
-  }, [id, formData, experiences, learnedExperiences, education, skillGroups, projects, certifications, references, languages, colorScheme, photoUrl, paperSize, sectionScales, mutedSections, headerStyle]);
+  }, [id, formData, experiences, learnedExperiences, education, skillGroups, projects, certifications, references, languages, colorScheme, photoPath, photoSize, paperSize, sectionScales, mutedSections, headerStyle]);
 
   // Auto-save effect
   useEffect(() => {
@@ -299,7 +307,11 @@ const Builder = () => {
           if (data.references) setReferences(data.references);
           if (data.languages) setLanguages(data.languages);
           if (data.colorScheme) setColorScheme(data.colorScheme);
-          if (data.photoUrl) setPhotoUrl(data.photoUrl);
+          if (typeof data.photoSize === "number") setPhotoSize(data.photoSize);
+          if (data.photoPath) {
+            setPhotoPath(data.photoPath);
+            getPhotoUrl("resumes", data.photoPath).then((u) => u && setPhotoUrl(u));
+          }
           if (data.paperSize && PAPER_SIZES[data.paperSize as PaperSize]) setPaperSize(data.paperSize);
           if (data.sectionScales) setSectionScales(data.sectionScales);
           if (data.mutedSections) setMutedSections(data.mutedSections);
@@ -350,6 +362,11 @@ const Builder = () => {
         if (personalInfo.mutedSections) setMutedSections(personalInfo.mutedSections);
         if (personalInfo.paperSize && PAPER_SIZES[personalInfo.paperSize]) setPaperSize(personalInfo.paperSize);
         if (personalInfo.sectionScales) setSectionScales(personalInfo.sectionScales);
+        if (typeof personalInfo.photoSize === "number") setPhotoSize(personalInfo.photoSize);
+        if (personalInfo.photoPath) {
+          setPhotoPath(personalInfo.photoPath);
+          getPhotoUrl("resumes", personalInfo.photoPath).then((u) => u && setPhotoUrl(u));
+        }
         if (resume.education?.length) setEducation(resume.education as EducationItem[]);
         if (resume.skills?.length) {
           const skills = resume.skills as (SkillGroup | { name?: string } | string)[];
@@ -489,14 +506,46 @@ const Builder = () => {
     }
   };
 
-  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPhotoUrl(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+    if (!file || !user || !currentResume) return;
+    setPhotoProcessing("upload");
+    try {
+      const resized = await resizeImage(file, 800);
+      const path = await uploadPhoto("resumes", user.id, `${currentResume.id}/photo`, resized);
+      const url = await getPhotoUrl("resumes", path);
+      setPhotoPath(path);
+      if (url) setPhotoUrl(url);
+      toast({ title: "Photo uploaded", description: "Saved to your account." });
+    } catch (err: unknown) {
+      toast({ title: "Upload failed", description: err instanceof Error ? err.message : "Please try again.", variant: "destructive" });
+    } finally {
+      setPhotoProcessing(null);
+      if (photoInputRef.current) photoInputRef.current.value = "";
+    }
+  };
+
+  const handleRemovePhoto = () => {
+    setPhotoUrl(null);
+    setPhotoPath(null);
+  };
+
+  const handleRemoveBackground = async () => {
+    if (!photoUrl || !user || !currentResume) return;
+    setPhotoProcessing("bgremove");
+    try {
+      const resp = await fetch(photoUrl);
+      const blob = await resp.blob();
+      const cleaned = await removeImageBackground(blob);
+      const path = await uploadPhoto("resumes", user.id, `${currentResume.id}/photo`, cleaned);
+      const url = await getPhotoUrl("resumes", path);
+      setPhotoPath(path);
+      if (url) setPhotoUrl(url);
+      toast({ title: "Background removed" });
+    } catch (err: unknown) {
+      toast({ title: "Background removal failed", description: err instanceof Error ? err.message : "Please try again.", variant: "destructive" });
+    } finally {
+      setPhotoProcessing(null);
     }
   };
 
@@ -521,6 +570,8 @@ const Builder = () => {
         paperSize,
         sectionScales,
         mutedSections,
+        photoPath: photoPath ?? undefined,
+        photoSize,
       },
       summary: formData.summary,
       experience: experiences,
@@ -651,10 +702,10 @@ const Builder = () => {
               role="img"
               aria-label="Profile"
               style={{
-                width: "128px",
-                height: "128px",
-                minWidth: "128px",
-                minHeight: "128px",
+                width: `${photoSize}px`,
+                height: `${photoSize}px`,
+                minWidth: `${photoSize}px`,
+                minHeight: `${photoSize}px`,
                 borderRadius: "50%",
                 backgroundImage: `url(${photoUrl})`,
                 backgroundPosition: "center",
@@ -669,10 +720,10 @@ const Builder = () => {
               className="flex items-center justify-center"
               style={{
                 backgroundColor: theme.primary,
-                width: "128px",
-                height: "128px",
-                minWidth: "128px",
-                minHeight: "128px",
+                width: `${photoSize}px`,
+                height: `${photoSize}px`,
+                minWidth: `${photoSize}px`,
+                minHeight: `${photoSize}px`,
                 borderRadius: "50%",
                 flexShrink: 0,
               }}
@@ -1039,19 +1090,35 @@ const Builder = () => {
                           <User className="w-10 h-10 text-muted-foreground" />
                         )}
                       </div>
-                      <div>
+                      <div className="flex flex-wrap gap-2">
                         <input ref={photoInputRef} type="file" accept="image/*" className="hidden" onChange={handlePhotoUpload} />
-                        <Button variant="outline" onClick={() => photoInputRef.current?.click()}>
-                          <Camera className="w-4 h-4 mr-2" />Upload Photo
+                        <Button variant="outline" onClick={() => photoInputRef.current?.click()} disabled={photoProcessing !== null}>
+                          {photoProcessing === "upload" ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Camera className="w-4 h-4 mr-2" />}
+                          {photoUrl ? "Change Photo" : "Upload Photo"}
                         </Button>
                         {photoUrl && (
-                          <Button variant="ghost" size="sm" className="ml-2 text-destructive" onClick={() => setPhotoUrl(null)}>
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
+                          <>
+                            <Button variant="outline" size="sm" onClick={handleRemoveBackground} disabled={photoProcessing !== null}>
+                              {photoProcessing === "bgremove" ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+                              Remove Background
+                            </Button>
+                            <Button variant="ghost" size="sm" className="text-destructive" onClick={handleRemovePhoto} disabled={photoProcessing !== null}>
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </>
                         )}
                       </div>
                     </div>
-                    <p className="text-xs text-muted-foreground">Photo is embedded in PDF only, not saved to database.</p>
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <Label className="text-xs">Photo size on resume</Label>
+                        <span className="text-xs text-muted-foreground">{photoSize}px</span>
+                      </div>
+                      <Slider value={[photoSize]} min={80} max={220} step={4} onValueChange={([v]) => setPhotoSize(v)} />
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Photos are stored securely in your account and appear on every device you sign in from. First background removal may take a few seconds while the model loads.
+                    </p>
                   </div>
                 )}
 

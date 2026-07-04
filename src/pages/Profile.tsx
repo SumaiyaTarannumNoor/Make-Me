@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import logo from "@/assets/logo.png";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -6,30 +6,82 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
+import { useToast } from "@/hooks/use-toast";
+import { resizeImage, uploadPhoto, getPhotoUrl, removeImageBackground } from "@/lib/photoUpload";
 import {
-  FileText, Sparkles, User, Mail, Phone, MapPin, Linkedin, Globe, Save, ArrowLeft, Loader2,
+  User, Mail, Phone, MapPin, Linkedin, Globe, Save, ArrowLeft, Loader2, Camera, Trash2,
 } from "lucide-react";
 
 const Profile = () => {
   const { user, signOut } = useAuth();
   const { profile, loading, updateProfile } = useProfile();
+  const { toast } = useToast();
+  const photoInputRef = useRef<HTMLInputElement>(null);
   const [saving, setSaving] = useState(false);
+  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
+  const [photoProcessing, setPhotoProcessing] = useState<null | "upload" | "bgremove">(null);
   const [formData, setFormData] = useState({
     full_name: "", phone: "", location: "", linkedin: "", portfolio: "",
   });
 
-  useState(() => {
+  useEffect(() => {
     if (profile) {
       setFormData({
         full_name: profile.full_name || "", phone: profile.phone || "",
         location: profile.location || "", linkedin: profile.linkedin || "",
         portfolio: profile.portfolio || "",
       });
+      if (profile.avatar_url) {
+        getPhotoUrl("avatars", profile.avatar_url).then((u) => u && setPhotoUrl(u));
+      } else {
+        setPhotoUrl(null);
+      }
     }
-  });
+  }, [profile]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault(); setSaving(true); await updateProfile(formData); setSaving(false);
+  };
+
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+    setPhotoProcessing("upload");
+    try {
+      const resized = await resizeImage(file, 512);
+      const path = await uploadPhoto("avatars", user.id, "avatar", resized);
+      const url = await getPhotoUrl("avatars", path);
+      if (url) setPhotoUrl(url);
+      await updateProfile({ avatar_url: path });
+    } catch (err: unknown) {
+      toast({ title: "Upload failed", description: err instanceof Error ? err.message : "Please try again.", variant: "destructive" });
+    } finally {
+      setPhotoProcessing(null);
+      if (photoInputRef.current) photoInputRef.current.value = "";
+    }
+  };
+
+  const handleRemoveBackground = async () => {
+    if (!photoUrl || !user) return;
+    setPhotoProcessing("bgremove");
+    try {
+      const resp = await fetch(photoUrl);
+      const blob = await resp.blob();
+      const cleaned = await removeImageBackground(blob);
+      const path = await uploadPhoto("avatars", user.id, "avatar", cleaned);
+      const url = await getPhotoUrl("avatars", path);
+      if (url) setPhotoUrl(url);
+      await updateProfile({ avatar_url: path });
+    } catch (err: unknown) {
+      toast({ title: "Background removal failed", description: err instanceof Error ? err.message : "Please try again.", variant: "destructive" });
+    } finally {
+      setPhotoProcessing(null);
+    }
+  };
+
+  const handleRemovePhoto = async () => {
+    setPhotoUrl(null);
+    await updateProfile({ avatar_url: null });
   };
 
   if (loading) {
@@ -59,12 +111,34 @@ const Profile = () => {
       <main className="container mx-auto px-4 py-8 max-w-2xl">
         <div className="bg-card rounded-2xl border border-border p-8">
           <div className="flex items-center gap-4 mb-8">
-            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-cloudy-sky-400 to-aquamarine-500 flex items-center justify-center">
-              <User className="w-10 h-10 text-primary-foreground" />
+            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-cloudy-sky-400 to-aquamarine-500 flex items-center justify-center overflow-hidden">
+              {photoUrl ? (
+                <img src={photoUrl} alt="Profile" className="w-full h-full object-cover" />
+              ) : (
+                <User className="w-10 h-10 text-primary-foreground" />
+              )}
             </div>
-            <div>
+            <div className="flex-1">
               <h1 className="font-display text-2xl font-bold text-foreground">{profile?.full_name || "Your Profile"}</h1>
               <p className="text-muted-foreground">{user?.email}</p>
+              <div className="flex flex-wrap gap-2 mt-3">
+                <input ref={photoInputRef} type="file" accept="image/*" className="hidden" onChange={handlePhotoUpload} />
+                <Button type="button" variant="outline" size="sm" onClick={() => photoInputRef.current?.click()} disabled={photoProcessing !== null}>
+                  {photoProcessing === "upload" ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Camera className="w-4 h-4 mr-2" />}
+                  {photoUrl ? "Change" : "Upload photo"}
+                </Button>
+                {photoUrl && (
+                  <>
+                    <Button type="button" variant="outline" size="sm" onClick={handleRemoveBackground} disabled={photoProcessing !== null}>
+                      {photoProcessing === "bgremove" ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+                      Remove background
+                    </Button>
+                    <Button type="button" variant="ghost" size="sm" className="text-destructive" onClick={handleRemovePhoto} disabled={photoProcessing !== null}>
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </>
+                )}
+              </div>
             </div>
           </div>
 
