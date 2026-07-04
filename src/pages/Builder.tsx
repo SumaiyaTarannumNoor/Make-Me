@@ -506,14 +506,46 @@ const Builder = () => {
     }
   };
 
-  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPhotoUrl(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+    if (!file || !user || !currentResume) return;
+    setPhotoProcessing("upload");
+    try {
+      const resized = await resizeImage(file, 800);
+      const path = await uploadPhoto("resumes", user.id, `${currentResume.id}/photo`, resized);
+      const url = await getPhotoUrl("resumes", path);
+      setPhotoPath(path);
+      if (url) setPhotoUrl(url);
+      toast({ title: "Photo uploaded", description: "Saved to your account." });
+    } catch (err: unknown) {
+      toast({ title: "Upload failed", description: err instanceof Error ? err.message : "Please try again.", variant: "destructive" });
+    } finally {
+      setPhotoProcessing(null);
+      if (photoInputRef.current) photoInputRef.current.value = "";
+    }
+  };
+
+  const handleRemovePhoto = () => {
+    setPhotoUrl(null);
+    setPhotoPath(null);
+  };
+
+  const handleRemoveBackground = async () => {
+    if (!photoUrl || !user || !currentResume) return;
+    setPhotoProcessing("bgremove");
+    try {
+      const resp = await fetch(photoUrl);
+      const blob = await resp.blob();
+      const cleaned = await removeImageBackground(blob);
+      const path = await uploadPhoto("resumes", user.id, `${currentResume.id}/photo`, cleaned);
+      const url = await getPhotoUrl("resumes", path);
+      setPhotoPath(path);
+      if (url) setPhotoUrl(url);
+      toast({ title: "Background removed" });
+    } catch (err: unknown) {
+      toast({ title: "Background removal failed", description: err instanceof Error ? err.message : "Please try again.", variant: "destructive" });
+    } finally {
+      setPhotoProcessing(null);
     }
   };
 
