@@ -360,6 +360,11 @@ const Builder = () => {
         if (personalInfo.mutedSections) setMutedSections(personalInfo.mutedSections);
         if (personalInfo.paperSize && PAPER_SIZES[personalInfo.paperSize]) setPaperSize(personalInfo.paperSize);
         if (personalInfo.sectionScales) setSectionScales(personalInfo.sectionScales);
+        if (typeof personalInfo.photoSize === "number") setPhotoSize(personalInfo.photoSize);
+        if (personalInfo.photoPath) {
+          setPhotoPath(personalInfo.photoPath);
+          getPhotoUrl("resumes", personalInfo.photoPath).then((u) => u && setPhotoUrl(u));
+        }
         if (resume.education?.length) setEducation(resume.education as EducationItem[]);
         if (resume.skills?.length) {
           const skills = resume.skills as (SkillGroup | { name?: string } | string)[];
