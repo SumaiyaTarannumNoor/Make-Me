@@ -702,10 +702,10 @@ const Builder = () => {
               role="img"
               aria-label="Profile"
               style={{
-                width: "128px",
-                height: "128px",
-                minWidth: "128px",
-                minHeight: "128px",
+                width: `${photoSize}px`,
+                height: `${photoSize}px`,
+                minWidth: `${photoSize}px`,
+                minHeight: `${photoSize}px`,
                 borderRadius: "50%",
                 backgroundImage: `url(${photoUrl})`,
                 backgroundPosition: "center",
