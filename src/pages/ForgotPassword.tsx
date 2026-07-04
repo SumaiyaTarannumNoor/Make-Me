@@ -19,21 +19,15 @@ const ForgotPassword = () => {
     if (!email) return;
     setIsLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke("check-email", { body: { email } });
-      if (error) throw error;
-      if (!data.exists) {
-        toast({ title: "No matched User email", description: "Please Complete Registration.", variant: "destructive" });
-        setIsLoading(false);
-        return;
-      }
-      const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
+      await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/reset-password`,
       });
-      if (resetError) throw resetError;
+      // Always show generic success to prevent user enumeration
       setEmailSent(true);
-      toast({ title: "Reset link sent!", description: "Check your email for a password reset link." });
+      toast({ title: "Reset link sent!", description: "If an account exists for this email, a reset link has been sent." });
     } catch (error: any) {
-      toast({ title: "Error", description: error.message || "Something went wrong", variant: "destructive" });
+      // Still show generic message even on error
+      setEmailSent(true);
     } finally {
       setIsLoading(false);
     }
