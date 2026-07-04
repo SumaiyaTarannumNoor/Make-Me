@@ -74,6 +74,8 @@ type ResumePersonalInfo = {
   paperSize?: PaperSize;
   sectionScales?: Record<string, number>;
   mutedSections?: Record<string, boolean>;
+  photoPath?: string;
+  photoSize?: number;
 };
 
 const PAPER_SIZES: Record<PaperSize, { label: string; widthPx: number; heightPx: number; widthMm: number; heightMm: number }> = {
