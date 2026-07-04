@@ -20,6 +20,8 @@ import {
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Switch } from "@/components/ui/switch";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Slider } from "@/components/ui/slider";
+import { resizeImage, uploadPhoto, getPhotoUrl, removeImageBackground } from "@/lib/photoUpload";
 
 const AUTOSAVE_KEY = "resume_autosave_";
 type ResumeColorScheme = ColorScheme | PremiumColorScheme;
