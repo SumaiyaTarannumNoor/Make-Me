@@ -97,6 +97,9 @@ const Builder = () => {
   const [currentResume, setCurrentResume] = useState<Resume | null>(null);
   const [colorScheme, setColorScheme] = useState<ResumeColorScheme>("coral");
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
+  const [photoPath, setPhotoPath] = useState<string | null>(null);
+  const [photoSize, setPhotoSize] = useState<number>(128);
+  const [photoProcessing, setPhotoProcessing] = useState<null | "upload" | "bgremove">(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   const [sections, setSections] = useState([
