@@ -277,10 +277,11 @@ const Builder = () => {
       sectionScales,
       mutedSections,
       headerStyle,
+      manualPageCount,
     };
     localStorage.setItem(AUTOSAVE_KEY + id, JSON.stringify(data));
     setHasUnsavedChanges(true);
-  }, [id, formData, experiences, learnedExperiences, education, skillGroups, projects, certifications, references, languages, colorScheme, photoPath, photoSize, paperSize, sectionScales, mutedSections, headerStyle]);
+  }, [id, formData, experiences, learnedExperiences, education, skillGroups, projects, certifications, references, languages, colorScheme, photoPath, photoSize, paperSize, sectionScales, mutedSections, headerStyle, manualPageCount]);
 
   // Auto-save effect
   useEffect(() => {
