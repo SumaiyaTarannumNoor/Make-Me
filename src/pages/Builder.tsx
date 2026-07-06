@@ -572,6 +572,7 @@ const Builder = () => {
         mutedSections,
         photoPath: photoPath ?? undefined,
         photoSize,
+        manualPageCount,
       },
       summary: formData.summary,
       experience: experiences,
