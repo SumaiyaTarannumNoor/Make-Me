@@ -30,8 +30,7 @@ const Login = () => {
         if (
           msg.includes("invalid login credentials") ||
           msg.includes("invalid_credentials") ||
-          msg.includes("user not found") ||
-          msg.includes("email not confirmed") === false && error.status === 400
+          msg.includes("user not found")
         ) {
           toast({
             title: "Register first",
