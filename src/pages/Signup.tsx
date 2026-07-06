@@ -80,6 +80,13 @@ const Signup = () => {
             <p className="text-muted-foreground">Start building your professional resume today</p>
           </div>
 
+          {notice && (
+            <div className="mb-6 flex items-start gap-3 rounded-lg border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+              <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
+              <p>{notice}</p>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
               <Label htmlFor="name">Full Name</Label>
