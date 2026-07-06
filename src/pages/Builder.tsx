@@ -310,6 +310,7 @@ const Builder = () => {
           if (data.languages) setLanguages(data.languages);
           if (data.colorScheme) setColorScheme(data.colorScheme);
           if (typeof data.photoSize === "number") setPhotoSize(data.photoSize);
+          if (typeof data.manualPageCount === "number") setManualPageCount(data.manualPageCount);
           if (data.photoPath) {
             setPhotoPath(data.photoPath);
             getPhotoUrl("resumes", data.photoPath).then((u) => u && setPhotoUrl(u));
