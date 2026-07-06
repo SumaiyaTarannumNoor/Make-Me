@@ -76,6 +76,7 @@ type ResumePersonalInfo = {
   mutedSections?: Record<string, boolean>;
   photoPath?: string;
   photoSize?: number;
+  manualPageCount?: number;
 };
 
 const PAPER_SIZES: Record<PaperSize, { label: string; widthPx: number; heightPx: number; widthMm: number; heightMm: number }> = {
@@ -276,10 +277,11 @@ const Builder = () => {
       sectionScales,
       mutedSections,
       headerStyle,
+      manualPageCount,
     };
     localStorage.setItem(AUTOSAVE_KEY + id, JSON.stringify(data));
     setHasUnsavedChanges(true);
-  }, [id, formData, experiences, learnedExperiences, education, skillGroups, projects, certifications, references, languages, colorScheme, photoPath, photoSize, paperSize, sectionScales, mutedSections, headerStyle]);
+  }, [id, formData, experiences, learnedExperiences, education, skillGroups, projects, certifications, references, languages, colorScheme, photoPath, photoSize, paperSize, sectionScales, mutedSections, headerStyle, manualPageCount]);
 
   // Auto-save effect
   useEffect(() => {
@@ -308,6 +310,7 @@ const Builder = () => {
           if (data.languages) setLanguages(data.languages);
           if (data.colorScheme) setColorScheme(data.colorScheme);
           if (typeof data.photoSize === "number") setPhotoSize(data.photoSize);
+          if (typeof data.manualPageCount === "number") setManualPageCount(data.manualPageCount);
           if (data.photoPath) {
             setPhotoPath(data.photoPath);
             getPhotoUrl("resumes", data.photoPath).then((u) => u && setPhotoUrl(u));
@@ -363,6 +366,7 @@ const Builder = () => {
         if (personalInfo.paperSize && PAPER_SIZES[personalInfo.paperSize]) setPaperSize(personalInfo.paperSize);
         if (personalInfo.sectionScales) setSectionScales(personalInfo.sectionScales);
         if (typeof personalInfo.photoSize === "number") setPhotoSize(personalInfo.photoSize);
+        if (typeof personalInfo.manualPageCount === "number") setManualPageCount(personalInfo.manualPageCount);
         if (personalInfo.photoPath) {
           setPhotoPath(personalInfo.photoPath);
           getPhotoUrl("resumes", personalInfo.photoPath).then((u) => u && setPhotoUrl(u));
@@ -572,6 +576,7 @@ const Builder = () => {
         mutedSections,
         photoPath: photoPath ?? undefined,
         photoSize,
+        manualPageCount,
       },
       summary: formData.summary,
       experience: experiences,
