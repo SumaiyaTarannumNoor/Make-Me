@@ -363,6 +363,7 @@ const Builder = () => {
         if (personalInfo.paperSize && PAPER_SIZES[personalInfo.paperSize]) setPaperSize(personalInfo.paperSize);
         if (personalInfo.sectionScales) setSectionScales(personalInfo.sectionScales);
         if (typeof personalInfo.photoSize === "number") setPhotoSize(personalInfo.photoSize);
+        if (typeof personalInfo.manualPageCount === "number") setManualPageCount(personalInfo.manualPageCount);
         if (personalInfo.photoPath) {
           setPhotoPath(personalInfo.photoPath);
           getPhotoUrl("resumes", personalInfo.photoPath).then((u) => u && setPhotoUrl(u));
