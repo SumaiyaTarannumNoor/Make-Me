@@ -3,14 +3,14 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 import { Sparkles, Eye, EyeOff, Mail, Lock } from "lucide-react";
 import logo from "@/assets/logo.png";
 
 const Login = () => {
   const navigate = useNavigate();
-  const { signIn } = useAuth();
+  const { toast } = useToast();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -20,7 +20,34 @@ const Login = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      await signIn(email, password);
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+
+      if (error) {
+        const msg = (error.message || "").toLowerCase();
+        // Supabase returns "Invalid login credentials" for both unknown email
+        // and wrong password. Treat this as "email may not be registered" and
+        // send the user to signup with a clear prompt (per product requirement).
+        if (
+          msg.includes("invalid login credentials") ||
+          msg.includes("invalid_credentials") ||
+          msg.includes("user not found")
+        ) {
+          toast({
+            title: "Register first",
+            description: "This email isn't registered yet. Please create an account to continue.",
+            variant: "destructive",
+          });
+          navigate("/signup", {
+            state: { email, notice: "Register first — this email isn't registered yet." },
+          });
+          return;
+        }
+        toast({ title: "Login failed", description: error.message, variant: "destructive" });
+        return;
+      }
+
+      toast({ title: "Welcome back!", description: "Successfully logged in." });
+
       // Check if user is admin
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
@@ -35,7 +62,6 @@ const Login = () => {
         }
       }
       navigate("/dashboard");
-    } catch (error) {
     } finally {
       setIsLoading(false);
     }
