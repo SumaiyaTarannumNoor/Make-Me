@@ -1,22 +1,25 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "@/hooks/useAuth";
-import { Sparkles, Eye, EyeOff, Mail, Lock, User } from "lucide-react";
+import { Sparkles, Eye, EyeOff, Mail, Lock, User, AlertCircle } from "lucide-react";
 import logo from "@/assets/logo.png";
 
 const Signup = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const routeState = (location.state ?? {}) as { email?: string; notice?: string };
   const { signUp } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(routeState.email ?? "");
   const [password, setPassword] = useState("");
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [notice] = useState<string | null>(routeState.notice ?? null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
