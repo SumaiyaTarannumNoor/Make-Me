@@ -788,7 +788,7 @@ const Builder = () => {
             <ResizableSection id="summary" interactive={interactive}>
               <div data-resume-block className="mb-5">
                 <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Professional Summary</h2>
-                <p className="text-[10px] text-gray-700 leading-relaxed whitespace-pre-line">{formData.summary}</p>
+                <p className="text-[10px] text-gray-700 leading-relaxed whitespace-pre-line"><Linkify text={formData.summary} color={theme.primary} /></p>
               </div>
             </ResizableSection>
           )}
