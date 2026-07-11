@@ -190,6 +190,18 @@ const Builder = () => {
 
   const [certifications, setCertifications] = useState<string[]>([]);
   const [newCert, setNewCert] = useState("");
+  const [dragProjectIdx, setDragProjectIdx] = useState<number | null>(null);
+  const [dragOverProjectIdx, setDragOverProjectIdx] = useState<number | null>(null);
+
+  const reorderProjects = (from: number, to: number) => {
+    if (from === to || from < 0 || to < 0) return;
+    setProjects((prev) => {
+      const next = [...prev];
+      const [moved] = next.splice(from, 1);
+      next.splice(to, 0, moved);
+      return next;
+    });
+  };
 
   const [references, setReferences] = useState<ReferenceItem[]>([
     { id: 1, name: "", designation: "", organization: "", email: "", phone: "", active: true },
