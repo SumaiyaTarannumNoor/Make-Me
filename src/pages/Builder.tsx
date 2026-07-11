@@ -192,6 +192,7 @@ const Builder = () => {
   const [newCert, setNewCert] = useState("");
   const [dragProjectIdx, setDragProjectIdx] = useState<number | null>(null);
   const [dragOverProjectIdx, setDragOverProjectIdx] = useState<number | null>(null);
+  const [projectDragArmed, setProjectDragArmed] = useState<string | number | null>(null);
 
   const reorderProjects = (from: number, to: number) => {
     if (from === to || from < 0 || to < 0) return;
