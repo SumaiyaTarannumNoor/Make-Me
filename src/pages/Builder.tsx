@@ -833,7 +833,7 @@ const Builder = () => {
                       {item.description && (
                         <ul className="mt-1 text-[10px] text-gray-600 space-y-0.5">
                           {item.description.split("\n").filter(Boolean).map((line, i) => (
-                            <li key={i} className="flex items-start gap-1"><span style={{ color: theme.primary }}>•</span><span>{line.replace(/^[•-]\s*/, "")}</span></li>
+                            <li key={i} className="flex items-start gap-1"><span style={{ color: theme.primary }}>•</span><span><Linkify text={line.replace(/^[•-]\s*/, "")} color={theme.primary} /></span></li>
                           ))}
                         </ul>
                       )}
