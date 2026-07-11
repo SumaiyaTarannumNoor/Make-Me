@@ -895,8 +895,9 @@ const Builder = () => {
                   {projects.filter((p) => p.name).map((project) => (
                     <div key={project.id} data-resume-block>
                       <h3 className="font-semibold text-gray-900 text-[10px]">{project.name}</h3>
-                      <p className="text-gray-600 text-[9px]">{project.description}</p>
-                      {project.link && <p className="text-[8px]" style={{ color: theme.primary }}>{project.link}</p>}
+                      <p className="text-gray-600 text-[9px]"><Linkify text={project.description} color={theme.primary} /></p>
+                      {project.link && <p className="text-[8px]"><a href={project.link.startsWith("http") ? project.link : `https://${project.link}`} target="_blank" rel="noopener noreferrer" className="underline" style={{ color: theme.primary }}>{project.link}</a></p>}
+
                     </div>
                   ))}
                 </div>
