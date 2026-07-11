@@ -84,6 +84,39 @@ const PAPER_SIZES: Record<PaperSize, { label: string; widthPx: number; heightPx:
   letter: { label: "US Letter", widthPx: 816, heightPx: 1056, widthMm: 215.9, heightMm: 279.4 },
 };
 
+// Auto-detect URLs and emails in free text and render them as clickable anchors
+// so that clickable link annotations get emitted into the exported PDF.
+const URL_REGEX = /(\bhttps?:\/\/[^\s<>()]+[^\s<>().,;:!?'"])|(\b(?:www\.|(?:[a-zA-Z0-9-]+\.)+(?:com|net|org|io|dev|co|app|ai|me|xyz|tech|so|gg|ly|edu|gov|info|bd))(?:\/[^\s<>()]*)?)|(\b[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}\b)/gi;
+const Linkify = ({ text, color }: { text: string; color?: string }) => {
+  if (!text) return null;
+  const parts: (string | { url: string; label: string })[] = [];
+  let last = 0;
+  text.replace(URL_REGEX, (match, _u, _b, _e, offset: number) => {
+    if (offset > last) parts.push(text.slice(last, offset));
+    const isEmail = match.includes("@") && !match.startsWith("http");
+    const url = isEmail ? `mailto:${match}` : match.startsWith("http") ? match : `https://${match}`;
+    parts.push({ url, label: match });
+    last = offset + match.length;
+    return match;
+  });
+  if (last < text.length) parts.push(text.slice(last));
+  return (
+    <>
+      {parts.map((p, i) =>
+        typeof p === "string" ? (
+          <span key={i}>{p}</span>
+        ) : (
+          <a key={i} href={p.url} target="_blank" rel="noopener noreferrer" className="underline" style={{ color: color || "inherit" }}>
+            {p.label}
+          </a>
+        )
+      )}
+    </>
+  );
+};
+
+
+
 const Builder = () => {
   const { id } = useParams();
   const [searchParams] = useSearchParams();
@@ -755,7 +788,7 @@ const Builder = () => {
             <ResizableSection id="summary" interactive={interactive}>
               <div data-resume-block className="mb-5">
                 <h2 className="text-sm font-bold uppercase tracking-wider mb-3 pb-1 border-b-2" style={{ color: theme.primary, borderColor: theme.primary }}>Professional Summary</h2>
-                <p className="text-[10px] text-gray-700 leading-relaxed whitespace-pre-line">{formData.summary}</p>
+                <p className="text-[10px] text-gray-700 leading-relaxed whitespace-pre-line"><Linkify text={formData.summary} color={theme.primary} /></p>
               </div>
             </ResizableSection>
           )}
@@ -776,7 +809,8 @@ const Builder = () => {
                     {exp.description && (
                       <ul className="mt-1.5 text-[10px] text-gray-600 space-y-0.5">
                         {exp.description.split("\n").filter(Boolean).map((line, i) => (
-                          <li key={i} className="flex items-start gap-1"><span style={{ color: theme.primary }}>•</span><span>{line.replace(/^[•-]\s*/, "")}</span></li>
+                          <li key={i} className="flex items-start gap-1"><span style={{ color: theme.primary }}>•</span><span><Linkify text={line.replace(/^[•-]\s*/, "")} color={theme.primary} /></span></li>
+
                         ))}
                       </ul>
                     )}
@@ -799,7 +833,7 @@ const Builder = () => {
                       {item.description && (
                         <ul className="mt-1 text-[10px] text-gray-600 space-y-0.5">
                           {item.description.split("\n").filter(Boolean).map((line, i) => (
-                            <li key={i} className="flex items-start gap-1"><span style={{ color: theme.primary }}>•</span><span>{line.replace(/^[•-]\s*/, "")}</span></li>
+                            <li key={i} className="flex items-start gap-1"><span style={{ color: theme.primary }}>•</span><span><Linkify text={line.replace(/^[•-]\s*/, "")} color={theme.primary} /></span></li>
                           ))}
                         </ul>
                       )}
@@ -861,8 +895,9 @@ const Builder = () => {
                   {projects.filter((p) => p.name).map((project) => (
                     <div key={project.id} data-resume-block>
                       <h3 className="font-semibold text-gray-900 text-[10px]">{project.name}</h3>
-                      <p className="text-gray-600 text-[9px]">{project.description}</p>
-                      {project.link && <p className="text-[8px]" style={{ color: theme.primary }}>{project.link}</p>}
+                      <p className="text-gray-600 text-[9px]"><Linkify text={project.description} color={theme.primary} /></p>
+                      {project.link && <p className="text-[8px]"><a href={project.link.startsWith("http") ? project.link : `https://${project.link}`} target="_blank" rel="noopener noreferrer" className="underline" style={{ color: theme.primary }}>{project.link}</a></p>}
+
                     </div>
                   ))}
                 </div>
