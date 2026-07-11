@@ -1279,17 +1279,20 @@ const Builder = () => {
                     {projects.map((project, idx) => (
                       <div
                         key={project.id}
-                        draggable
-                        onDragStart={(e) => { setDragProjectIdx(idx); e.dataTransfer.effectAllowed = "move"; }}
+                        draggable={projectDragArmed === project.id}
+                        onDragStart={(e) => { setDragProjectIdx(idx); e.dataTransfer.effectAllowed = "move"; try { e.dataTransfer.setData("text/plain", String(project.id)); } catch {} }}
                         onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = "move"; if (dragOverProjectIdx !== idx) setDragOverProjectIdx(idx); }}
                         onDragLeave={() => { if (dragOverProjectIdx === idx) setDragOverProjectIdx(null); }}
-                        onDrop={(e) => { e.preventDefault(); if (dragProjectIdx !== null) reorderProjects(dragProjectIdx, idx); setDragProjectIdx(null); setDragOverProjectIdx(null); }}
-                        onDragEnd={() => { setDragProjectIdx(null); setDragOverProjectIdx(null); }}
+                        onDrop={(e) => { e.preventDefault(); if (dragProjectIdx !== null) reorderProjects(dragProjectIdx, idx); setDragProjectIdx(null); setDragOverProjectIdx(null); setProjectDragArmed(null); }}
+                        onDragEnd={() => { setDragProjectIdx(null); setDragOverProjectIdx(null); setProjectDragArmed(null); }}
                         className={`p-4 border rounded-xl space-y-3 bg-background transition-colors ${dragOverProjectIdx === idx && dragProjectIdx !== idx ? "border-primary ring-2 ring-primary/30" : ""} ${dragProjectIdx === idx ? "opacity-50" : ""}`}
                       >
                         <div className="flex items-center gap-2">
                           <button
                             type="button"
+                            onMouseDown={() => setProjectDragArmed(project.id)}
+                            onMouseUp={() => setProjectDragArmed((v) => (v === project.id ? null : v))}
+                            onTouchStart={() => setProjectDragArmed(project.id)}
                             className="cursor-grab active:cursor-grabbing touch-none p-1 -ml-1 text-muted-foreground hover:text-foreground"
                             aria-label="Drag to reorder project"
                             title="Drag to reorder"
