@@ -84,6 +84,39 @@ const PAPER_SIZES: Record<PaperSize, { label: string; widthPx: number; heightPx:
   letter: { label: "US Letter", widthPx: 816, heightPx: 1056, widthMm: 215.9, heightMm: 279.4 },
 };
 
+// Auto-detect URLs and emails in free text and render them as clickable anchors
+// so that clickable link annotations get emitted into the exported PDF.
+const URL_REGEX = /(\bhttps?:\/\/[^\s<>()]+[^\s<>().,;:!?'"])|(\b(?:www\.|(?:[a-zA-Z0-9-]+\.)+(?:com|net|org|io|dev|co|app|ai|me|xyz|tech|so|gg|ly|edu|gov|info|bd))(?:\/[^\s<>()]*)?)|(\b[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}\b)/gi;
+const Linkify = ({ text, color }: { text: string; color?: string }) => {
+  if (!text) return null;
+  const parts: (string | { url: string; label: string })[] = [];
+  let last = 0;
+  text.replace(URL_REGEX, (match, _u, _b, _e, offset: number) => {
+    if (offset > last) parts.push(text.slice(last, offset));
+    const isEmail = match.includes("@") && !match.startsWith("http");
+    const url = isEmail ? `mailto:${match}` : match.startsWith("http") ? match : `https://${match}`;
+    parts.push({ url, label: match });
+    last = offset + match.length;
+    return match;
+  });
+  if (last < text.length) parts.push(text.slice(last));
+  return (
+    <>
+      {parts.map((p, i) =>
+        typeof p === "string" ? (
+          <span key={i}>{p}</span>
+        ) : (
+          <a key={i} href={p.url} target="_blank" rel="noopener noreferrer" className="underline" style={{ color: color || "inherit" }}>
+            {p.label}
+          </a>
+        )
+      )}
+    </>
+  );
+};
+
+
+
 const Builder = () => {
   const { id } = useParams();
   const [searchParams] = useSearchParams();
