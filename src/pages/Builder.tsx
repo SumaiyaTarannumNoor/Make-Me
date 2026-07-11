@@ -15,7 +15,7 @@ import {
   ChevronLeft, Download, Plus, Trash2, User, Briefcase,
   GraduationCap, Code, FileCheck, ChevronDown, ChevronUp, Loader2, Save,
   FolderOpen, Award, Mail, Phone, MapPin, Linkedin, Globe, Camera, LayoutTemplate, Users,
-  Eye, EyeOff, Languages as LanguagesIcon,
+  Eye, EyeOff, Languages as LanguagesIcon, GripVertical,
 } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Switch } from "@/components/ui/switch";
@@ -190,6 +190,19 @@ const Builder = () => {
 
   const [certifications, setCertifications] = useState<string[]>([]);
   const [newCert, setNewCert] = useState("");
+  const [dragProjectIdx, setDragProjectIdx] = useState<number | null>(null);
+  const [dragOverProjectIdx, setDragOverProjectIdx] = useState<number | null>(null);
+  const [projectDragArmed, setProjectDragArmed] = useState<string | number | null>(null);
+
+  const reorderProjects = (from: number, to: number) => {
+    if (from === to || from < 0 || to < 0) return;
+    setProjects((prev) => {
+      const next = [...prev];
+      const [moved] = next.splice(from, 1);
+      next.splice(to, 0, moved);
+      return next;
+    });
+  };
 
   const [references, setReferences] = useState<ReferenceItem[]>([
     { id: 1, name: "", designation: "", organization: "", email: "", phone: "", active: true },
@@ -1262,9 +1275,35 @@ const Builder = () => {
 
                 {section.id === "projects" && (
                   <>
-                    {projects.map((project) => (
-                      <div key={project.id} className="p-4 border rounded-xl space-y-3">
-                        <Input placeholder="Project Name" value={project.name} onChange={(e) => setProjects(projects.map((p) => (p.id === project.id ? { ...p, name: e.target.value } : p)))} />
+                    <p className="text-xs text-muted-foreground">Drag the handle to reorder. The resume preview updates instantly.</p>
+                    {projects.map((project, idx) => (
+                      <div
+                        key={project.id}
+                        draggable={projectDragArmed === project.id}
+                        onDragStart={(e) => { setDragProjectIdx(idx); e.dataTransfer.effectAllowed = "move"; try { e.dataTransfer.setData("text/plain", String(project.id)); } catch {} }}
+                        onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = "move"; if (dragOverProjectIdx !== idx) setDragOverProjectIdx(idx); }}
+                        onDragLeave={() => { if (dragOverProjectIdx === idx) setDragOverProjectIdx(null); }}
+                        onDrop={(e) => { e.preventDefault(); if (dragProjectIdx !== null) reorderProjects(dragProjectIdx, idx); setDragProjectIdx(null); setDragOverProjectIdx(null); setProjectDragArmed(null); }}
+                        onDragEnd={() => { setDragProjectIdx(null); setDragOverProjectIdx(null); setProjectDragArmed(null); }}
+                        className={`p-4 border rounded-xl space-y-3 bg-background transition-colors ${dragOverProjectIdx === idx && dragProjectIdx !== idx ? "border-primary ring-2 ring-primary/30" : ""} ${dragProjectIdx === idx ? "opacity-50" : ""}`}
+                      >
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="button"
+                            onMouseDown={() => setProjectDragArmed(project.id)}
+                            onMouseUp={() => setProjectDragArmed((v) => (v === project.id ? null : v))}
+                            onTouchStart={() => setProjectDragArmed(project.id)}
+                            className="cursor-grab active:cursor-grabbing touch-none p-1 -ml-1 text-muted-foreground hover:text-foreground"
+                            aria-label="Drag to reorder project"
+                            title="Drag to reorder"
+                          >
+                            <GripVertical className="w-4 h-4" />
+                          </button>
+                          <Input placeholder="Project Name" value={project.name} onChange={(e) => setProjects(projects.map((p) => (p.id === project.id ? { ...p, name: e.target.value } : p)))} />
+                          <Button variant="ghost" size="icon" onClick={() => setProjects(projects.filter((p) => p.id !== project.id))} aria-label="Remove project">
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
                         <Textarea placeholder="Brief description..." value={project.description} onChange={(e) => setProjects(projects.map((p) => (p.id === project.id ? { ...p, description: e.target.value } : p)))} rows={2} />
                         <Input placeholder="Link (optional)" value={project.link} onChange={(e) => setProjects(projects.map((p) => (p.id === project.id ? { ...p, link: e.target.value } : p)))} />
                       </div>
