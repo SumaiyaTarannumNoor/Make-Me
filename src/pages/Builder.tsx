@@ -1231,6 +1231,29 @@ const Builder = () => {
       <div className="flex-1 flex">
         {/* Left Panel - Editor */}
         <div className="w-full md:w-1/2 border-r border-border bg-card overflow-auto p-6 space-y-4">
+          <div className="flex items-center justify-between gap-3 p-4 rounded-xl border border-dashed border-border bg-muted/30">
+            <div className="min-w-0">
+              <p className="text-sm font-medium text-foreground">Have an existing resume?</p>
+              <p className="text-xs text-muted-foreground truncate">Upload a PDF, DOCX, or TXT and we'll fill in the empty fields.</p>
+            </div>
+            <input
+              ref={uploadInputRef}
+              type="file"
+              accept=".pdf,.docx,.txt,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain"
+              className="hidden"
+              onChange={handleResumeUpload}
+            />
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => uploadInputRef.current?.click()}
+              disabled={uploadingResume}
+              className="shrink-0"
+            >
+              {uploadingResume ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+              <span className="ml-1">{uploadingResume ? "Reading…" : "Upload resume"}</span>
+            </Button>
+          </div>
           {sections.map((section) => (
             <Collapsible key={section.id} open={section.isOpen} onOpenChange={() => toggleSection(section.id)}>
               <div className={`w-full flex items-center justify-between p-4 rounded-xl bg-muted/50 ${isMuted(section.id) ? "opacity-60" : ""}`}>
