@@ -657,7 +657,7 @@ const Builder = () => {
       for (let i = 0; i < pages.length; i += 1) {
         const pageEl = pages[i];
         const canvas = await html2canvas(pageEl, {
-          scale: compressed ? 3 : 4,
+          scale: 4,
           useCORS: true,
           allowTaint: true,
           logging: false,
@@ -669,16 +669,15 @@ const Builder = () => {
 
         if (i > 0) pdf.addPage([activePaper.widthMm, activePaper.heightMm], "p");
         if (compressed) {
-          // High quality JPEG so the compressed version still looks crisp & shiny
           pdf.addImage(
-            canvas.toDataURL("image/jpeg", 0.98),
+            canvas.toDataURL("image/jpeg", 0.95),
             "JPEG",
             0,
             0,
             activePaper.widthMm,
             activePaper.heightMm,
             undefined,
-            "FAST"
+            "SLOW"
           );
         } else {
           pdf.addImage(
@@ -693,54 +692,9 @@ const Builder = () => {
           );
         }
 
-        // Overlay an invisible, selectable text layer so users can copy text
-        // from the downloaded PDF (works for both normal and compressed).
+        // Add clickable link annotations on top of the rendered image
         try {
           const pageRect = pageEl.getBoundingClientRect();
-          const GState = (pdf as any).GState;
-          if (GState) {
-            (pdf as any).setGState(new GState({ opacity: 0 }));
-          }
-          const walker = document.createTreeWalker(pageEl, NodeFilter.SHOW_TEXT);
-          const range = document.createRange();
-          let node: Node | null = walker.nextNode();
-          while (node) {
-            const text = (node.nodeValue || "").replace(/\s+/g, " ").trim();
-            if (text) {
-              range.selectNodeContents(node);
-              const rects = Array.from(range.getClientRects());
-              const totalW = rects.reduce((s, r) => s + r.width, 0) || 1;
-              let cursor = 0;
-              rects.forEach((r, idx) => {
-                if (!r.width || !r.height) return;
-                const share = r.width / totalW;
-                const count =
-                  idx === rects.length - 1
-                    ? text.length - cursor
-                    : Math.max(1, Math.round(text.length * share));
-                const chunk = text.substr(cursor, count);
-                cursor += count;
-                if (!chunk.trim()) return;
-                const el = node!.parentElement;
-                const fontPx = el
-                  ? parseFloat(getComputedStyle(el).fontSize || "12")
-                  : 12;
-                const fontPt = (fontPx * pxToMm * 72) / 25.4;
-                const x = (r.left - pageRect.left) * pxToMm;
-                const y = (r.bottom - pageRect.top) * pxToMm;
-                try {
-                  pdf.setFontSize(Math.max(6, fontPt));
-                  pdf.text(chunk, x, y, { baseline: "alphabetic" });
-                } catch {}
-              });
-            }
-            node = walker.nextNode();
-          }
-          if (GState) {
-            (pdf as any).setGState(new GState({ opacity: 1 }));
-          }
-
-          // Add clickable link annotations on top of the rendered image
           const anchors = pageEl.querySelectorAll("a[href]");
           anchors.forEach((a) => {
             const href = (a as HTMLAnchorElement).href;
@@ -754,7 +708,7 @@ const Builder = () => {
             pdf.link(x, y, w, h, { url: href });
           });
         } catch (err) {
-          console.warn("Text/link annotation failed", err);
+          console.warn("Link annotation failed", err);
         }
       }
 
