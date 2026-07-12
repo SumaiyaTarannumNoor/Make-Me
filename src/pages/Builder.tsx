@@ -638,6 +638,157 @@ const Builder = () => {
     setSaving(false);
   };
 
+  const uploadInputRef = useRef<HTMLInputElement | null>(null);
+  const [uploadingResume, setUploadingResume] = useState(false);
+
+  const extractTextFromFile = async (file: File): Promise<string> => {
+    const name = file.name.toLowerCase();
+    if (name.endsWith(".txt")) return await file.text();
+    if (name.endsWith(".docx")) {
+      const mammoth = await import("mammoth/mammoth.browser");
+      const buf = await file.arrayBuffer();
+      const result = await mammoth.extractRawText({ arrayBuffer: buf });
+      return result.value || "";
+    }
+    if (name.endsWith(".pdf")) {
+      const pdfjs: any = await import("pdfjs-dist/build/pdf.mjs");
+      // @ts-ignore
+      const worker = await import("pdfjs-dist/build/pdf.worker.mjs?url");
+      pdfjs.GlobalWorkerOptions.workerSrc = worker.default;
+      const buf = await file.arrayBuffer();
+      const doc = await pdfjs.getDocument({ data: buf }).promise;
+      let text = "";
+      for (let i = 1; i <= doc.numPages; i++) {
+        const page = await doc.getPage(i);
+        const content = await page.getTextContent();
+        text += content.items.map((it: any) => ("str" in it ? it.str : "")).join(" ") + "\n";
+      }
+      return text;
+    }
+    throw new Error("Unsupported file type. Use PDF, DOCX, or TXT.");
+  };
+
+  const handleResumeUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    if (file.size > 10 * 1024 * 1024) {
+      toast({ title: "File too large", description: "Please upload a file under 10 MB.", variant: "destructive" });
+      return;
+    }
+    setUploadingResume(true);
+    try {
+      const text = await extractTextFromFile(file);
+      if (!text.trim()) throw new Error("Could not read any text from the file.");
+      const { data, error } = await supabase.functions.invoke("parse-resume", { body: { text } });
+      if (error) throw error;
+      const parsed = (data as { data?: any })?.data;
+      if (!parsed || typeof parsed !== "object") throw new Error("Parsing returned no data.");
+
+      const pickStr = (v: unknown) => (typeof v === "string" ? v.trim() : "");
+      let filled = 0;
+      setFormData((prev) => {
+        const next = { ...prev };
+        (["fullName", "email", "phone", "location", "linkedin", "portfolio", "designation", "tagline", "summary"] as const).forEach((k) => {
+          const val = pickStr(parsed[k]);
+          if (val && !next[k]) { next[k] = val; filled++; }
+        });
+        return next;
+      });
+
+      if (Array.isArray(parsed.experiences) && parsed.experiences.length) {
+        setExperiences((prev) => {
+          const emptyOnly = prev.every((x) => !x.company && !x.title);
+          if (!emptyOnly) return prev;
+          filled++;
+          return parsed.experiences.map((x: any, i: number) => ({
+            id: Date.now() + i,
+            company: pickStr(x.company),
+            title: pickStr(x.title),
+            type: pickStr(x.type) || "Full-time",
+            startDate: pickStr(x.startDate),
+            endDate: pickStr(x.endDate),
+            description: pickStr(x.description),
+          }));
+        });
+      }
+      if (Array.isArray(parsed.education) && parsed.education.length) {
+        setEducation((prev) => {
+          const emptyOnly = prev.every((x) => !x.institution && !x.degree);
+          if (!emptyOnly) return prev;
+          filled++;
+          return parsed.education.map((x: any, i: number) => ({
+            id: Date.now() + i,
+            institution: pickStr(x.institution),
+            degree: pickStr(x.degree),
+            year: pickStr(x.year),
+            grade: pickStr(x.grade),
+          }));
+        });
+      }
+      if (Array.isArray(parsed.skills) && parsed.skills.length) {
+        const items = parsed.skills.map(pickStr).filter(Boolean);
+        if (items.length) {
+          setSkillGroups((prev) => {
+            const first = prev[0];
+            if (first && first.items.length === 0) {
+              filled++;
+              const next = [...prev];
+              next[0] = { ...first, items };
+              return next;
+            }
+            return prev;
+          });
+        }
+      }
+      if (Array.isArray(parsed.projects) && parsed.projects.length) {
+        setProjects((prev) => {
+          const emptyOnly = prev.every((x) => !x.name && !x.description);
+          if (!emptyOnly) return prev;
+          filled++;
+          return parsed.projects.map((x: any, i: number) => ({
+            id: Date.now() + i,
+            name: pickStr(x.name),
+            description: pickStr(x.description),
+            link: pickStr(x.link),
+          }));
+        });
+      }
+      if (Array.isArray(parsed.certifications) && parsed.certifications.length) {
+        const items = parsed.certifications.map(pickStr).filter(Boolean);
+        setCertifications((prev) => (prev.length === 0 && items.length ? (filled++, items) : prev));
+      }
+      if (Array.isArray(parsed.languages) && parsed.languages.length) {
+        setLanguages((prev) => {
+          const emptyOnly = prev.every((x) => !x.name);
+          if (!emptyOnly) return prev;
+          filled++;
+          return parsed.languages.map((x: any, i: number) => ({
+            id: Date.now() + i,
+            name: pickStr(x.name),
+            level: pickStr(x.level),
+          }));
+        });
+      }
+
+      toast({
+        title: filled ? "Resume imported" : "Nothing new to fill",
+        description: filled
+          ? "We filled the empty fields — review and click Save to keep them."
+          : "All matching fields were already filled. Existing data was kept.",
+      });
+    } catch (err: any) {
+      toast({
+        title: "Import failed",
+        description: err?.message || "Could not read that file.",
+        variant: "destructive",
+      });
+    } finally {
+      setUploadingResume(false);
+    }
+  };
+
+
   const handleDownloadPDF = async (compressed = false) => {
     if (!currentResume || !user) return;
     const pages = pageRefs.current.slice(0, pageCount).filter(Boolean) as HTMLDivElement[];
