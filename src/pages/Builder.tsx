@@ -140,7 +140,7 @@ const Builder = () => {
 
   const [sections, setSections] = useState([
     { id: "personal", title: "Personal Information", icon: User, isOpen: true, muteable: false },
-    { id: "photo", title: "Profile Photo", icon: Camera, isOpen: false, muteable: false },
+    { id: "photo", title: "Profile Photo", icon: Camera, isOpen: false, muteable: true },
     { id: "summary", title: "Professional Summary", icon: FileCheck, isOpen: false, muteable: true },
     { id: "experience", title: "Work Experience", icon: Briefcase, isOpen: false, muteable: true },
     { id: "learned", title: "Learned Experience", icon: Award, isOpen: false, muteable: true },
