@@ -303,10 +303,13 @@ const Builder = () => {
     );
   };
 
-  // Auto-save to localStorage whenever data changes
+  const [initialLoadDone, setInitialLoadDone] = useState(false);
+
+  // Auto-save to localStorage whenever data changes (only after initial DB load)
   const saveToLocalStorage = useCallback(() => {
-    if (!id) return;
+    if (!id || !initialLoadDone) return;
     const data = {
+      savedAt: Date.now(),
       formData,
       experiences,
       learnedExperiences,
@@ -327,7 +330,7 @@ const Builder = () => {
     };
     localStorage.setItem(AUTOSAVE_KEY + id, JSON.stringify(data));
     setHasUnsavedChanges(true);
-  }, [id, formData, experiences, learnedExperiences, education, skillGroups, projects, certifications, references, languages, colorScheme, photoPath, photoSize, paperSize, sectionScales, mutedSections, headerStyle, manualPageCount]);
+  }, [id, initialLoadDone, formData, experiences, learnedExperiences, education, skillGroups, projects, certifications, references, languages, colorScheme, photoPath, photoSize, paperSize, sectionScales, mutedSections, headerStyle, manualPageCount]);
 
   // Auto-save effect
   useEffect(() => {
@@ -337,42 +340,6 @@ const Builder = () => {
     return () => clearTimeout(timer);
   }, [saveToLocalStorage]);
 
-  // Load from localStorage on mount
-  useEffect(() => {
-    if (id) {
-      const saved = localStorage.getItem(AUTOSAVE_KEY + id);
-      if (saved) {
-        try {
-          const data = JSON.parse(saved);
-          if (data.formData) setFormData({ ...{ title: "Untitled Resume", fullName: "", email: "", phone: "", location: "", linkedin: "", portfolio: "", tagline: "", designation: "", summary: "" }, ...data.formData });
-          if (data.headerStyle) setHeaderStyle({ ...DEFAULT_HEADER_STYLE, ...data.headerStyle });
-          if (data.experiences) setExperiences(data.experiences);
-          if (data.learnedExperiences) setLearnedExperiences(data.learnedExperiences);
-          if (data.education) setEducation(data.education);
-          if (data.skillGroups) setSkillGroups(data.skillGroups);
-          if (data.projects) setProjects(data.projects);
-          if (data.certifications) setCertifications(data.certifications);
-          if (data.references) setReferences(data.references);
-          if (data.languages) setLanguages(data.languages);
-          if (data.colorScheme) setColorScheme(data.colorScheme);
-          if (typeof data.photoSize === "number") setPhotoSize(data.photoSize);
-          if (typeof data.manualPageCount === "number") setManualPageCount(data.manualPageCount);
-          if (data.photoPath) {
-            setPhotoPath(data.photoPath);
-            getPhotoUrl("resumes", data.photoPath).then((u) => u && setPhotoUrl(u));
-          }
-          if (data.paperSize && PAPER_SIZES[data.paperSize as PaperSize]) setPaperSize(data.paperSize);
-          if (data.sectionScales) setSectionScales(data.sectionScales);
-          if (data.mutedSections) setMutedSections(data.mutedSections);
-          setHasUnsavedChanges(true);
-          return; // Use localStorage data instead of database
-        } catch (e) {
-          console.error("Failed to parse saved data", e);
-        }
-      }
-    }
-  }, [id]);
-
   // Load from template param
   useEffect(() => {
     const templateParam = searchParams.get("template");
@@ -381,68 +348,110 @@ const Builder = () => {
     }
   }, [searchParams]);
 
-  // Load from database if no localStorage data
-  useEffect(() => {
-    if (id && resumes.length > 0) {
-      const saved = localStorage.getItem(AUTOSAVE_KEY + id);
-      if (saved) return; // Already loaded from localStorage
+  const applyLocalData = (data: any) => {
+    if (data.formData) setFormData({ ...{ title: "Untitled Resume", fullName: "", email: "", phone: "", location: "", linkedin: "", portfolio: "", tagline: "", designation: "", summary: "" }, ...data.formData });
+    if (data.headerStyle) setHeaderStyle({ ...DEFAULT_HEADER_STYLE, ...data.headerStyle });
+    if (data.experiences) setExperiences(data.experiences);
+    if (data.learnedExperiences) setLearnedExperiences(data.learnedExperiences);
+    if (data.education) setEducation(data.education);
+    if (data.skillGroups) setSkillGroups(data.skillGroups);
+    if (data.projects) setProjects(data.projects);
+    if (data.certifications) setCertifications(data.certifications);
+    if (data.references) setReferences(data.references);
+    if (data.languages) setLanguages(data.languages);
+    if (data.colorScheme) setColorScheme(data.colorScheme);
+    if (typeof data.photoSize === "number") setPhotoSize(data.photoSize);
+    if (typeof data.manualPageCount === "number") setManualPageCount(data.manualPageCount);
+    if (data.photoPath) {
+      setPhotoPath(data.photoPath);
+      getPhotoUrl("resumes", data.photoPath).then((u) => u && setPhotoUrl(u));
+    }
+    if (data.paperSize && PAPER_SIZES[data.paperSize as PaperSize]) setPaperSize(data.paperSize);
+    if (data.sectionScales) setSectionScales(data.sectionScales);
+    if (data.mutedSections) setMutedSections(data.mutedSections);
+  };
 
-      const resume = resumes.find((r) => r.id === id);
-      if (resume) {
-        const personalInfo = resume.personal_info as ResumePersonalInfo;
-        setCurrentResume(resume);
-        setFormData({
-          title: resume.title || "Untitled Resume",
-          fullName: personalInfo.fullName || "",
-          email: personalInfo.email || "",
-          phone: personalInfo.phone || "",
-          location: personalInfo.location || "",
-          linkedin: personalInfo.linkedin || "",
-          portfolio: personalInfo.portfolio || "",
-          tagline: personalInfo.tagline || "",
-          designation: personalInfo.designation || "",
-          summary: resume.summary || "",
-        });
-        if (personalInfo.headerStyle) setHeaderStyle({ ...DEFAULT_HEADER_STYLE, ...personalInfo.headerStyle });
-        if (resume.experience?.length) setExperiences(resume.experience as ExperienceItem[]);
-        if (personalInfo.learnedExperiences?.length) setLearnedExperiences(personalInfo.learnedExperiences);
-        if (personalInfo.references?.length) setReferences(personalInfo.references);
-        if (personalInfo.languages?.length) setLanguages(personalInfo.languages);
-        if (personalInfo.mutedSections) setMutedSections(personalInfo.mutedSections);
-        if (personalInfo.paperSize && PAPER_SIZES[personalInfo.paperSize]) setPaperSize(personalInfo.paperSize);
-        if (personalInfo.sectionScales) setSectionScales(personalInfo.sectionScales);
-        if (typeof personalInfo.photoSize === "number") setPhotoSize(personalInfo.photoSize);
-        if (typeof personalInfo.manualPageCount === "number") setManualPageCount(personalInfo.manualPageCount);
-        if (personalInfo.photoPath) {
-          setPhotoPath(personalInfo.photoPath);
-          getPhotoUrl("resumes", personalInfo.photoPath).then((u) => u && setPhotoUrl(u));
-        }
-        if (resume.education?.length) setEducation(resume.education as EducationItem[]);
-        if (resume.skills?.length) {
-          const skills = resume.skills as (SkillGroup | { name?: string } | string)[];
-          if (typeof skills[0] === "object" && skills[0] !== null && "category" in skills[0]) {
-            setSkillGroups(skills as SkillGroup[]);
-          } else {
-            setSkillGroups([{ id: 1, category: "Technical Skills", items: skills.map((s) => typeof s === "string" ? s : "name" in s ? s.name || "" : "").filter(Boolean) }]);
-          }
-        }
-        if (resume.projects?.length) setProjects(resume.projects as ProjectItem[]);
-        if (resume.certifications?.length) setCertifications((resume.certifications as ({ name?: string } | string)[]).map((c) => typeof c === "string" ? c : c.name || "").filter(Boolean));
+  const applyDbResume = (resume: Resume) => {
+    const personalInfo = resume.personal_info as ResumePersonalInfo;
+    setCurrentResume(resume);
+    setFormData({
+      title: resume.title || "Untitled Resume",
+      fullName: personalInfo.fullName || "",
+      email: personalInfo.email || "",
+      phone: personalInfo.phone || "",
+      location: personalInfo.location || "",
+      linkedin: personalInfo.linkedin || "",
+      portfolio: personalInfo.portfolio || "",
+      tagline: personalInfo.tagline || "",
+      designation: personalInfo.designation || "",
+      summary: resume.summary || "",
+    });
+    if (personalInfo.headerStyle) setHeaderStyle({ ...DEFAULT_HEADER_STYLE, ...personalInfo.headerStyle });
+    if (resume.experience?.length) setExperiences(resume.experience as ExperienceItem[]);
+    if (personalInfo.learnedExperiences?.length) setLearnedExperiences(personalInfo.learnedExperiences);
+    if (personalInfo.references?.length) setReferences(personalInfo.references);
+    if (personalInfo.languages?.length) setLanguages(personalInfo.languages);
+    if (personalInfo.mutedSections) setMutedSections(personalInfo.mutedSections);
+    if (personalInfo.paperSize && PAPER_SIZES[personalInfo.paperSize]) setPaperSize(personalInfo.paperSize);
+    if (personalInfo.sectionScales) setSectionScales(personalInfo.sectionScales);
+    if (typeof personalInfo.photoSize === "number") setPhotoSize(personalInfo.photoSize);
+    if (typeof personalInfo.manualPageCount === "number") setManualPageCount(personalInfo.manualPageCount);
+    if (personalInfo.photoPath) {
+      setPhotoPath(personalInfo.photoPath);
+      getPhotoUrl("resumes", personalInfo.photoPath).then((u) => u && setPhotoUrl(u));
+    }
+    if (resume.education?.length) setEducation(resume.education as EducationItem[]);
+    if (resume.skills?.length) {
+      const skills = resume.skills as (SkillGroup | { name?: string } | string)[];
+      if (typeof skills[0] === "object" && skills[0] !== null && "category" in skills[0]) {
+        setSkillGroups(skills as SkillGroup[]);
+      } else {
+        setSkillGroups([{ id: 1, category: "Technical Skills", items: skills.map((s) => typeof s === "string" ? s : "name" in s ? s.name || "" : "").filter(Boolean) }]);
       }
-    } else if (!id && user) {
+    }
+    if (resume.projects?.length) setProjects(resume.projects as ProjectItem[]);
+    if (resume.certifications?.length) setCertifications((resume.certifications as ({ name?: string } | string)[]).map((c) => typeof c === "string" ? c : c.name || "").filter(Boolean));
+  };
+
+  // Unified load: DB is source of truth; localStorage only overrides if newer than DB updated_at
+  useEffect(() => {
+    if (initialLoadDone) return;
+    if (!id && user) {
       createResume().then((resume) => {
         if (resume) navigate(`/builder/${resume.id}`, { replace: true });
       });
+      return;
     }
-  }, [id, resumes, user]);
+    if (!id || resumes.length === 0) return;
 
-  // Set current resume reference
-  useEffect(() => {
-    if (id && resumes.length > 0) {
-      const resume = resumes.find((r) => r.id === id);
-      if (resume) setCurrentResume(resume);
+    const resume = resumes.find((r) => r.id === id);
+    if (!resume) return;
+
+    // Always load from DB first
+    applyDbResume(resume);
+
+    // Then check if localStorage has strictly newer unsaved edits
+    try {
+      const saved = localStorage.getItem(AUTOSAVE_KEY + id);
+      if (saved) {
+        const data = JSON.parse(saved);
+        const localTime = typeof data.savedAt === "number" ? data.savedAt : 0;
+        const dbTime = new Date(resume.updated_at).getTime();
+        if (localTime > dbTime) {
+          applyLocalData(data);
+          setHasUnsavedChanges(true);
+        } else {
+          // Stale localStorage — clear it so it can't hide DB data later
+          localStorage.removeItem(AUTOSAVE_KEY + id);
+        }
+      }
+    } catch (e) {
+      console.error("Failed to parse saved data", e);
+      localStorage.removeItem(AUTOSAVE_KEY + id);
     }
-  }, [id, resumes]);
+
+    setInitialLoadDone(true);
+  }, [id, resumes, user, initialLoadDone]);
 
   useEffect(() => {
     if (!resumePreviewRef.current) return;
