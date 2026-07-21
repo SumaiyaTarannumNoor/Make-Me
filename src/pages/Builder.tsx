@@ -757,7 +757,7 @@ const Builder = () => {
               {formData.tagline || "Your tagline — a short summary of your career and passion."}
             </p>
           </div>
-          {photoUrl ? (
+          {!isMuted("photo") && (photoUrl ? (
             <div
               role="img"
               aria-label="Profile"
@@ -790,7 +790,7 @@ const Builder = () => {
             >
               <User className="w-16 h-16 text-white" />
             </div>
-          )}
+          ))}
         </div>
         <div className="flex flex-wrap gap-4 text-gray-300 text-[10px]">
           {formData.email && <a href={`mailto:${formData.email}`} className="flex items-center gap-1.5 no-underline text-inherit"><Mail className="w-3.5 h-3.5" style={{ color: theme.primary }} /><span>{formData.email}</span></a>}
