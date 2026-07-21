@@ -140,7 +140,7 @@ const Builder = () => {
 
   const [sections, setSections] = useState([
     { id: "personal", title: "Personal Information", icon: User, isOpen: true, muteable: false },
-    { id: "photo", title: "Profile Photo", icon: Camera, isOpen: false, muteable: false },
+    { id: "photo", title: "Profile Photo", icon: Camera, isOpen: false, muteable: true },
     { id: "summary", title: "Professional Summary", icon: FileCheck, isOpen: false, muteable: true },
     { id: "experience", title: "Work Experience", icon: Briefcase, isOpen: false, muteable: true },
     { id: "learned", title: "Learned Experience", icon: Award, isOpen: false, muteable: true },
@@ -701,6 +701,42 @@ const Builder = () => {
           );
         }
 
+        // Add invisible text layer so text is selectable/copyable in the PDF
+        try {
+          const pageRect = pageEl.getBoundingClientRect();
+          const pxToPt = pxToMm * (72 / 25.4);
+          const walker = document.createTreeWalker(pageEl, NodeFilter.SHOW_TEXT);
+          const range = document.createRange();
+          pdf.setTextColor(0, 0, 0);
+          let node: Node | null;
+          while ((node = walker.nextNode())) {
+            const raw = node.textContent;
+            if (!raw || !raw.trim()) continue;
+            const parent = node.parentElement;
+            if (!parent) continue;
+            const cs = window.getComputedStyle(parent);
+            if (cs.visibility === "hidden" || cs.display === "none") continue;
+            range.selectNodeContents(node);
+            const rects = Array.from(range.getClientRects()).filter((r) => r.width > 0 && r.height > 0);
+            if (!rects.length) continue;
+            const fontSizePx = parseFloat(cs.fontSize) || 10;
+            const fontPt = fontSizePx * pxToPt;
+            pdf.setFontSize(fontPt);
+            // Place the whole text node at the first rect (works for single-line;
+            // multi-line still copies fully, selection may be linear).
+            const r = rects[0];
+            const x = (r.left - pageRect.left) * pxToMm;
+            const y = (r.top - pageRect.top) * pxToMm + fontPt * 0.352778 * 0.85;
+            try {
+              pdf.text(raw, x, y, { renderingMode: "invisible", baseline: "alphabetic" } as never);
+            } catch {
+              pdf.text(raw, x, y);
+            }
+          }
+        } catch (err) {
+          console.warn("Text layer failed", err);
+        }
+
         // Add clickable link annotations on top of the rendered image
         try {
           const pageRect = pageEl.getBoundingClientRect();
@@ -757,7 +793,7 @@ const Builder = () => {
               {formData.tagline || "Your tagline — a short summary of your career and passion."}
             </p>
           </div>
-          {photoUrl ? (
+          {!isMuted("photo") && (photoUrl ? (
             <div
               role="img"
               aria-label="Profile"
@@ -790,7 +826,7 @@ const Builder = () => {
             >
               <User className="w-16 h-16 text-white" />
             </div>
-          )}
+          ))}
         </div>
         <div className="flex flex-wrap gap-4 text-gray-300 text-[10px]">
           {formData.email && <a href={`mailto:${formData.email}`} className="flex items-center gap-1.5 no-underline text-inherit"><Mail className="w-3.5 h-3.5" style={{ color: theme.primary }} /><span>{formData.email}</span></a>}
