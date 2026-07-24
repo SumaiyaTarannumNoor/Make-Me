@@ -15,7 +15,7 @@ import {
   ChevronLeft, Download, Plus, Trash2, User, Briefcase,
   GraduationCap, Code, FileCheck, ChevronDown, ChevronUp, Loader2, Save,
   FolderOpen, Award, Mail, Phone, MapPin, Linkedin, Globe, Camera, LayoutTemplate, Users,
-  Eye, EyeOff, Languages as LanguagesIcon, GripVertical,
+  Eye, EyeOff, Languages as LanguagesIcon, GripVertical, Upload,
 } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Switch } from "@/components/ui/switch";
@@ -647,6 +647,142 @@ const Builder = () => {
     setSaving(false);
   };
 
+  const [importing, setImporting] = useState(false);
+  const importInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImportFromPDF = async (file: File) => {
+    if (!file) return;
+    if (file.type !== "application/pdf" && !file.name.toLowerCase().endsWith(".pdf")) {
+      toast({ title: "Please select a PDF file", variant: "destructive" });
+      return;
+    }
+    setImporting(true);
+    try {
+      // Extract text with pdfjs-dist (browser)
+      const pdfjs: typeof import("pdfjs-dist") = await import("pdfjs-dist");
+      // Use a CDN worker to avoid bundler config
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (pdfjs as any).GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${(pdfjs as any).version}/build/pdf.worker.min.mjs`;
+
+      const buf = await file.arrayBuffer();
+      const doc = await pdfjs.getDocument({ data: buf }).promise;
+      let fullText = "";
+      for (let p = 1; p <= doc.numPages; p += 1) {
+        const page = await doc.getPage(p);
+        const content = await page.getTextContent();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const line = (content.items as any[]).map((it) => it.str).join(" ");
+        fullText += line + "\n\n";
+      }
+      fullText = fullText.trim();
+      if (!fullText) throw new Error("Could not extract any text from the PDF");
+
+      // Send to edge function for AI structured extraction
+      const { data, error } = await supabase.functions.invoke("parse-resume-pdf", {
+        body: { text: fullText },
+      });
+      if (error) throw error;
+      const r = (data as { resume?: Record<string, unknown> })?.resume;
+      if (!r) throw new Error("No resume data returned");
+
+      // Populate state
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const pi = (r as any).personalInfo || {};
+      setFormData((prev) => ({
+        ...prev,
+        fullName: pi.fullName || prev.fullName,
+        email: pi.email || prev.email,
+        phone: pi.phone || prev.phone,
+        location: pi.location || prev.location,
+        linkedin: pi.linkedin || prev.linkedin,
+        portfolio: pi.portfolio || prev.portfolio,
+        designation: pi.designation || prev.designation,
+        tagline: pi.tagline || prev.tagline,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        summary: (r as any).summary || prev.summary,
+      }));
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const exps = ((r as any).experience || []) as any[];
+      if (exps.length) {
+        setExperiences(exps.map((e, i) => ({
+          id: Date.now() + i,
+          company: e.company || "",
+          title: e.title || "",
+          type: e.type || "Full-time",
+          startDate: e.startDate || "",
+          endDate: e.endDate || "",
+          description: e.description || "",
+        })));
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const edus = ((r as any).education || []) as any[];
+      if (edus.length) {
+        setEducation(edus.map((e, i) => ({
+          id: Date.now() + i,
+          institution: e.institution || "",
+          degree: e.degree || "",
+          year: [e.startDate, e.endDate].filter(Boolean).join(" - "),
+          grade: e.gpa || "",
+        })));
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const skills = ((r as any).skills || []) as string[];
+      if (skills.length) {
+        setSkillGroups([{ id: 1, category: "Technical Skills", items: skills.filter(Boolean) }]);
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const projs = ((r as any).projects || []) as any[];
+      if (projs.length) {
+        setProjects(projs.map((p, i) => ({
+          id: Date.now() + i,
+          name: p.name || "",
+          description: [p.description, p.technologies && `Tech: ${p.technologies}`].filter(Boolean).join("\n"),
+          link: p.link || "",
+        })));
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const certs = ((r as any).certifications || []) as (string | { name?: string })[];
+      if (certs.length) {
+        setCertifications(certs.map((c) => typeof c === "string" ? c : c.name || "").filter(Boolean));
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const langs = ((r as any).languages || []) as any[];
+      if (langs.length) {
+        setLanguages(langs.map((l, i) => ({ id: Date.now() + i, name: l.name || "", level: l.proficiency || l.level || "" })));
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const refs = ((r as any).references || []) as any[];
+      if (refs.length) {
+        setReferences(refs.map((rf, i) => ({
+          id: Date.now() + i,
+          name: rf.name || "",
+          designation: rf.title || rf.designation || "",
+          organization: rf.company || rf.organization || "",
+          email: rf.email || "",
+          phone: rf.phone || "",
+          active: true,
+        })));
+      }
+
+      setHasUnsavedChanges(true);
+      toast({ title: "Resume imported!", description: "Review the fields and click Save." });
+    } catch (e) {
+      console.error("PDF import error:", e);
+      const msg = (e as Error).message || "Failed to import PDF";
+      toast({ title: "Import failed", description: msg, variant: "destructive" });
+    } finally {
+      setImporting(false);
+      if (importInputRef.current) importInputRef.current.value = "";
+    }
+  };
+
   const handleDownloadPDF = async (compressed = false) => {
     if (!currentResume || !user) return;
     const pages = pageRefs.current.slice(0, pageCount).filter(Boolean) as HTMLDivElement[];
@@ -701,7 +837,9 @@ const Builder = () => {
           );
         }
 
-        // Add invisible text layer so text is selectable/copyable in the PDF
+        // Add invisible text layer so text is selectable/copyable in the PDF.
+        // Split each text node by its per-line client rects and place text
+        // proportionally so multi-line paragraphs select cleanly.
         try {
           const pageRect = pageEl.getBoundingClientRect();
           const pxToPt = pxToMm * (72 / 25.4);
@@ -715,22 +853,49 @@ const Builder = () => {
             const parent = node.parentElement;
             if (!parent) continue;
             const cs = window.getComputedStyle(parent);
-            if (cs.visibility === "hidden" || cs.display === "none") continue;
+            if (cs.visibility === "hidden" || cs.display === "none" || cs.opacity === "0") continue;
             range.selectNodeContents(node);
             const rects = Array.from(range.getClientRects()).filter((r) => r.width > 0 && r.height > 0);
             if (!rects.length) continue;
             const fontSizePx = parseFloat(cs.fontSize) || 10;
             const fontPt = fontSizePx * pxToPt;
             pdf.setFontSize(fontPt);
-            // Place the whole text node at the first rect (works for single-line;
-            // multi-line still copies fully, selection may be linear).
-            const r = rects[0];
-            const x = (r.left - pageRect.left) * pxToMm;
-            const y = (r.top - pageRect.top) * pxToMm + fontPt * 0.352778 * 0.85;
-            try {
-              pdf.text(raw, x, y, { renderingMode: "invisible", baseline: "alphabetic" } as never);
-            } catch {
-              pdf.text(raw, x, y);
+
+            // Approximate character width from the parent's font to split text across line rects
+            const measure = document.createElement("span");
+            measure.style.cssText = `position:absolute;visibility:hidden;white-space:pre;font:${cs.font};letter-spacing:${cs.letterSpacing};`;
+            measure.textContent = raw;
+            document.body.appendChild(measure);
+            const totalTextWidth = measure.getBoundingClientRect().width || rects.reduce((s, r) => s + r.width, 0);
+            document.body.removeChild(measure);
+
+            let cursor = 0;
+            for (const r of rects) {
+              const frac = totalTextWidth > 0 ? r.width / totalTextWidth : 1 / rects.length;
+              let take = Math.max(1, Math.round(raw.length * frac));
+              if (cursor + take > raw.length) take = raw.length - cursor;
+              const chunk = raw.slice(cursor, cursor + take);
+              cursor += take;
+              if (!chunk) continue;
+              const x = (r.left - pageRect.left) * pxToMm;
+              const y = (r.top - pageRect.top) * pxToMm + fontPt * 0.352778 * 0.85;
+              try {
+                pdf.text(chunk, x, y, { renderingMode: "invisible", baseline: "alphabetic" } as never);
+              } catch {
+                pdf.text(chunk, x, y);
+              }
+              if (cursor >= raw.length) break;
+            }
+            // Any leftover characters -> place at last rect so nothing is lost when copying
+            if (cursor < raw.length) {
+              const r = rects[rects.length - 1];
+              const x = (r.left - pageRect.left) * pxToMm;
+              const y = (r.top - pageRect.top) * pxToMm + fontPt * 0.352778 * 0.85;
+              try {
+                pdf.text(raw.slice(cursor), x, y, { renderingMode: "invisible", baseline: "alphabetic" } as never);
+              } catch {
+                pdf.text(raw.slice(cursor), x, y);
+              }
             }
           }
         } catch (err) {
@@ -1079,6 +1244,36 @@ const Builder = () => {
       <div className="flex-1 flex">
         {/* Left Panel - Editor */}
         <div className="w-full md:w-1/2 border-r border-border bg-card overflow-auto p-6 space-y-4">
+          {/* Import from PDF */}
+          <div className="rounded-xl border border-dashed border-primary/40 bg-primary/5 p-4 flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <p className="font-semibold text-sm">Import from PDF</p>
+              <p className="text-xs text-muted-foreground truncate">
+                Upload an existing resume PDF to auto-fill all sections below.
+              </p>
+            </div>
+            <input
+              ref={importInputRef}
+              type="file"
+              accept="application/pdf,.pdf"
+              className="hidden"
+              onChange={(e) => {
+                const f = e.target.files?.[0];
+                if (f) handleImportFromPDF(f);
+              }}
+            />
+            <Button
+              type="button"
+              size="sm"
+              onClick={() => importInputRef.current?.click()}
+              disabled={importing}
+              className="shrink-0"
+            >
+              {importing ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Upload className="w-4 h-4 mr-2" />}
+              {importing ? "Importing..." : "Upload PDF"}
+            </Button>
+          </div>
+
           {sections.map((section) => (
             <Collapsible key={section.id} open={section.isOpen} onOpenChange={() => toggleSection(section.id)}>
               <div className={`w-full flex items-center justify-between p-4 rounded-xl bg-muted/50 ${isMuted(section.id) ? "opacity-60" : ""}`}>
