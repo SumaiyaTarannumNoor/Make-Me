@@ -1244,6 +1244,36 @@ const Builder = () => {
       <div className="flex-1 flex">
         {/* Left Panel - Editor */}
         <div className="w-full md:w-1/2 border-r border-border bg-card overflow-auto p-6 space-y-4">
+          {/* Import from PDF */}
+          <div className="rounded-xl border border-dashed border-primary/40 bg-primary/5 p-4 flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <p className="font-semibold text-sm">Import from PDF</p>
+              <p className="text-xs text-muted-foreground truncate">
+                Upload an existing resume PDF to auto-fill all sections below.
+              </p>
+            </div>
+            <input
+              ref={importInputRef}
+              type="file"
+              accept="application/pdf,.pdf"
+              className="hidden"
+              onChange={(e) => {
+                const f = e.target.files?.[0];
+                if (f) handleImportFromPDF(f);
+              }}
+            />
+            <Button
+              type="button"
+              size="sm"
+              onClick={() => importInputRef.current?.click()}
+              disabled={importing}
+              className="shrink-0"
+            >
+              {importing ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Upload className="w-4 h-4 mr-2" />}
+              {importing ? "Importing..." : "Upload PDF"}
+            </Button>
+          </div>
+
           {sections.map((section) => (
             <Collapsible key={section.id} open={section.isOpen} onOpenChange={() => toggleSection(section.id)}>
               <div className={`w-full flex items-center justify-between p-4 rounded-xl bg-muted/50 ${isMuted(section.id) ? "opacity-60" : ""}`}>
