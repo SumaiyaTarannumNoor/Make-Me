@@ -701,7 +701,9 @@ const Builder = () => {
           );
         }
 
-        // Add invisible text layer so text is selectable/copyable in the PDF
+        // Add invisible text layer so text is selectable/copyable in the PDF.
+        // Split each text node by its per-line client rects and place text
+        // proportionally so multi-line paragraphs select cleanly.
         try {
           const pageRect = pageEl.getBoundingClientRect();
           const pxToPt = pxToMm * (72 / 25.4);
@@ -715,22 +717,49 @@ const Builder = () => {
             const parent = node.parentElement;
             if (!parent) continue;
             const cs = window.getComputedStyle(parent);
-            if (cs.visibility === "hidden" || cs.display === "none") continue;
+            if (cs.visibility === "hidden" || cs.display === "none" || cs.opacity === "0") continue;
             range.selectNodeContents(node);
             const rects = Array.from(range.getClientRects()).filter((r) => r.width > 0 && r.height > 0);
             if (!rects.length) continue;
             const fontSizePx = parseFloat(cs.fontSize) || 10;
             const fontPt = fontSizePx * pxToPt;
             pdf.setFontSize(fontPt);
-            // Place the whole text node at the first rect (works for single-line;
-            // multi-line still copies fully, selection may be linear).
-            const r = rects[0];
-            const x = (r.left - pageRect.left) * pxToMm;
-            const y = (r.top - pageRect.top) * pxToMm + fontPt * 0.352778 * 0.85;
-            try {
-              pdf.text(raw, x, y, { renderingMode: "invisible", baseline: "alphabetic" } as never);
-            } catch {
-              pdf.text(raw, x, y);
+
+            // Approximate character width from the parent's font to split text across line rects
+            const measure = document.createElement("span");
+            measure.style.cssText = `position:absolute;visibility:hidden;white-space:pre;font:${cs.font};letter-spacing:${cs.letterSpacing};`;
+            measure.textContent = raw;
+            document.body.appendChild(measure);
+            const totalTextWidth = measure.getBoundingClientRect().width || rects.reduce((s, r) => s + r.width, 0);
+            document.body.removeChild(measure);
+
+            let cursor = 0;
+            for (const r of rects) {
+              const frac = totalTextWidth > 0 ? r.width / totalTextWidth : 1 / rects.length;
+              let take = Math.max(1, Math.round(raw.length * frac));
+              if (cursor + take > raw.length) take = raw.length - cursor;
+              const chunk = raw.slice(cursor, cursor + take);
+              cursor += take;
+              if (!chunk) continue;
+              const x = (r.left - pageRect.left) * pxToMm;
+              const y = (r.top - pageRect.top) * pxToMm + fontPt * 0.352778 * 0.85;
+              try {
+                pdf.text(chunk, x, y, { renderingMode: "invisible", baseline: "alphabetic" } as never);
+              } catch {
+                pdf.text(chunk, x, y);
+              }
+              if (cursor >= raw.length) break;
+            }
+            // Any leftover characters -> place at last rect so nothing is lost when copying
+            if (cursor < raw.length) {
+              const r = rects[rects.length - 1];
+              const x = (r.left - pageRect.left) * pxToMm;
+              const y = (r.top - pageRect.top) * pxToMm + fontPt * 0.352778 * 0.85;
+              try {
+                pdf.text(raw.slice(cursor), x, y, { renderingMode: "invisible", baseline: "alphabetic" } as never);
+              } catch {
+                pdf.text(raw.slice(cursor), x, y);
+              }
             }
           }
         } catch (err) {
