@@ -647,6 +647,142 @@ const Builder = () => {
     setSaving(false);
   };
 
+  const [importing, setImporting] = useState(false);
+  const importInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImportFromPDF = async (file: File) => {
+    if (!file) return;
+    if (file.type !== "application/pdf" && !file.name.toLowerCase().endsWith(".pdf")) {
+      toast({ title: "Please select a PDF file", variant: "destructive" });
+      return;
+    }
+    setImporting(true);
+    try {
+      // Extract text with pdfjs-dist (browser)
+      const pdfjs: typeof import("pdfjs-dist") = await import("pdfjs-dist");
+      // Use a CDN worker to avoid bundler config
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (pdfjs as any).GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${(pdfjs as any).version}/build/pdf.worker.min.mjs`;
+
+      const buf = await file.arrayBuffer();
+      const doc = await pdfjs.getDocument({ data: buf }).promise;
+      let fullText = "";
+      for (let p = 1; p <= doc.numPages; p += 1) {
+        const page = await doc.getPage(p);
+        const content = await page.getTextContent();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const line = (content.items as any[]).map((it) => it.str).join(" ");
+        fullText += line + "\n\n";
+      }
+      fullText = fullText.trim();
+      if (!fullText) throw new Error("Could not extract any text from the PDF");
+
+      // Send to edge function for AI structured extraction
+      const { data, error } = await supabase.functions.invoke("parse-resume-pdf", {
+        body: { text: fullText },
+      });
+      if (error) throw error;
+      const r = (data as { resume?: Record<string, unknown> })?.resume;
+      if (!r) throw new Error("No resume data returned");
+
+      // Populate state
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const pi = (r as any).personalInfo || {};
+      setFormData((prev) => ({
+        ...prev,
+        fullName: pi.fullName || prev.fullName,
+        email: pi.email || prev.email,
+        phone: pi.phone || prev.phone,
+        location: pi.location || prev.location,
+        linkedin: pi.linkedin || prev.linkedin,
+        portfolio: pi.portfolio || prev.portfolio,
+        designation: pi.designation || prev.designation,
+        tagline: pi.tagline || prev.tagline,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        summary: (r as any).summary || prev.summary,
+      }));
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const exps = ((r as any).experience || []) as any[];
+      if (exps.length) {
+        setExperiences(exps.map((e, i) => ({
+          id: Date.now() + i,
+          company: e.company || "",
+          title: e.title || "",
+          type: e.type || "Full-time",
+          startDate: e.startDate || "",
+          endDate: e.endDate || "",
+          description: e.description || "",
+        })));
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const edus = ((r as any).education || []) as any[];
+      if (edus.length) {
+        setEducation(edus.map((e, i) => ({
+          id: Date.now() + i,
+          institution: e.institution || "",
+          degree: e.degree || "",
+          year: [e.startDate, e.endDate].filter(Boolean).join(" - "),
+          grade: e.gpa || "",
+        })));
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const skills = ((r as any).skills || []) as string[];
+      if (skills.length) {
+        setSkillGroups([{ id: 1, category: "Technical Skills", items: skills.filter(Boolean) }]);
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const projs = ((r as any).projects || []) as any[];
+      if (projs.length) {
+        setProjects(projs.map((p, i) => ({
+          id: Date.now() + i,
+          name: p.name || "",
+          description: [p.description, p.technologies && `Tech: ${p.technologies}`].filter(Boolean).join("\n"),
+          link: p.link || "",
+        })));
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const certs = ((r as any).certifications || []) as (string | { name?: string })[];
+      if (certs.length) {
+        setCertifications(certs.map((c) => typeof c === "string" ? c : c.name || "").filter(Boolean));
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const langs = ((r as any).languages || []) as any[];
+      if (langs.length) {
+        setLanguages(langs.map((l, i) => ({ id: Date.now() + i, name: l.name || "", level: l.proficiency || l.level || "" })));
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const refs = ((r as any).references || []) as any[];
+      if (refs.length) {
+        setReferences(refs.map((rf, i) => ({
+          id: Date.now() + i,
+          name: rf.name || "",
+          designation: rf.title || rf.designation || "",
+          organization: rf.company || rf.organization || "",
+          email: rf.email || "",
+          phone: rf.phone || "",
+          active: true,
+        })));
+      }
+
+      setHasUnsavedChanges(true);
+      toast({ title: "Resume imported!", description: "Review the fields and click Save." });
+    } catch (e) {
+      console.error("PDF import error:", e);
+      const msg = (e as Error).message || "Failed to import PDF";
+      toast({ title: "Import failed", description: msg, variant: "destructive" });
+    } finally {
+      setImporting(false);
+      if (importInputRef.current) importInputRef.current.value = "";
+    }
+  };
+
   const handleDownloadPDF = async (compressed = false) => {
     if (!currentResume || !user) return;
     const pages = pageRefs.current.slice(0, pageCount).filter(Boolean) as HTMLDivElement[];
