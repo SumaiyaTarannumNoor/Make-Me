@@ -1,1 +1,4 @@
 project_id = "pkakhjfjanupnjrkdaur"
+
+[functions.parse-resume-pdf]
+verify_jwt = true
