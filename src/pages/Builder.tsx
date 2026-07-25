@@ -666,7 +666,7 @@ const Builder = () => {
       (pdfjs as any).GlobalWorkerOptions.workerSrc = workerUrl;
 
       const buf = await file.arrayBuffer();
-      const doc = await pdfjs.getDocument({ data: buf, isEvalSupported: false }).promise;
+      const doc = await pdfjs.getDocument({ data: buf }).promise;
       let fullText = "";
       for (let p = 1; p <= doc.numPages; p += 1) {
         const page = await doc.getPage(p);
