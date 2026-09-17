@@ -656,43 +656,58 @@ const Builder = () => {
       toast({ title: "Please select a PDF file", variant: "destructive" });
       return;
     }
+    if (file.size > 15 * 1024 * 1024) {
+      toast({ title: "File too large", description: "Please upload a PDF under 15 MB.", variant: "destructive" });
+      return;
+    }
     setImporting(true);
     try {
-      // Extract text with pdfjs-dist (browser) using bundled worker
-      const pdfjs: typeof import("pdfjs-dist") = await import("pdfjs-dist");
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const workerUrl = (await import("pdfjs-dist/build/pdf.worker.min.mjs?url")).default;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (pdfjs as any).GlobalWorkerOptions.workerSrc = workerUrl;
-
       const buf = await file.arrayBuffer();
-      const doc = await pdfjs.getDocument({ data: buf }).promise;
-      let fullText = "";
-      for (let p = 1; p <= doc.numPages; p += 1) {
-        const page = await doc.getPage(p);
-        const content = await page.getTextContent();
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const items = content.items as any[];
-        let lastY: number | null = null;
-        let line = "";
-        for (const it of items) {
-          const y = it.transform?.[5];
-          if (lastY !== null && Math.abs((y ?? 0) - lastY) > 2) {
-            fullText += line.trim() + "\n";
-            line = "";
-          }
-          line += (it.str || "") + (it.hasEOL ? "\n" : " ");
-          lastY = y ?? lastY;
-        }
-        fullText += line + "\n\n";
-      }
-      fullText = fullText.trim();
-      if (!fullText) throw new Error("This PDF has no selectable text (it may be a scanned image). Try a text-based PDF.");
 
+      // Base64-encode the PDF so the AI can read the document directly
+      // (this also works for scanned / image-only PDFs).
+      const bytes = new Uint8Array(buf);
+      let binary = "";
+      const CHUNK = 0x8000;
+      for (let i = 0; i < bytes.length; i += CHUNK) {
+        binary += String.fromCharCode(...bytes.subarray(i, i + CHUNK));
+      }
+      const fileBase64 = btoa(binary);
+
+      // Best-effort text layer extraction as an extra hint (non-fatal).
+      let fullText = "";
+      try {
+        const pdfjs: typeof import("pdfjs-dist") = await import("pdfjs-dist");
+        const workerUrl = (await import("pdfjs-dist/build/pdf.worker.min.mjs?url")).default;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (pdfjs as any).GlobalWorkerOptions.workerSrc = workerUrl;
+        const doc = await pdfjs.getDocument({ data: bytes.slice() }).promise;
+        for (let p = 1; p <= doc.numPages; p += 1) {
+          const page = await doc.getPage(p);
+          const content = await page.getTextContent();
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const items = content.items as any[];
+          let lastY: number | null = null;
+          let line = "";
+          for (const it of items) {
+            const y = it.transform?.[5];
+            if (lastY !== null && Math.abs((y ?? 0) - lastY) > 2) {
+              fullText += line.trim() + "\n";
+              line = "";
+            }
+            line += (it.str || "") + (it.hasEOL ? "\n" : " ");
+            lastY = y ?? lastY;
+          }
+          fullText += line + "\n\n";
+        }
+        fullText = fullText.trim();
+      } catch (textErr) {
+        console.warn("Text layer extraction skipped:", textErr);
+      }
 
       // Send to edge function for AI structured extraction
       const { data, error } = await supabase.functions.invoke("parse-resume-pdf", {
-        body: { text: fullText },
+        body: { fileBase64, filename: file.name, text: fullText },
       });
       if (error) throw error;
       const r = (data as { resume?: Record<string, unknown> })?.resume;
