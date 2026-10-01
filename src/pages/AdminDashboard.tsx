@@ -188,6 +188,13 @@ const AdminDashboard = () => {
                             <TableCell className="text-muted-foreground text-sm">
                               {formatDate(u.registered_at || u.created_at)}
                             </TableCell>
+                            <TableCell className="text-muted-foreground text-sm">
+                              {u.last_sign_in_at ? (
+                                formatDate(u.last_sign_in_at)
+                              ) : (
+                                <span className="italic">Never</span>
+                              )}
+                            </TableCell>
                             <TableCell>
                               {u.is_active ? (
                                 <Badge className="bg-green-500/10 text-green-600 border-green-500/30">
