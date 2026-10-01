@@ -175,6 +175,7 @@ const AdminDashboard = () => {
                           <TableHead>Email</TableHead>
                           <TableHead>Registered</TableHead>
                           <TableHead>Last Login</TableHead>
+                          <TableHead>Last Online</TableHead>
                           <TableHead>Status</TableHead>
                           <TableHead>Plan</TableHead>
                           <TableHead className="text-right">Actions</TableHead>
@@ -191,6 +192,13 @@ const AdminDashboard = () => {
                             <TableCell className="text-muted-foreground text-sm">
                               {u.last_sign_in_at ? (
                                 formatDate(u.last_sign_in_at)
+                              ) : (
+                                <span className="italic">Never</span>
+                              )}
+                            </TableCell>
+                            <TableCell className="text-muted-foreground text-sm">
+                              {u.last_online_at ? (
+                                formatDate(u.last_online_at)
                               ) : (
                                 <span className="italic">Never</span>
                               )}
@@ -252,7 +260,7 @@ const AdminDashboard = () => {
                         ))}
                         {filteredUsers?.length === 0 && (
                           <TableRow>
-                            <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                            <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                               No users found
                             </TableCell>
                           </TableRow>
