@@ -29,6 +29,7 @@ export interface AdminProfile {
   created_at: string;
   registered_at?: string;
   last_sign_in_at?: string | null;
+  last_online_at?: string | null;
   is_active?: boolean;
 }
 

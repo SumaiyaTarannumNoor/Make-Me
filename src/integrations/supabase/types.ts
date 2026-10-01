@@ -23,6 +23,7 @@ export type Database = {
           full_name: string | null
           id: string
           is_premium: boolean
+          last_online_at: string | null
           linkedin: string | null
           location: string | null
           phone: string | null
@@ -38,6 +39,7 @@ export type Database = {
           full_name?: string | null
           id?: string
           is_premium?: boolean
+          last_online_at?: string | null
           linkedin?: string | null
           location?: string | null
           phone?: string | null
@@ -53,6 +55,7 @@ export type Database = {
           full_name?: string | null
           id?: string
           is_premium?: boolean
+          last_online_at?: string | null
           linkedin?: string | null
           location?: string | null
           phone?: string | null
