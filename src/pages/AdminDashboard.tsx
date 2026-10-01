@@ -174,6 +174,7 @@ const AdminDashboard = () => {
                           <TableHead>Name</TableHead>
                           <TableHead>Email</TableHead>
                           <TableHead>Registered</TableHead>
+                          <TableHead>Last Login</TableHead>
                           <TableHead>Status</TableHead>
                           <TableHead>Plan</TableHead>
                           <TableHead className="text-right">Actions</TableHead>
