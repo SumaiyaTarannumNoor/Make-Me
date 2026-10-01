@@ -43,7 +43,7 @@ Deno.serve(async (req) => {
     // Fetch profiles
     const { data: profiles } = await adminClient
       .from('profiles')
-      .select('user_id, email, full_name, is_premium, created_at')
+      .select('user_id, email, full_name, is_premium, created_at, last_online_at')
       .order('created_at', { ascending: false })
 
     // Fetch auth users for last_sign_in_at (paginate)
@@ -65,10 +65,14 @@ Deno.serve(async (req) => {
     const users = (profiles ?? []).map((p: any) => {
       const auth = authUsersMap.get(p.user_id)
       const last = auth?.last_sign_in_at ?? null
-      const isActive = last ? (now - new Date(last).getTime()) < ACTIVE_WINDOW_MS : false
+      const lastOnline = p.last_online_at ?? null
+      const isActive = lastOnline
+        ? (now - new Date(lastOnline).getTime()) < ACTIVE_WINDOW_MS
+        : (last ? (now - new Date(last).getTime()) < ACTIVE_WINDOW_MS : false)
       return {
         ...p,
         last_sign_in_at: last,
+        last_online_at: lastOnline,
         is_active: isActive,
         registered_at: auth?.created_at ?? p.created_at,
       }
