@@ -41,6 +41,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return () => subscription.unsubscribe();
   }, []);
 
+  // Presence heartbeat: stamp last_online_at while the user is on the site
+  useEffect(() => {
+    if (!user) return;
+    const stamp = () => {
+      supabase
+        .from('profiles')
+        .update({ last_online_at: new Date().toISOString() } as any)
+        .eq('user_id', user.id)
+        .then(() => {});
+    };
+    stamp();
+    const interval = setInterval(stamp, 60 * 1000);
+    return () => clearInterval(interval);
+  }, [user?.id]);
+
   const signUp = async (email: string, password: string, fullName: string) => {
     const { error } = await supabase.auth.signUp({
       email,
