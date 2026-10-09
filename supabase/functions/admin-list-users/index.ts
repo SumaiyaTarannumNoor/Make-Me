@@ -65,7 +65,10 @@ Deno.serve(async (req) => {
     const users = (profiles ?? []).map((p: any) => {
       const auth = authUsersMap.get(p.user_id)
       const last = auth?.last_sign_in_at ?? null
-      const lastOnline = p.last_online_at ?? null
+      const candidates = [p.last_online_at, last].filter(Boolean) as string[]
+      const lastOnline = candidates.length
+        ? candidates.reduce((a, b) => (new Date(a) > new Date(b) ? a : b))
+        : null
       const isActive = lastOnline
         ? (now - new Date(lastOnline).getTime()) < ACTIVE_WINDOW_MS
         : (last ? (now - new Date(last).getTime()) < ACTIVE_WINDOW_MS : false)
