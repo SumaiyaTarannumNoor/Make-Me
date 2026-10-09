@@ -77,6 +77,7 @@ type ResumePersonalInfo = {
   photoPath?: string;
   photoSize?: number;
   manualPageCount?: number;
+  colorScheme?: string;
 };
 
 const PAPER_SIZES: Record<PaperSize, { label: string; widthPx: number; heightPx: number; widthMm: number; heightMm: number }> = {
@@ -343,7 +344,7 @@ const Builder = () => {
   // Load from template param
   useEffect(() => {
     const templateParam = searchParams.get("template");
-    if (templateParam && Object.keys(resumeColorSchemes).includes(templateParam)) {
+    if (templateParam && Object.keys(resumeColorSchemes).includes(templateParam) && !initialLoadDone) {
       setColorScheme(templateParam as ResumeColorScheme);
     }
   }, [searchParams]);
@@ -396,6 +397,7 @@ const Builder = () => {
     if (personalInfo.sectionScales) setSectionScales(personalInfo.sectionScales);
     if (typeof personalInfo.photoSize === "number") setPhotoSize(personalInfo.photoSize);
     if (typeof personalInfo.manualPageCount === "number") setManualPageCount(personalInfo.manualPageCount);
+    if (personalInfo.colorScheme && personalInfo.colorScheme in resumeColorSchemes) setColorScheme(personalInfo.colorScheme as ResumeColorScheme);
     if (personalInfo.photoPath) {
       setPhotoPath(personalInfo.photoPath);
       getPhotoUrl("resumes", personalInfo.photoPath).then((u) => u && setPhotoUrl(u));
@@ -632,6 +634,7 @@ const Builder = () => {
         photoPath: photoPath ?? undefined,
         photoSize,
         manualPageCount,
+        colorScheme,
       },
       summary: formData.summary,
       experience: experiences,
